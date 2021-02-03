@@ -19,20 +19,21 @@ open class HorizontalBarHighlighter: BarHighlighter {
         let pos = getValsForTouch(x: y, y: x)
         guard let high = getHighlight(xValue: Double(pos.y), x: y, y: x) else { return nil }
 
-        if let set = barData[high.dataSetIndex] as? BarChartDataSet,
-           set.isStacked
-        {
-            return getStackedHighlight(high: high,
-                                       set: set,
-                                       xValue: Double(pos.y),
-                                       yValue: Double(pos.x))
+        let set = barData[high.dataSetIndex]
+        if set.isStacked {
+            return getStackedHighlight(
+                high: high,
+                set: set,
+                xValue: Double(pos.y),
+                yValue: Double(pos.x)
+            )
         }
 
         return high
     }
 
-    override internal func buildHighlights(
-        dataSet set: ChartDataSet,
+    override internal func buildHighlights<Entry: ChartDataEntry>(
+        dataSet set: ChartDataSet<Entry>,
         dataSetIndex: Int,
         xValue: Double,
         rounding: ChartDataSetRounding

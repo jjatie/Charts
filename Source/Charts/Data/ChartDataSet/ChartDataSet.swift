@@ -28,11 +28,11 @@ public typealias ARange = ClosedRange<Double>
 /// The DataSet class represents one group or type of entries (Entry) in the Chart that belong together.
 /// It is designed to logically separate different groups of values inside the Chart (e.g. the values for a specific line in the LineChart, or the values of a specific group of bars in the BarChart).
 @dynamicMemberLookup
-public class ChartDataSet: NSCopying {
+public final class ChartDataSet<Element: ChartDataEntry>: NSCopying {
     /// - Note: Calls `notifyDataSetChanged()` after setting a new value.
     /// - Returns: The array of y-values that this DataSet represents.
     /// the entries that this dataset represents / holds together
-    private(set) var entries: [ChartDataEntry]
+    private(set) var entries: [Element]
 
     /// The label string that describes the DataSet.
     public var label: String? = "DataSet"
@@ -43,9 +43,9 @@ public class ChartDataSet: NSCopying {
     public internal(set) var xRange: AxisRange = (.greatestFiniteMagnitude, -.greatestFiniteMagnitude)
     public internal(set) var yRange: AxisRange = (.greatestFiniteMagnitude, -.greatestFiniteMagnitude)
 
-    public var style = ChartStyleValues<Element>()
+    public var style = ChartStyle<Element>()
 
-    public subscript<T>(dynamicMember keyPath: WritableKeyPath<ChartStyleValues<Element>, T>) -> T {
+    public subscript<T>(dynamicMember keyPath: WritableKeyPath<ChartStyle<Element>, T>) -> T {
         get { style[keyPath: keyPath] }
         set { style[keyPath: keyPath] = newValue }
     }
@@ -118,7 +118,7 @@ public class ChartDataSet: NSCopying {
     ///
     /// - Parameters:
     ///   - e:
-    public func calcMinMax(entry e: ChartDataEntry) {
+    func calcMinMax(entry e: Element) {
         calcMinMaxX(entry: e)
         calcMinMaxY(entry: e)
     }
@@ -205,7 +205,7 @@ extension ChartDataSet {
 
 extension ChartDataSet: MutableCollection {
     public typealias Index = Int
-    public typealias Element = ChartDataEntry
+//    public typealias Element = ChartDataEntry
 
     public var startIndex: Index {
         entries.startIndex
@@ -248,7 +248,7 @@ extension ChartDataSet: RangeReplaceableCollection {
         entries.append(newElement)
     }
 
-    public func insert(_ newElement: ChartDataEntry, at i: Int) {
+    public func insert(_ newElement: Element, at i: Int) {
         calcMinMax(entry: newElement)
         entries.insert(newElement, at: i)
     }

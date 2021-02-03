@@ -1,6 +1,6 @@
 import CoreGraphics
 
-extension ChartStyleValues {
+extension ChartStyle {
     /// `true` if this DataSet is visible inside the chart, or `false` ifit is currently hidden.
     public var isVisible: Bool {
         get { self[IsVisibleChartStyleKey.self] }
@@ -18,6 +18,12 @@ extension ChartStyleValues {
     public var isHighlightingEnabled: Bool {
         get { self[HighlightToggleChartStyleKey.self] }
         set { self[HighlightToggleChartStyleKey.self] = newValue }
+    }
+
+    /// get/sets the color for the highlighted sector
+    public var highlightColor: NSUIColor {
+        get { self[HighlightColorChartStyleKey.self] }
+        set { self[HighlightColorChartStyleKey.self] = newValue }
     }
 
     /// Set this to true to draw y-icons on the chart
@@ -51,6 +57,10 @@ private enum ColorsChartStyleKey: ChartStyleKey {
 
 private enum HighlightToggleChartStyleKey: ChartStyleKey {
     static let defaultValue: Bool = true
+}
+
+private enum HighlightColorChartStyleKey: ChartStyleKey {
+    static let defaultValue: NSUIColor = NSUIColor(red: 255.0 / 255.0, green: 187.0 / 255.0, blue: 115.0 / 255.0, alpha: 1.0)
 }
 
 private enum DrawIconsToggleChartStyleKey: ChartStyleKey {

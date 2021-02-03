@@ -48,7 +48,7 @@ open class ChartViewBase: NSUIView {
     internal lazy var defaultValueFormatter: ValueFormatter = DefaultValueFormatter(decimals: 0)
 
     /// object that holds all data that was originally set for the chart, before it was modified or any filtering algorithms had been applied
-    open var data: ChartData? {
+    open var data: ChartData<ChartDataEntry>? {
         didSet {
             offsetsCalculated = false
 

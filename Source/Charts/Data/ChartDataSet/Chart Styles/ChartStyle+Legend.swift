@@ -1,6 +1,6 @@
 import CoreGraphics
 
-extension ChartStyleValues {
+extension ChartStyle {
     /// The form to draw for this dataset in the legend.
     public var form: Legend.Form {
         get { self[LegendFormChartStyleKey.self] }

@@ -78,8 +78,8 @@ open class ChartHighlighter: Highlighter {
     }
 
     /// - Returns: An array of `Highlight` objects corresponding to the selected xValue and dataSetIndex.
-    internal func buildHighlights(
-        dataSet set: ChartDataSet,
+    internal func buildHighlights<Entry: ChartDataEntry>(
+        dataSet set: ChartDataSet<Entry>,
         dataSetIndex: Int,
         xValue: Double,
         rounding: ChartDataSetRounding
@@ -154,7 +154,7 @@ open class ChartHighlighter: Highlighter {
         return hypot(x1 - x2, y1 - y2)
     }
 
-    internal var data: ChartData? {
+    internal var data: ChartData<ChartDataEntry>? {
         return chart?.data
     }
 }

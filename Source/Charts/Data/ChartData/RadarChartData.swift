@@ -12,7 +12,7 @@
 import CoreGraphics
 import Foundation
 
-open class RadarChartData: ChartData {
+open class RadarChartData: ChartData<RadarChartDataEntry> {
     open var highlightColor = NSUIColor(red: 255.0 / 255.0, green: 187.0 / 255.0, blue: 115.0 / 255.0, alpha: 1.0)
     open var highlightLineWidth = CGFloat(1.0)
     open var highlightLineDashPhase = CGFloat(0.0)
@@ -30,15 +30,15 @@ open class RadarChartData: ChartData {
         super.init()
     }
 
-    override public init(dataSets: [ChartDataSet]) {
+    override public init(dataSets: [Element]) {
         super.init(dataSets: dataSets)
     }
 
-    public required init(arrayLiteral elements: ChartDataSet...) {
+    public required init(arrayLiteral elements: Element...) {
         super.init(dataSets: elements)
     }
 
-    override open func entry(for highlight: Highlight) -> ChartDataEntry? {
+    override open func entry(for highlight: Highlight) -> RadarChartDataEntry? {
         self[highlight.dataSetIndex][Int(highlight.x)]
     }
 }

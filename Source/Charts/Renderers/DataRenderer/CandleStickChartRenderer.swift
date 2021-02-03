@@ -9,6 +9,7 @@
 //  https://github.com/danielgindi/Charts
 //
 
+import Algorithms
 import CoreGraphics
 import Foundation
 
@@ -44,7 +45,7 @@ public class CandleStickChartRenderer: DataRenderer {
             accessibleChartElements.append(element)
         }
 
-        for case let set as CandleChartDataSet in candleData where set.isVisible {
+        for set in candleData where set.isVisible {
             drawDataSet(context: context, dataSet: set)
         }
     }
@@ -72,10 +73,7 @@ public class CandleStickChartRenderer: DataRenderer {
 
         context.setLineWidth(dataSet.shadowWidth)
 
-        for j in xBounds {
-            // get the entry
-            guard let e = dataSet[j] as? CandleChartDataEntry else { continue }
-
+        for (j, e) in dataSet[xBounds].indexed() {
             let xPos = e.x
 
             let open = e.open
@@ -246,11 +244,7 @@ public class CandleStickChartRenderer: DataRenderer {
 
             var pt = CGPoint()
 
-            for i in candleData.indices {
-                guard let
-                    dataSet = candleData[i] as? BarLineScatterCandleBubbleChartDataSet,
-                    shouldDrawValues(forDataSet: dataSet)
-                else { continue }
+            for (i, dataSet) in candleData.indexed() where shouldDrawValues(forDataSet: dataSet) {
 
                 let valueFont = dataSet.valueFont
 
@@ -268,9 +262,7 @@ public class CandleStickChartRenderer: DataRenderer {
                 let lineHeight = valueFont.lineHeight
                 let yOffset: CGFloat = lineHeight + 5.0
 
-                for j in xBounds {
-                    guard let e = dataSet[j] as? CandleChartDataEntry else { break }
-
+                for (j, e) in dataSet[xBounds].indexed() {
                     pt.x = CGFloat(e.x)
                     pt.y = CGFloat(e.high * phaseY)
                     pt = pt.applying(valueToPixelMatrix)
@@ -318,16 +310,11 @@ public class CandleStickChartRenderer: DataRenderer {
         context.saveGState()
 
         for high in indices {
-            guard
-                let set = candleData[high.dataSetIndex] as? CandleChartDataSet,
-                set.isHighlightingEnabled
+            let set = candleData[high.dataSetIndex]
+            guard set.isHighlightingEnabled,
+                  let e = set.element(withX: high.x, closestToY: high.y),
+                  isInBoundsX(entry: e, dataSet: set)
             else { continue }
-
-            guard let e = set.element(withX: high.x, closestToY: high.y) as? CandleChartDataEntry else { continue }
-
-            if !isInBoundsX(entry: e, dataSet: set) {
-                continue
-            }
 
             let trans = dataProvider.getTransformer(forAxis: set.axisDependency)
 

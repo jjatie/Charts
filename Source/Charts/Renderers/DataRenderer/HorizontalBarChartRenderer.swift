@@ -56,8 +56,7 @@ public class HorizontalBarChartRenderer: DataRenderer {
                 }
             }
 
-            for i in barData.indices {
-                let set = barData[i] as! BarChartDataSet
+            for (i, set) in barData.indexed() {
                 let size = set.count * (set.isStacked ? set.stackSize : 1)
                 if _buffers[i].count != size {
                     _buffers[i] = [CGRect](repeating: CGRect(), count: size)
@@ -87,8 +86,7 @@ public class HorizontalBarChartRenderer: DataRenderer {
 
         for i in stride(from: 0, to: min(Int(ceil(Double(dataSet.count) * animator.phaseX)), dataSet.count), by: 1)
         {
-            guard let e = dataSet[i] as? BarChartDataEntry else { continue }
-
+            let e = dataSet[i]
             let vals = e.yValues
 
             x = e.x
@@ -186,13 +184,7 @@ public class HorizontalBarChartRenderer: DataRenderer {
         }
 
         // Populate logically ordered nested elements into accessibilityOrderedElements in drawDataSet()
-        for i in barData.indices {
-            guard let set = barData[i] as? BarChartDataSet else {
-                fatalError("Datasets for BarChartRenderer must conform to IBarChartDataset")
-            }
-
-            guard set.isVisible else { continue }
-
+        for (i, set) in barData.indexed() where set.isVisible {
             drawDataSet(context: context, dataSet: set, index: i)
         }
 
@@ -227,8 +219,7 @@ public class HorizontalBarChartRenderer: DataRenderer {
 
             for i in stride(from: 0, to: min(Int(ceil(Double(dataSet.count) * animator.phaseX)), dataSet.count), by: 1)
             {
-                guard let e = dataSet[i] as? BarChartDataEntry else { continue }
-
+                let e = dataSet[i]
                 x = e.x
 
                 _barShadowRectBuffer.origin.y = CGFloat(x - barWidthHalf)
@@ -341,12 +332,7 @@ public class HorizontalBarChartRenderer: DataRenderer {
         var negOffset: CGFloat
         let drawValueAboveBar = dataProvider.isDrawValueAboveBarEnabled
 
-        for dataSetIndex in barData.indices {
-            guard let
-                    dataSet = barData[dataSetIndex] as? BarChartDataSet,
-                  shouldDrawValues(forDataSet: dataSet)
-            else { continue }
-
+        for (index, dataSet) in barData.indexed() where shouldDrawValues(forDataSet: dataSet) {
             let angleRadians = dataSet.valueLabelAngle.DEG2RAD
 
             let isInverted = dataProvider.isInverted(axis: dataSet.axisDependency)
@@ -362,13 +348,12 @@ public class HorizontalBarChartRenderer: DataRenderer {
 
             let iconsOffset = dataSet.iconsOffset
 
-            let buffer = _buffers[dataSetIndex]
+            let buffer = _buffers[index]
 
             // if only single values are drawn (sum)
             if !dataSet.isStacked {
-                for j in 0 ..< Int(ceil(Double(dataSet.count) * animator.phaseX)) {
-                    guard let e = dataSet[j] as? BarChartDataEntry else { continue }
-
+                let range = 0 ..< Int(ceil(Double(dataSet.count) * animator.phaseX))
+                for (j, e) in dataSet[range].indexed() {
                     let rect = buffer[j]
 
                     let y = rect.origin.y + rect.size.height / 2.0
@@ -389,7 +374,7 @@ public class HorizontalBarChartRenderer: DataRenderer {
                     let valueText = formatter.stringForValue(
                         val,
                         entry: e,
-                        dataSetIndex: dataSetIndex,
+                        dataSetIndex: index,
                         viewPortHandler: viewPortHandler
                     )
 
@@ -436,9 +421,8 @@ public class HorizontalBarChartRenderer: DataRenderer {
 
                 var bufferIndex = 0
 
-                for index in 0 ..< Int(ceil(Double(dataSet.count) * animator.phaseX)) {
-                    guard let e = dataSet[index] as? BarChartDataEntry else { continue }
-
+                let range = 0 ..< Int(ceil(Double(dataSet.count) * animator.phaseX))
+                for (index, e) in dataSet[range].indexed() {
                     let rect = buffer[bufferIndex]
 
                     let vals = e.yValues
@@ -461,7 +445,7 @@ public class HorizontalBarChartRenderer: DataRenderer {
                         let valueText = formatter.stringForValue(
                             val,
                             entry: e,
-                            dataSetIndex: dataSetIndex,
+                            dataSetIndex: index,
                             viewPortHandler: viewPortHandler
                         )
 
@@ -534,7 +518,7 @@ public class HorizontalBarChartRenderer: DataRenderer {
                             let valueText = formatter.stringForValue(
                                 val,
                                 entry: e,
-                                dataSetIndex: dataSetIndex,
+                                dataSetIndex: index,
                                 viewPortHandler: viewPortHandler
                             )
 
@@ -621,12 +605,10 @@ public class HorizontalBarChartRenderer: DataRenderer {
         var barRect = CGRect()
 
         for high in indices {
-            guard
-                let set = barData[high.dataSetIndex] as? BarChartDataSet,
-                set.isHighlightingEnabled
-            else { continue }
+            let set = barData[high.dataSetIndex]
+            guard set.isHighlightingEnabled else { continue }
 
-            if let e = set.element(withX: high.x, closestToY: high.y) as? BarChartDataEntry {
+            if let e = set.element(withX: high.x, closestToY: high.y) {
                 guard isInBoundsX(entry: e, dataSet: set) else { continue }
 
                 let trans = dataProvider.getTransformer(forAxis: set.axisDependency)
@@ -695,7 +677,7 @@ extension HorizontalBarChartRenderer {
         let element = NSUIAccessibilityElement(accessibilityContainer: container)
         let xAxis = container.xAxis
 
-        guard let e = dataSet[idx / stackSize] as? BarChartDataEntry else { return element }
+        let e = dataSet[idx / stackSize]
         guard let dataProvider = dataProvider else { return element }
 
         // NOTE: The formatter can cause issues when the x-axis labels are consecutive ints.

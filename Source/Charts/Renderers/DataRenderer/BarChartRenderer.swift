@@ -79,7 +79,7 @@ public class BarChartRenderer: DataRenderer {
         }
 
         _buffers = zip(_buffers, barData).map { buffer, set -> Buffer in
-            let set = set as! BarChartDataSet
+            let set = set
             let size = set.count * (set.isStacked ? set.stackSize : 1)
             return buffer.count == size
                 ? buffer
@@ -101,10 +101,9 @@ public class BarChartRenderer: DataRenderer {
         let isInverted = dataProvider.isInverted(axis: dataSet.axisDependency)
         let phaseY = CGFloat(animator.phaseY)
 
-        for i in (0 ..< dataSet.count).clamped(to: 0 ..< Int(ceil(Double(dataSet.count) * animator.phaseX)))
+        for i in dataSet.indices.clamped(to: 0 ..< Int(ceil(Double(dataSet.count) * animator.phaseX)))
         {
-            guard let e = dataSet[i] as? BarChartDataEntry else { continue }
-
+            let e = dataSet[i]
             let x = CGFloat(e.x)
             let left = x - barWidthHalf
             let right = x + barWidthHalf
@@ -260,13 +259,7 @@ public class BarChartRenderer: DataRenderer {
         }
 
         // Populate logically ordered nested elements into accessibilityOrderedElements in drawDataSet()
-        for i in barData.indices {
-            guard let set = barData[i] as? BarChartDataSet else {
-                fatalError("Datasets for BarChartRenderer must conform to IBarChartDataset")
-            }
-
-            guard set.isVisible else { continue }
-
+        for (i, set) in barData.indexed() where set.isVisible {
             drawDataSet(context: context, dataSet: set, index: i)
         }
 
@@ -301,9 +294,7 @@ public class BarChartRenderer: DataRenderer {
             var x: Double = 0.0
 
             let range = (0 ..< dataSet.count).clamped(to: 0 ..< Int(ceil(Double(dataSet.count) * animator.phaseX)))
-            for i in range {
-                guard let e = dataSet[i] as? BarChartDataEntry else { continue }
-
+            for e in dataSet[range] {
                 x = e.x
 
                 _barShadowRectBuffer.origin.x = CGFloat(x - barWidthHalf)
@@ -413,14 +404,8 @@ public class BarChartRenderer: DataRenderer {
         var negOffset: CGFloat
         let drawValueAboveBar = dataProvider.isDrawValueAboveBarEnabled
 
-        for dataSetIndex in barData.indices {
-            guard
-                let dataSet = barData[dataSetIndex] as? BarChartDataSet,
-                shouldDrawValues(forDataSet: dataSet)
-            else { continue }
-
+        for (i, dataSet) in barData.indexed() where shouldDrawValues(forDataSet: dataSet) {
             let angleRadians = dataSet.valueLabelAngle.DEG2RAD
-
             let isInverted = dataProvider.isInverted(axis: dataSet.axisDependency)
 
             // calculate the correct offset depending on the draw position of the value
@@ -434,7 +419,7 @@ public class BarChartRenderer: DataRenderer {
                 negOffset = -negOffset - valueTextHeight
             }
 
-            let buffer = _buffers[dataSetIndex]
+            let buffer = _buffers[i]
 
             let formatter = dataSet.valueFormatter
 
@@ -447,9 +432,7 @@ public class BarChartRenderer: DataRenderer {
             // if only single values are drawn (sum)
             if !dataSet.isStacked {
                 let range = 0 ..< Int(ceil(Double(dataSet.count) * animator.phaseX))
-                for j in range {
-                    guard let e = dataSet[j] as? BarChartDataEntry else { continue }
-
+                for (j, e) in dataSet[range].indexed() {
                     let rect = buffer[j]
 
                     let x = rect.origin.x + rect.size.width / 2.0
@@ -468,7 +451,7 @@ public class BarChartRenderer: DataRenderer {
                             value: formatter.stringForValue(
                                 val,
                                 entry: e,
-                                dataSetIndex: dataSetIndex,
+                                dataSetIndex: i,
                                 viewPortHandler: viewPortHandler
                             ),
                             xPos: x,
@@ -503,9 +486,7 @@ public class BarChartRenderer: DataRenderer {
                 var bufferIndex = 0
                 let lastIndex = ceil(Double(dataSet.count) * animator.phaseX)
 
-                for index in 0 ..< Int(lastIndex) {
-                    guard let e = dataSet[index] as? BarChartDataEntry else { continue }
-
+                for (i, e) in dataSet[0 ..< Int(lastIndex)].indexed() {
                     let vals = e.yValues
 
                     let rect = buffer[bufferIndex]
@@ -554,14 +535,14 @@ public class BarChartRenderer: DataRenderer {
                                     value: formatter.stringForValue(
                                         value,
                                         entry: e,
-                                        dataSetIndex: dataSetIndex,
+                                        dataSetIndex: i,
                                         viewPortHandler: viewPortHandler
                                     ),
                                     xPos: x,
                                     yPos: y,
                                     font: valueFont,
                                     align: .center,
-                                    color: dataSet.valueTextColorAt(index),
+                                    color: dataSet.valueTextColorAt(i),
                                     anchor: CGPoint(x: 0.5, y: 0.5),
                                     angleRadians: angleRadians
                                 )
@@ -585,7 +566,7 @@ public class BarChartRenderer: DataRenderer {
                                 value: formatter.stringForValue(
                                     e.y,
                                     entry: e,
-                                    dataSetIndex: dataSetIndex,
+                                    dataSetIndex: i,
                                     viewPortHandler: viewPortHandler
                                 ),
                                 xPos: x,
@@ -593,7 +574,7 @@ public class BarChartRenderer: DataRenderer {
                                     (e.y >= 0 ? posOffset : negOffset),
                                 font: valueFont,
                                 align: .center,
-                                color: dataSet.valueTextColorAt(index),
+                                color: dataSet.valueTextColorAt(i),
                                 anchor: CGPoint(x: 0.5, y: 0.5),
                                 angleRadians: angleRadians
                             )
@@ -641,45 +622,42 @@ public class BarChartRenderer: DataRenderer {
         var barRect = CGRect()
 
         for high in indices {
-            guard
-                let set = barData[high.dataSetIndex] as? BarChartDataSet,
-                set.isHighlightingEnabled
+            let set = barData[high.dataSetIndex]
+            guard set.isHighlightingEnabled,
+                  let e = set.element(withX: high.x, closestToY: high.y),
+                  isInBoundsX(entry: e, dataSet: set)
             else { continue }
 
-            if let e = set.element(withX: high.x, closestToY: high.y) as? BarChartDataEntry {
-                guard isInBoundsX(entry: e, dataSet: set) else { continue }
+            let trans = dataProvider.getTransformer(forAxis: set.axisDependency)
 
-                let trans = dataProvider.getTransformer(forAxis: set.axisDependency)
+            context.setFillColor(set.highlightColor.cgColor)
+            context.setAlpha(set.highlightAlpha)
 
-                context.setFillColor(set.highlightColor.cgColor)
-                context.setAlpha(set.highlightAlpha)
+            let isStack = high.stackIndex >= 0 && e.isStacked
 
-                let isStack = high.stackIndex >= 0 && e.isStacked
+            let y1: Double
+            let y2: Double
 
-                let y1: Double
-                let y2: Double
-
-                if isStack {
-                    if dataProvider.isHighlightFullBarEnabled {
-                        y1 = e.positiveSum
-                        y2 = -e.negativeSum
-                    } else {
-                        let range = e.ranges?[high.stackIndex]
-
-                        y1 = range?.lowerBound ?? 0.0
-                        y2 = range?.upperBound ?? 0.0
-                    }
+            if isStack {
+                if dataProvider.isHighlightFullBarEnabled {
+                    y1 = e.positiveSum
+                    y2 = -e.negativeSum
                 } else {
-                    y1 = e.y
-                    y2 = 0.0
+                    let range = e.ranges?[high.stackIndex]
+
+                    y1 = range?.lowerBound ?? 0.0
+                    y2 = range?.upperBound ?? 0.0
                 }
-
-                prepareBarHighlight(x: e.x, y1: y1, y2: y2, barWidthHalf: barData.barWidth / 2.0, trans: trans, rect: &barRect)
-
-                setHighlightDrawPos(highlight: high, barRect: barRect)
-
-                context.fill(barRect)
+            } else {
+                y1 = e.y
+                y2 = 0.0
             }
+
+            prepareBarHighlight(x: e.x, y1: y1, y2: y2, barWidthHalf: barData.barWidth / 2.0, trans: trans, rect: &barRect)
+
+            setHighlightDrawPos(highlight: high, barRect: barRect)
+
+            context.fill(barRect)
         }
     }
 
@@ -713,7 +691,7 @@ public class BarChartRenderer: DataRenderer {
         let element = NSUIAccessibilityElement(accessibilityContainer: container)
         let xAxis = container.xAxis
 
-        guard let e = dataSet[idx / stackSize] as? BarChartDataEntry else { return element }
+        let e = dataSet[idx / stackSize]
         guard let dataProvider = dataProvider else { return element }
 
         // NOTE: The formatter can cause issues when the x-axis labels are consecutive ints.

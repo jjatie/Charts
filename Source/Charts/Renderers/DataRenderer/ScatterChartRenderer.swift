@@ -48,12 +48,10 @@ public class ScatterChartRenderer: DataRenderer {
         // TODO: Due to the potential complexity of data presented in Scatter charts, a more usable way
         // for VO accessibility would be to use axis based traversal rather than by dataset.
         // Hence, accessibleChartElements is not populated below. (Individual renderers guard against dataSource being their respective views)
-        let sets = scatterData._dataSets as? [ScatterChartDataSet]
-        assert(sets != nil, "Datasets for ScatterChartRenderer must conform to IScatterChartDataSet")
 
         // TODO
         let drawDataSet = { self.drawDataSet(context: context, dataSet: $0) }
-        sets!.lazy
+        scatterData.lazy
             .filter(\.isVisible)
             .forEach(drawDataSet)
     }
@@ -113,11 +111,7 @@ public class ScatterChartRenderer: DataRenderer {
 
         var pt = CGPoint()
 
-        for i in scatterData.indices {
-            guard let dataSet = scatterData[i] as? ScatterChartDataSet,
-                  shouldDrawValues(forDataSet: dataSet)
-            else { continue }
-
+        for (i, dataSet) in scatterData.indexed() where shouldDrawValues(forDataSet: dataSet) {
             let valueFont = dataSet.valueFont
 
             let formatter = dataSet.valueFormatter
@@ -188,8 +182,8 @@ public class ScatterChartRenderer: DataRenderer {
         context.saveGState()
 
         for high in indices {
-            guard let set = scatterData[high.dataSetIndex] as? ScatterChartDataSet,
-                  set.isHighlightingEnabled,
+            let set = scatterData[high.dataSetIndex]
+            guard set.isHighlightingEnabled,
                   let entry = set.element(withX: high.x, closestToY: high.y),
                   isInBoundsX(entry: entry, dataSet: set)
             else {

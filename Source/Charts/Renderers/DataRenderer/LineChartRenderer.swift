@@ -43,12 +43,8 @@ public class LineChartRenderer: DataRenderer {
     public func drawData(context: CGContext) {
         guard let lineData = dataProvider?.lineData else { return }
 
-        let sets = lineData._dataSets as? [LineChartDataSet]
-        assert(sets != nil, "Datasets for LineChartRenderer must conform to ILineChartDataSet")
-
-        // TODO:
         let drawDataSet = { self.drawDataSet(context: context, dataSet: $0) }
-        sets!.lazy
+        lineData.lazy
             .filter(\.isVisible)
             .forEach(drawDataSet)
     }
@@ -499,12 +495,7 @@ public class LineChartRenderer: DataRenderer {
 
             var pt = CGPoint()
 
-            for i in lineData.indices {
-                guard let
-                    dataSet = lineData[i] as? LineChartDataSet,
-                    shouldDrawValues(forDataSet: dataSet)
-                else { continue }
-
+            for (i, dataSet) in lineData.indexed() where shouldDrawValues(forDataSet: dataSet) {
                 let valueFont = dataSet.valueFont
 
                 let formatter = dataSet.valueFormatter
@@ -593,15 +584,13 @@ public class LineChartRenderer: DataRenderer {
 
         context.saveGState()
 
-        for i in lineData.indices {
-            guard let dataSet = lineData[i] as? LineChartDataSet else { continue }
-
-            // Skip Circles and Accessibility if not enabled,
-            // reduces CPU significantly if not needed
-            if !dataSet.isVisible || !dataSet.isDrawCirclesEnabled || dataSet.count == 0 {
-                continue
-            }
-
+        for (i, dataSet) in lineData.indexed() where
+        // Skip Circles and Accessibility if not enabled,
+        // reduces CPU significantly if not needed
+            dataSet.isVisible &&
+            dataSet.isDrawCirclesEnabled &&
+            !dataSet.isEmpty
+        {
             let trans = dataProvider.getTransformer(forAxis: dataSet.axisDependency)
             let valueToPixelMatrix = trans.valueToPixelMatrix
 
@@ -710,9 +699,8 @@ public class LineChartRenderer: DataRenderer {
         context.saveGState()
 
         for high in indices {
-            guard let set = lineData[high.dataSetIndex] as? LineChartDataSet,
-                  set.isHighlightingEnabled
-            else { continue }
+            let set = lineData[high.dataSetIndex]
+            guard set.isHighlightingEnabled else { continue }
 
             guard let e = set.element(withX: high.x, closestToY: high.y) else { continue }
 

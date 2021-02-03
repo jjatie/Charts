@@ -58,7 +58,7 @@ public class RadarChartRenderer: DataRenderer {
                                              withDefaultDescription: "Radar Chart")
         accessibleChartElements.append(element)
 
-        for case let set as RadarChartDataSet in radarData where set.isVisible {
+        for set in radarData where set.isVisible {
             drawDataSet(context: context, dataSet: set, mostEntries: mostEntries)
         }
     }
@@ -328,8 +328,7 @@ public class RadarChartRenderer: DataRenderer {
                 set.isHighlightingEnabled
             else { continue }
 
-            guard let e = set[Int(high.x)] as? RadarChartDataEntry
-            else { continue }
+            let e = set[Int(high.x)]
 
             if !isInBoundsX(entry: e, dataSet: set) {
                 continue

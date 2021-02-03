@@ -20,14 +20,15 @@ open class BarHighlighter: ChartHighlighter {
         else { return nil }
 
         let pos = getValsForTouch(x: x, y: y)
+        let set = barData[high.dataSetIndex]
 
-        if let set = barData[high.dataSetIndex] as? BarChartDataSet,
-           set.isStacked
-        {
-            return getStackedHighlight(high: high,
-                                       set: set,
-                                       xValue: Double(pos.x),
-                                       yValue: Double(pos.y))
+        if set.isStacked {
+            return getStackedHighlight(
+                high: high,
+                set: set,
+                xValue: Double(pos.x),
+                yValue: Double(pos.y)
+            )
         } else {
             return high
         }
@@ -38,8 +39,8 @@ open class BarHighlighter: ChartHighlighter {
         return abs(x1 - x2)
     }
 
-    override internal var data: ChartData? {
-        return (chart as? BarChartDataProvider)?.barData
+    var barData: ChartData<BarChartDataEntry>? {
+        (chart as? BarChartDataProvider)?.barData
     }
 
     /// This method creates the Highlight object that also indicates which value of a stacked BarEntry has been selected.
@@ -57,7 +58,7 @@ open class BarHighlighter: ChartHighlighter {
     {
         guard
             let chart = self.chart as? BarLineScatterCandleBubbleChartDataProvider,
-            let entry = set.element(withX: xValue, closestToY: yValue) as? BarChartDataEntry
+            let entry = set.element(withX: xValue, closestToY: yValue)
         else { return nil }
 
         // Not stacked

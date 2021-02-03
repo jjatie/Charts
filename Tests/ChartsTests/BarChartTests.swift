@@ -16,36 +16,36 @@ class BarChartTests: XCTestCase {
 
     // MARK: Prepare
 
-    func setupCustomValuesDataEntries(values: [Double]) -> [ChartDataEntry] {
-        var entries: [ChartDataEntry] = Array()
+    func setupCustomValuesDataEntries(values: [Double]) -> [BarChartDataEntry] {
+        var entries: [BarChartDataEntry] = Array()
         for (i, value) in values.enumerated() {
             entries.append(BarChartDataEntry(x: Double(i), y: value, icon: icon))
         }
         return entries
     }
 
-    func setupDefaultValuesDataEntries() -> [ChartDataEntry] {
+    func setupDefaultValuesDataEntries() -> [BarChartDataEntry] {
         let values: [Double] = [8, 104, -81, 93, 52, -44, 97, 101, -75, 28,
                                 -76, 25, 20, -13, 52, 44, -57, 23, 45, -91,
                                 99, 14, -84, 48, 40, -71, 106, 41, -45, 61]
         return setupCustomValuesDataEntries(values: values)
     }
 
-    func setupPositiveValuesDataEntries() -> [ChartDataEntry] {
+    func setupPositiveValuesDataEntries() -> [BarChartDataEntry] {
         let values: [Double] = [8, 104, 81, 93, 52, 44, 97, 101, 75, 28,
                                 76, 25, 20, 13, 52, 44, 57, 23, 45, 91,
                                 99, 14, 84, 48, 40, 71, 106, 41, 45, 61]
         return setupCustomValuesDataEntries(values: values)
     }
 
-    func setupNegativeValuesDataEntries() -> [ChartDataEntry] {
+    func setupNegativeValuesDataEntries() -> [BarChartDataEntry] {
         let values: [Double] = [-8, -104, -81, -93, -52, -44, -97, -101, -75, -28,
                                 -76, -25, -20, -13, -52, -44, -57, -23, -45, -91,
                                 -99, -14, -84, -48, -40, -71, -106, -41, -45, -61]
         return setupCustomValuesDataEntries(values: values)
     }
 
-    func setupZeroValuesDataEntries() -> [ChartDataEntry] {
+    func setupZeroValuesDataEntries() -> [BarChartDataEntry] {
         let values = [Double](repeating: 0.0, count: 30)
         return setupCustomValuesDataEntries(values: values)
     }
@@ -60,7 +60,7 @@ class BarChartTests: XCTestCase {
         return entries
     }
 
-    func setupDefaultStackedDataSet(chartDataEntries: [ChartDataEntry]) -> BarChartDataSet {
+    func setupDefaultStackedDataSet(chartDataEntries: [BarChartDataEntry]) -> BarChartDataSet {
         let dataSet = BarChartDataSet(entries: chartDataEntries, label: "Stacked bar chart unit test data")
         dataSet.isDrawIconsEnabled = false
         dataSet.iconsOffset = CGPoint(x: 0, y: -10.0)
@@ -71,7 +71,7 @@ class BarChartTests: XCTestCase {
         return dataSet
     }
 
-    func setupDefaultDataSet(chartDataEntries: [ChartDataEntry]) -> BarChartDataSet {
+    func setupDefaultDataSet(chartDataEntries: [BarChartDataEntry]) -> BarChartDataSet {
         let dataSet = BarChartDataSet(entries: chartDataEntries, label: "Bar chart unit test data")
         dataSet.isDrawIconsEnabled = false
         dataSet.iconsOffset = CGPoint(x: 0, y: -10.0)

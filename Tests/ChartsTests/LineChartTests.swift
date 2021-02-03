@@ -56,7 +56,7 @@ class LineChartTests: XCTestCase {
     }
 
     func testIsCubic() {
-        dataSet.mode = LineChartDataSet.Mode.cubicBezier
+        dataSet.mode = .cubicBezier
         assertChartSnapshot(matching: chart)
     }
 

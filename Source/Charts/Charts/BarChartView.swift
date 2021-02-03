@@ -100,9 +100,8 @@ open class BarChartView: BarLineChartViewBase, BarChartDataProvider {
 
     /// - Returns: The bounding box of the specified Entry in the specified DataSet. Returns null if the Entry could not be found in the charts data.
     open func getBarBounds(entry e: BarChartDataEntry) -> CGRect {
-        guard let
-            data = data as? BarChartData,
-            let set = data.getDataSetForEntry(e) as? BarChartDataSet
+        guard let data = data as? BarChartData,
+              let set = data.getDataSetForEntry(e)
         else { return .null }
 
         let y = e.y

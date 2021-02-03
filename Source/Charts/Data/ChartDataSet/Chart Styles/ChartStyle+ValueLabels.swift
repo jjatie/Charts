@@ -1,6 +1,6 @@
 import CoreGraphics
 
-extension ChartStyleValues {
+extension ChartStyle {
     /// Set this to true to draw y-values on the chart.
     ///
     /// - Note: For bar and line charts: if `maxVisibleCount` is reached, no values will be drawn even if this is enabled.

@@ -12,16 +12,16 @@
 import CoreGraphics
 import Foundation
 
-open class BarChartData: BarLineScatterCandleBubbleChartData {
+open class BarChartData: BarLineScatterCandleBubbleChartData<BarChartDataEntry> {
     public required init() {
         super.init()
     }
 
-    override public init(dataSets: [ChartDataSet]) {
+    override public init(dataSets: [Element]) {
         super.init(dataSets: dataSets)
     }
 
-    public required init(arrayLiteral elements: ChartDataSet...) {
+    public required init(arrayLiteral elements: Element...) {
         super.init(dataSets: elements)
     }
 
@@ -56,7 +56,7 @@ open class BarChartData: BarLineScatterCandleBubbleChartData {
             let start = fromX
             fromX += groupSpaceWidthHalf
 
-            (_dataSets as! [BarChartDataSet]).forEach { set in
+            _dataSets.forEach { set in
                 fromX += barSpaceHalf
                 fromX += barWidthHalf
 

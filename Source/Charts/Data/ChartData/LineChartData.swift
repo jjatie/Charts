@@ -12,16 +12,16 @@
 import Foundation
 
 /// Data object that encapsulates all data associated with a LineChart.
-open class LineChartData: ChartData {
+open class LineChartData: ChartData<ChartDataEntry> {
     public required init() {
         super.init()
     }
 
-    override public init(dataSets: [ChartDataSet]) {
+    override public init(dataSets: [Element]) {
         super.init(dataSets: dataSets)
     }
 
-    public required init(arrayLiteral elements: ChartDataSet...) {
+    public required init(arrayLiteral elements: Element...) {
         super.init(dataSets: elements)
     }
 }

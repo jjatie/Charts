@@ -1,63 +1,28 @@
-//
-//  BarChartDataSet.swift
-//  Charts
-//
-//  Copyright 2015 Daniel Cohen Gindi & Philipp Jahoda
-//  A port of MPAndroidChart for iOS
-//  Licensed under Apache License 2.0
-//
-//  https://github.com/danielgindi/Charts
-//
+public typealias BarChartDataSet = ChartDataSet<BarChartDataEntry>
 
-import CoreGraphics
-import Foundation
-
-public class BarChartDataSet: BarLineScatterCandleBubbleChartDataSet, BarChartDataSetProtocol {
+extension BarChartDataSet {
     private func initialize() {
-        highlightColor = NSUIColor.black
-
-        calcStackSize(entries: entries as! [BarChartDataEntry])
-        calcEntryCountIncludingStacks(entries: entries as! [BarChartDataEntry])
+        // TODO:
+        style.highlightColor = NSUIColor.black
     }
 
-    public required init() {
-        super.init()
-        initialize()
-    }
 
-    override public init(entries: [ChartDataEntry], label: String = "DataSet") {
-        super.init(entries: entries, label: label)
-        initialize()
-    }
-
-    // MARK: - Data functions and accessors
-
-    /// the maximum number of bars that are stacked upon each other, this value
-    /// is calculated from the Entries that are added to the DataSet
-    public private(set) var stackSize = 1
-
-    /// the overall entry count, including counting each stack-value individually
-    public private(set) var entryCountStacks = 0
-
-    /// Calculates the total number of entries this DataSet represents, including
-    /// stacks. All values belonging to a stack are calculated separately.
-    private func calcEntryCountIncludingStacks(entries: [BarChartDataEntry]) {
-        entryCountStacks = entries.lazy
-            .map(\.stackSize)
-            .reduce(into: 0, +=)
-    }
-
-    /// calculates the maximum stacksize that occurs in the Entries array of this DataSet
-    private func calcStackSize(entries: [BarChartDataEntry]) {
-        stackSize = entries.lazy
+    /// The maximum number of bars that can be stacked upon another in this DataSet.
+    /// This value is calculated from the Entries that are added to the DataSet
+    /// - Complexity: O(n) where `n` is the number of entries in this data set
+    public var stackSize: Int {
+        entries.lazy
             .map(\.stackSize)
             .max() ?? 1
     }
 
-    override public func calcMinMax(entry e: ChartDataEntry) {
-        guard let e = e as? BarChartDataEntry,
-              !e.y.isNaN
-        else { return }
+    /// `true` if this DataSet is stacked (stacksize > 1) or not.
+    public var isStacked: Bool {
+        stackSize > 1
+    }
+
+    func calcMinMax(entry e: Element) {
+        guard !e.y.isNaN else { return }
 
         if e.yValues == nil {
             yRange = merge(yRange, e.y)
@@ -66,42 +31,5 @@ public class BarChartDataSet: BarLineScatterCandleBubbleChartDataSet, BarChartDa
         }
 
         calcMinMaxX(entry: e)
-    }
-
-    /// `true` if this DataSet is stacked (stacksize > 1) or not.
-    public var isStacked: Bool {
-        stackSize > 1
-    }
-
-    /// array of labels used to describe the different values of the stacked bars
-    public var stackLabels: [String] = []
-
-    // MARK: - Styling functions and accessors
-
-    /// the color used for drawing the bar-shadows. The bar shadows is a surface behind the bar that indicates the maximum value
-    public var barShadowColor = NSUIColor(red: 215.0 / 255.0, green: 215.0 / 255.0, blue: 215.0 / 255.0, alpha: 1.0)
-
-    /// the width used for drawing borders around the bars. If borderWidth == 0, no border will be drawn.
-    public var barBorderWidth: CGFloat = 0.0
-
-    /// the color drawing borders around the bars.
-    public var barBorderColor = NSUIColor.black
-
-    /// the alpha value (transparency) that is used for drawing the highlight indicator bar. min = 0.0 (fully transparent), max = 1.0 (fully opaque)
-    public var highlightAlpha = CGFloat(120.0 / 255.0)
-
-    // MARK: - NSCopying
-
-    override public func copy(with zone: NSZone? = nil) -> Any {
-        let copy = super.copy(with: zone) as! BarChartDataSet
-        copy.stackSize = stackSize
-        copy.entryCountStacks = entryCountStacks
-        copy.stackLabels = stackLabels
-
-        copy.barShadowColor = barShadowColor
-        copy.barBorderWidth = barBorderWidth
-        copy.barBorderColor = barBorderColor
-        copy.highlightAlpha = highlightAlpha
-        return copy
     }
 }

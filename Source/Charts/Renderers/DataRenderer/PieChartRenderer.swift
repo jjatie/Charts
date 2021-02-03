@@ -333,8 +333,6 @@ public class PieChartRenderer: DataRenderer {
             let formatter = dataSet.valueFormatter
 
             for (j, e) in dataSet.indexed() {
-                let pe = e as? PieChartDataEntry
-
                 if xIndex == 0 {
                     angle = 0.0
                 } else {
@@ -438,8 +436,8 @@ public class PieChartRenderer: DataRenderer {
                                          attributes: [.font: valueFont,
                                                       .foregroundColor: valueTextColor])
 
-                        if j < data.entryCount, pe?.label != nil {
-                            context.drawText(pe!.label!,
+                        if j < data.entryCount, e.label != nil {
+                            context.drawText(e.label!,
                                              at: CGPoint(x: labelPoint.x,
                                                          y: labelPoint.y + lineHeight),
                                              align: align,
@@ -448,8 +446,8 @@ public class PieChartRenderer: DataRenderer {
                                                           .foregroundColor: entryLabelColor ?? valueTextColor])
                         }
                     } else if drawXOutside {
-                        if j < data.entryCount, pe?.label != nil {
-                            context.drawText(pe!.label!,
+                        if j < data.entryCount, e.label != nil {
+                            context.drawText(e.label!,
                                              at: CGPoint(x: labelPoint.x,
                                                          y: labelPoint.y + lineHeight / 2.0),
                                              align: align,
@@ -480,8 +478,8 @@ public class PieChartRenderer: DataRenderer {
                                          angleRadians: angleRadians,
                                          attributes: [.font: valueFont, .foregroundColor: valueTextColor])
 
-                        if j < data.entryCount, pe?.label != nil {
-                            context.drawText(pe!.label!,
+                        if j < data.entryCount, e.label != nil {
+                            context.drawText(e.label!,
                                              at: CGPoint(x: x, y: y + lineHeight),
                                              align: .center,
                                              angleRadians: angleRadians,
@@ -489,8 +487,8 @@ public class PieChartRenderer: DataRenderer {
                                                           .foregroundColor: entryLabelColor ?? valueTextColor])
                         }
                     } else if drawXInside {
-                        if j < data.entryCount, pe?.label != nil {
-                            context.drawText(pe!.label!,
+                        if j < data.entryCount, e.label != nil {
+                            context.drawText(e.label!,
                                              at: CGPoint(x: x, y: y + lineHeight / 2.0),
                                              align: .center,
                                              angleRadians: angleRadians,
@@ -683,7 +681,7 @@ public class PieChartRenderer: DataRenderer {
 
             let accountForSliceSpacing = sliceSpace > 0.0 && sliceAngle <= 180.0
 
-            context.setFillColor(set.highlightColor?.cgColor ?? set.color(at: index).cgColor)
+            context.setFillColor(set.isHighlightingEnabled ? set.highlightColor.cgColor : set.color(at: index).cgColor)
 
             let sliceSpaceAngleOuter = visibleAngleCount == 1 ?
                 0.0 :
@@ -832,9 +830,9 @@ public class PieChartRenderer: DataRenderer {
             elementValueText = valueText
         }
 
-        let pieChartDataEntry = dataSet[idx] as? PieChartDataEntry
+        let pieChartDataEntry = dataSet[idx]
         let isCount = data.accessibilityEntryLabelSuffixIsCount
-        let prefix = data.accessibilityEntryLabelPrefix?.appending("\(idx + 1)") ?? pieChartDataEntry?.label ?? ""
+        let prefix = data.accessibilityEntryLabelPrefix?.appending("\(idx + 1)") ?? pieChartDataEntry.label ?? ""
         let suffix = data.accessibilityEntryLabelSuffix ?? ""
         element.accessibilityLabel = "\(prefix) : \(elementValueText) \(suffix + (isCount ? (e.y == 1.0 ? "" : "s") : ""))"
 

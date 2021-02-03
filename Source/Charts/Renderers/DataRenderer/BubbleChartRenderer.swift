@@ -9,6 +9,7 @@
 //  https://github.com/danielgindi/Charts
 //
 
+import Algorithms
 import CoreGraphics
 import Foundation
 
@@ -54,7 +55,7 @@ public class BubbleChartRenderer: DataRenderer {
             accessibleChartElements.append(element)
         }
 
-        for case let (i, set as BubbleChartDataSet) in bubbleData.indexed() where set.isVisible {
+        for (i, set) in bubbleData.indexed() where set.isVisible {
             drawDataSet(context: context, dataSet: set, dataSetIndex: i)
         }
 
@@ -108,9 +109,7 @@ public class BubbleChartRenderer: DataRenderer {
         let maxBubbleHeight: CGFloat = abs(viewPortHandler.contentBottom - viewPortHandler.contentTop)
         let referenceSize: CGFloat = min(maxBubbleHeight, maxBubbleWidth)
 
-        for j in xBounds {
-            guard let entry = dataSet[j] as? BubbleChartDataEntry else { continue }
-
+        for (j, entry) in dataSet[xBounds].indexed() {
             _pointBuffer.x = CGFloat(entry.x)
             _pointBuffer.y = CGFloat(entry.y * phaseY)
             _pointBuffer = _pointBuffer.applying(valueToPixelMatrix)
@@ -165,13 +164,7 @@ public class BubbleChartRenderer: DataRenderer {
 
         var pt = CGPoint()
 
-        for i in bubbleData.indices {
-            guard let dataSet = bubbleData[i] as? BubbleChartDataSet,
-                  shouldDrawValues(forDataSet: dataSet)
-            else {
-                continue
-            }
-
+        for (i, dataSet) in bubbleData.indexed() where shouldDrawValues(forDataSet: dataSet) {
             let formatter = dataSet.valueFormatter
             let alpha = phaseX == 1 ? phaseY : phaseX
 
@@ -184,9 +177,7 @@ public class BubbleChartRenderer: DataRenderer {
 
             let angleRadians = dataSet.valueLabelAngle.DEG2RAD
 
-            for j in xBounds {
-                guard let e = dataSet[j] as? BubbleChartDataEntry else { break }
-
+            for (j, e) in dataSet[xBounds].indexed() {
                 let valueTextColor = dataSet.valueTextColorAt(j).withAlphaComponent(CGFloat(alpha))
 
                 pt.x = CGFloat(e.x)
@@ -245,11 +236,10 @@ public class BubbleChartRenderer: DataRenderer {
         let phaseY = animator.phaseY
 
         for high in indices {
-            guard
-                let dataSet = bubbleData[high.dataSetIndex] as? BubbleChartDataSet,
-                dataSet.isHighlightingEnabled,
-                let entry = dataSet.element(withX: high.x, closestToY: high.y) as? BubbleChartDataEntry,
-                isInBoundsX(entry: entry, dataSet: dataSet)
+            let dataSet = bubbleData[high.dataSetIndex]
+            guard dataSet.isHighlightingEnabled,
+                  let entry = dataSet.element(withX: high.x, closestToY: high.y),
+                  isInBoundsX(entry: entry, dataSet: dataSet)
             else { continue }
 
             let trans = dataProvider.getTransformer(forAxis: dataSet.axisDependency)

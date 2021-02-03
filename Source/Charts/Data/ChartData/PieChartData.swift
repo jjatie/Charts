@@ -11,21 +11,25 @@
 
 import Foundation
 
-open class PieChartData: ChartData {
+open class PieChartData: ChartData<PieChartDataEntry> {
     public required init() {
         super.init()
     }
 
-    public init(dataSet: ChartDataSet) {
+    public init(dataSet: Element) {
         super.init(dataSets: [dataSet])
     }
 
-    public required init(arrayLiteral elements: ChartDataSet...) {
+    override public init(dataSets: [Element]) {
+        super.init(dataSets: dataSets)
+    }
+
+    public required init(arrayLiteral elements: Element...) {
         super.init(dataSets: elements)
     }
 
     public var dataSet: PieChartDataSet? {
-        get { _dataSets.first as? PieChartDataSet }
+        get { first }
         set {
             if let set = newValue {
                 _dataSets = [set]
@@ -46,7 +50,7 @@ open class PieChartData: ChartData {
         }
     }
 
-    override open func entry(for highlight: Highlight) -> ChartDataEntry? {
+    override open func entry(for highlight: Highlight) -> PieChartDataEntry? {
         dataSet?[Int(highlight.x)]
     }
 
