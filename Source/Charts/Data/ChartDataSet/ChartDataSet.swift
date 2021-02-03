@@ -54,7 +54,7 @@ public class ChartDataSet: NSCopying {
         self.entries = []
     }
 
-    public init(entries: [ChartDataEntry] = [], label: String = "DataSet") {
+    public init(entries: [Element] = [], label: String = "DataSet") {
         self.entries = entries
         self.label = label
         calcMinMax()
@@ -72,7 +72,7 @@ public class ChartDataSet: NSCopying {
     /// of `Collection` conformances.
     ///
     /// - Parameter entries: new entries to replace existing entries in the dataset
-    public func replaceEntries(_ entries: [ChartDataEntry]) {
+    public func replaceEntries(_ entries: [Element]) {
         self.entries = entries
         notifyDataSetChanged()
     }
@@ -129,7 +129,7 @@ public class ChartDataSet: NSCopying {
     ///
     /// - Parameters:
     ///   - e: the entry to add
-    public func addEntryOrdered(_ e: ChartDataEntry) {
+    public func addEntryOrdered(_ e: Element) {
         if let last = last, last.x > e.x,
            let startIndex = index(ofX: e.x, closestToY: e.y, rounding: .up),
            let closestIndex = self[startIndex...].lastIndex(where: { $0.x < e.x }) {
@@ -145,7 +145,7 @@ public class ChartDataSet: NSCopying {
     /// - Parameters:
     ///   - entry: the entry to remove
     /// - Returns: `true` if the entry was removed successfully, else if the entry does not exist
-    public func remove(_ entry: ChartDataEntry) -> Bool {
+    public func remove(_ entry: Element) -> Bool {
         guard let index = firstIndex(of: entry) else { return false }
         _ = remove(at: index)
         return true
