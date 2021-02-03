@@ -30,7 +30,7 @@ func assertChartSnapshot<Value: ChartViewBase>(
 ) {
     assertSnapshot(
         matching: try value(),
-        as: .image(precision: Snapshot.tolerance),
+        as: .image(precision: 1 - Snapshot.tolerance),
         record: recording,
         timeout: timeout,
         file: file,
