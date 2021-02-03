@@ -13,7 +13,7 @@ import CoreGraphics
 import Foundation
 
 open class XAxis: AxisBase {
-    public enum LabelPosition: Int {
+    public enum LabelPosition {
         case top
         case bottom
         case bothSided

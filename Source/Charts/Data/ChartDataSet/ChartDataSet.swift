@@ -14,10 +14,10 @@ import Foundation
 import CoreGraphics
 
 /// Determines how to round DataSet index values for `ChartDataSet.entryIndex(x, rounding)` when an exact x-value is not found.
-public enum ChartDataSetRounding: Int {
-    case up = 0
-    case down = 1
-    case closest = 2
+public enum ChartDataSetRounding {
+    case up
+    case down
+    case closest
 }
 
 /// The DataSet class represents one group or type of entries (Entry) in the Chart that belong together.
