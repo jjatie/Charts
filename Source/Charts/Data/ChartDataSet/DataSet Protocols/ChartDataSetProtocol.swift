@@ -12,7 +12,7 @@
 import CoreGraphics
 import Foundation
 
-public protocol ChartDataSetProtocol: AnyObject, RandomAccessCollection, MutableCollection {
+public protocol ChartDataSetProtocol: RandomAccessCollection, MutableCollection {
     // MARK: - Data functions and accessors
 
     /// Use this method to tell the data set that the underlying data has changed
@@ -85,4 +85,19 @@ public protocol ChartDataSetProtocol: AnyObject, RandomAccessCollection, Mutable
 
     /// The axis this DataSet should be plotted against.
     var axisDependency: YAxis.AxisDependency { get }
+}
+
+extension ChartDataSetProtocol {
+    /// Use this method to tell the data set that the underlying data has changed
+    public func notifyDataSetChanged() {
+        calcMinMax()
+    }
+
+    @discardableResult
+    public func removeEntry(x: Double) -> Bool {
+        if let entry = entryForXValue(x, closestToY: Double.nan) {
+            return remove(entry)
+        }
+        return false
+    }
 }
