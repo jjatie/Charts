@@ -148,7 +148,6 @@ open class ChartDataSet: ChartDataSetProtocol, NSCopying {
 
     open func copy(with zone: NSZone? = nil) -> Any {
         let copy = type(of: self).init()
-
         copy.entries = entries
         copy.label = label
         copy.axisDependency = axisDependency
