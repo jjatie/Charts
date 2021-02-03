@@ -40,7 +40,7 @@ open class CombinedHighlighter: ChartHighlighter {
                 high.dataIndex = i
                 vals.append(high)
             } else {
-                for (j, set) in dataObject.indexed() where set.isHighlightEnabled {
+                for (j, set) in dataObject.indexed() where set.isHighlightingEnabled {
                     let highs = buildHighlights(dataSet: set, dataSetIndex: j, xValue: xValue, rounding: .closest)
 
                     for high in highs {

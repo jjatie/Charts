@@ -325,7 +325,7 @@ public class RadarChartRenderer: DataRenderer {
         for high in indices {
             guard
                 let set = chart.data?[high.dataSetIndex] as? RadarChartDataSet,
-                set.isHighlightEnabled
+                set.isHighlightingEnabled
             else { continue }
 
             guard let e = set[Int(high.x)] as? RadarChartDataEntry

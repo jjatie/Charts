@@ -623,7 +623,7 @@ public class HorizontalBarChartRenderer: DataRenderer {
         for high in indices {
             guard
                 let set = barData[high.dataSetIndex] as? BarChartDataSet,
-                set.isHighlightEnabled
+                set.isHighlightingEnabled
             else { continue }
 
             if let e = set.element(withX: high.x, closestToY: high.y) as? BarChartDataEntry {

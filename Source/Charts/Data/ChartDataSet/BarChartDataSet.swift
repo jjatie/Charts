@@ -12,7 +12,7 @@
 import CoreGraphics
 import Foundation
 
-open class BarChartDataSet: BarLineScatterCandleBubbleChartDataSet, BarChartDataSetProtocol {
+public class BarChartDataSet: BarLineScatterCandleBubbleChartDataSet, BarChartDataSetProtocol {
     private func initialize() {
         highlightColor = NSUIColor.black
 
@@ -54,7 +54,7 @@ open class BarChartDataSet: BarLineScatterCandleBubbleChartDataSet, BarChartData
             .max() ?? 1
     }
 
-    override open func calcMinMax(entry e: ChartDataEntry) {
+    override public func calcMinMax(entry e: ChartDataEntry) {
         guard let e = e as? BarChartDataEntry,
               !e.y.isNaN
         else { return }
@@ -74,25 +74,25 @@ open class BarChartDataSet: BarLineScatterCandleBubbleChartDataSet, BarChartData
     }
 
     /// array of labels used to describe the different values of the stacked bars
-    open var stackLabels: [String] = []
+    public var stackLabels: [String] = []
 
     // MARK: - Styling functions and accessors
 
     /// the color used for drawing the bar-shadows. The bar shadows is a surface behind the bar that indicates the maximum value
-    open var barShadowColor = NSUIColor(red: 215.0 / 255.0, green: 215.0 / 255.0, blue: 215.0 / 255.0, alpha: 1.0)
+    public var barShadowColor = NSUIColor(red: 215.0 / 255.0, green: 215.0 / 255.0, blue: 215.0 / 255.0, alpha: 1.0)
 
     /// the width used for drawing borders around the bars. If borderWidth == 0, no border will be drawn.
-    open var barBorderWidth: CGFloat = 0.0
+    public var barBorderWidth: CGFloat = 0.0
 
     /// the color drawing borders around the bars.
-    open var barBorderColor = NSUIColor.black
+    public var barBorderColor = NSUIColor.black
 
     /// the alpha value (transparency) that is used for drawing the highlight indicator bar. min = 0.0 (fully transparent), max = 1.0 (fully opaque)
-    open var highlightAlpha = CGFloat(120.0 / 255.0)
+    public var highlightAlpha = CGFloat(120.0 / 255.0)
 
     // MARK: - NSCopying
 
-    override open func copy(with zone: NSZone? = nil) -> Any {
+    override public func copy(with zone: NSZone? = nil) -> Any {
         let copy = super.copy(with: zone) as! BarChartDataSet
         copy.stackSize = stackSize
         copy.entryCountStacks = entryCountStacks

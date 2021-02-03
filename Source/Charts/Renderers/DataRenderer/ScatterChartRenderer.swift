@@ -189,7 +189,7 @@ public class ScatterChartRenderer: DataRenderer {
 
         for high in indices {
             guard let set = scatterData[high.dataSetIndex] as? ScatterChartDataSet,
-                  set.isHighlightEnabled,
+                  set.isHighlightingEnabled,
                   let entry = set.element(withX: high.x, closestToY: high.y),
                   isInBoundsX(entry: entry, dataSet: set)
             else {

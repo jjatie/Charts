@@ -161,7 +161,7 @@ public class PieChartRenderer: DataRenderer {
             if abs(e.y) < Double.ulpOfOne { continue }
 
             // Skip if highlighted
-            if dataSet.isHighlightEnabled, chart.needsHighlight(index: j) {
+            if dataSet.isHighlightingEnabled, chart.needsHighlight(index: j) {
                 continue
             }
 
@@ -657,7 +657,7 @@ public class PieChartRenderer: DataRenderer {
             let index = Int(hightlight.x)
             guard index < drawAngles.count,
                   let set = data[hightlight.dataSetIndex] as? PieChartDataSet,
-                  set.isHighlightEnabled
+                  set.isHighlightingEnabled
             else {
                 continue
             }

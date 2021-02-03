@@ -320,7 +320,7 @@ public class CandleStickChartRenderer: DataRenderer {
         for high in indices {
             guard
                 let set = candleData[high.dataSetIndex] as? CandleChartDataSet,
-                set.isHighlightEnabled
+                set.isHighlightingEnabled
             else { continue }
 
             guard let e = set.element(withX: high.x, closestToY: high.y) as? CandleChartDataEntry else { continue }

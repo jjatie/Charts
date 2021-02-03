@@ -12,7 +12,7 @@
 import CoreGraphics
 import Foundation
 
-open class BubbleChartDataSet: BarLineScatterCandleBubbleChartDataSet, BubbleChartDataSetProtocol {
+public class BubbleChartDataSet: BarLineScatterCandleBubbleChartDataSet, BubbleChartDataSetProtocol {
     // MARK: - Data functions and accessors
 
     public private(set) var maxSize: CGFloat = 0
@@ -31,11 +31,11 @@ open class BubbleChartDataSet: BarLineScatterCandleBubbleChartDataSet, BubbleCha
     // MARK: - Styling functions and accessors
 
     /// Sets/gets the width of the circle that surrounds the bubble when highlighted
-    open var highlightCircleWidth: CGFloat = 2.5
+    public var highlightCircleWidth: CGFloat = 2.5
 
     // MARK: - NSCopying
 
-    override open func copy(with zone: NSZone? = nil) -> Any {
+    override public func copy(with zone: NSZone? = nil) -> Any {
         let copy = super.copy(with: zone) as! BubbleChartDataSet
         copy.maxSize = maxSize
         copy.isNormalizeSizeEnabled = isNormalizeSizeEnabled

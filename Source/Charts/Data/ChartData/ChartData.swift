@@ -217,8 +217,8 @@ open class ChartData: ExpressibleByArrayLiteral {
     /// Enables / disables highlighting values for all DataSets this data object contains.
     /// If set to true, this means that values can be highlighted programmatically or by touch gesture.
     open var isHighlightEnabled: Bool {
-        get { allSatisfy { $0.isHighlightEnabled } }
-        set { forEach { $0.isHighlightEnabled = newValue } }
+        get { allSatisfy { $0.isHighlightingEnabled } }
+        set { forEach { $0.isHighlightingEnabled = newValue } }
     }
 
     /// Clears this data object from all DataSets and removes all Entries.

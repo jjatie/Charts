@@ -92,12 +92,4 @@ extension ChartDataSetProtocol {
     public func notifyDataSetChanged() {
         calcMinMax()
     }
-
-    @discardableResult
-    public func removeEntry(x: Double) -> Bool {
-        if let entry = entryForXValue(x, closestToY: Double.nan) {
-            return remove(entry)
-        }
-        return false
-    }
 }

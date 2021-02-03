@@ -711,7 +711,7 @@ public class LineChartRenderer: DataRenderer {
 
         for high in indices {
             guard let set = lineData[high.dataSetIndex] as? LineChartDataSet,
-                  set.isHighlightEnabled
+                  set.isHighlightingEnabled
             else { continue }
 
             guard let e = set.element(withX: high.x, closestToY: high.y) else { continue }

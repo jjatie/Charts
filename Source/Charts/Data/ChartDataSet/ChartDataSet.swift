@@ -28,25 +28,24 @@ public typealias ARange = ClosedRange<Double>
 /// The DataSet class represents one group or type of entries (Entry) in the Chart that belong together.
 /// It is designed to logically separate different groups of values inside the Chart (e.g. the values for a specific line in the LineChart, or the values of a specific group of bars in the BarChart).
 @dynamicMemberLookup
-open class ChartDataSet: ChartDataSetProtocol, NSCopying {
+public class ChartDataSet: ChartDataSetProtocol, NSCopying {
     /// - Note: Calls `notifyDataSetChanged()` after setting a new value.
     /// - Returns: The array of y-values that this DataSet represents.
     /// the entries that this dataset represents / holds together
     private(set) var entries: [ChartDataEntry]
 
     /// The label string that describes the DataSet.
-    open var label: String? = "DataSet"
+    public var label: String? = "DataSet"
 
-    open var style = ChartStyle<Element>()
+    public var style = ChartStyleValues<Element>()
 
     /// The axis this DataSet should be plotted against.
-    open var axisDependency = YAxis.AxisDependency.left
-
+    public var axisDependency = YAxis.AxisDependency.left
 
     public internal(set) var xRange: AxisRange = (.greatestFiniteMagnitude, -.greatestFiniteMagnitude)
     public internal(set) var yRange: AxisRange = (.greatestFiniteMagnitude, -.greatestFiniteMagnitude)
 
-    public subscript<T>(dynamicMember keyPath: WritableKeyPath<ChartStyle<Element>, T>) -> T {
+    public subscript<T>(dynamicMember keyPath: WritableKeyPath<ChartStyleValues<Element>, T>) -> T {
         get { style[keyPath: keyPath] }
         set { style[keyPath: keyPath] = newValue }
     }
@@ -138,7 +137,7 @@ open class ChartDataSet: ChartDataSetProtocol, NSCopying {
     /// - Parameters:
     ///   - entry: the entry to remove
     /// - Returns: `true` if the entry was removed successfully, else if the entry does not exist
-    open func remove(_ entry: ChartDataEntry) -> Bool {
+    public func remove(_ entry: ChartDataEntry) -> Bool {
         guard let index = firstIndex(of: entry) else { return false }
         _ = remove(at: index)
         return true
@@ -146,7 +145,7 @@ open class ChartDataSet: ChartDataSetProtocol, NSCopying {
 
     // MARK: - NSCopying
 
-    open func copy(with zone: NSZone? = nil) -> Any {
+    public func copy(with zone: NSZone? = nil) -> Any {
         let copy = type(of: self).init()
         copy.entries = entries
         copy.label = label
@@ -161,111 +160,34 @@ open class ChartDataSet: ChartDataSetProtocol, NSCopying {
 // MARK: - Styling functions and accessors
 
 extension ChartDataSet {
-    open func color(at index: Int) -> NSUIColor {
+    public func color(at index: Int) -> NSUIColor {
         style.colors[index % style.colors.count]
     }
 
-    open func valueTextColorAt(_ index: Int) -> NSUIColor {
+    public func valueTextColorAt(_ index: Int) -> NSUIColor {
         style.valueColors[index % style.valueColors.count]
     }
 
-    open func addColor(_ color: NSUIColor) {
+    public func addColor(_ color: NSUIColor) {
         style.colors.append(color)
     }
 
-    open func setColor(_ color: NSUIColor) {
+    public func setColor(_ color: NSUIColor) {
         style.colors.removeAll(keepingCapacity: false)
         style.colors.append(color)
     }
 
-    open func setColor(_ color: NSUIColor, alpha: CGFloat) {
+    public func setColor(_ color: NSUIColor, alpha: CGFloat) {
         setColor(color.withAlphaComponent(alpha))
     }
 
-    open func setColors(_ colors: [NSUIColor], alpha: CGFloat) {
+    public func setColors(_ colors: [NSUIColor], alpha: CGFloat) {
         self.style.colors = colors.map { $0.withAlphaComponent(alpha) }
     }
 
-    open func setColors(_ colors: NSUIColor...) {
+    public func setColors(_ colors: NSUIColor...) {
         self.style.colors = colors
     }
-}
-
-extension NSUIColor {
-    static var defaultDataSet: Self {
-        Self(red: 140.0 / 255.0, green: 234.0 / 255.0, blue: 255.0 / 255.0, alpha: 1.0)
-    }
-}
-public struct ChartStyle<EntryType: ChartDataEntry> {
-    public init() { }
-
-    /// All the colors that are used for this DataSet.
-    /// Colors are reused as soon as the number of Entries the DataSet represents is higher than the size of the colors array.
-    public var colors: [NSUIColor] = [.defaultDataSet]
-
-    /// List representing all colors that are used for drawing the actual values for this DataSet
-    public var valueColors: [NSUIColor] = [.labelOrBlack]
-
-    /// `true` if value highlighting is enabled for this dataset
-    public var isHighlightEnabled: Bool = true
-
-    /// Custom formatter that is used instead of the auto-formatter if set
-    public var valueFormatter: ValueFormatter = DefaultValueFormatter()
-
-    /// Sets/get a single color for value text.
-    /// Setting the color clears the colors array and adds a single color.
-    /// Getting will return the first color in the array.
-    public var valueTextColor: NSUIColor {
-        get { valueColors[0] }
-        set {
-            valueColors.removeAll(keepingCapacity: false)
-            valueColors.append(newValue)
-        }
-    }
-
-    /// the font for the value-text labels
-    public var valueFont = NSUIFont.systemFont(ofSize: 7.0)
-
-    /// The rotation angle (in degrees) for value-text labels
-    public var valueLabelAngle = CGFloat(0.0)
-
-    /// The form to draw for this dataset in the legend.
-    public var form = Legend.Form.default
-
-    /// The form size to draw for this dataset in the legend.
-    ///
-    /// Return `NaN` to use the default legend form size.
-    public var formSize = CGFloat.nan
-
-    /// The line width for drawing the form of this dataset in the legend
-    ///
-    /// Return `NaN` to use the default legend form line width.
-    public var formLineWidth = CGFloat.nan
-
-    /// Line dash configuration for legend shapes that consist of lines.
-    ///
-    /// This is how much (in pixels) into the dash pattern are we starting from.
-    public var formLineDashPhase: CGFloat = 0.0
-
-    /// Line dash configuration for legend shapes that consist of lines.
-    ///
-    /// This is the actual dash pattern.
-    /// I.e. [2, 3] will paint [--   --   ]
-    /// [1, 3, 4, 2] will paint [-   ----  -   ----  ]
-    public var formLineDashLengths: [CGFloat]?
-
-    public var isDrawValuesEnabled: Bool = true
-
-    public var isDrawIconsEnabled: Bool = true
-
-    /// Offset of icons drawn on the chart.
-    ///
-    /// For all charts except Pie and Radar it will be ordinary (x offset, y offset).
-    ///
-    /// For Pie and Radar chart it will be (y offset, distance from center offset); so if you want icon to be rendered under value, you should increase X component of CGPoint, and if you want icon to be rendered closet to center, you should decrease height component of CGPoint.
-    public var iconsOffset = CGPoint(x: 0, y: 0)
-
-    public var isVisible: Bool = true
 }
 
 // MARK: - MutableCollection
@@ -286,7 +208,7 @@ extension ChartDataSet: MutableCollection {
         entries.index(after: after)
     }
 
-    open var count: Int {
+    public var count: Int {
         entries.count
     }
 
@@ -366,14 +288,14 @@ extension ChartDataSet: RangeReplaceableCollection {
 
 // MARK: - CustomStringConvertible
 extension ChartDataSet: CustomStringConvertible {
-    open var description: String {
+    public var description: String {
         String(format: "%@, label: %@, %i entries", arguments: [NSStringFromClass(type(of: self)), self.label ?? "", self.count])
     }
 }
 
 // MARK: - CustomDebugStringConvertible
 extension ChartDataSet: CustomDebugStringConvertible {
-    open var debugDescription: String {
+    public var debugDescription: String {
         reduce(into: description + ":") {
             $0 += "\n\($1.description)"
         }

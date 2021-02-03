@@ -247,7 +247,7 @@ public class BubbleChartRenderer: DataRenderer {
         for high in indices {
             guard
                 let dataSet = bubbleData[high.dataSetIndex] as? BubbleChartDataSet,
-                dataSet.isHighlightEnabled,
+                dataSet.isHighlightingEnabled,
                 let entry = dataSet.element(withX: high.x, closestToY: high.y) as? BubbleChartDataEntry,
                 isInBoundsX(entry: entry, dataSet: dataSet)
             else { continue }
