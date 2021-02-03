@@ -115,18 +115,3 @@ public protocol ChartDataSetProtocol: AnyObject, RandomAccessCollection, Mutable
     /// - Returns: `true` if contains the entry, `false` ifnot.
     func contains(_ e: ChartDataEntry) -> Bool
 }
-
-extension ChartDataSetProtocol {
-    /// Use this method to tell the data set that the underlying data has changed
-    public func notifyDataSetChanged() {
-        calcMinMax()
-    }
-
-    @discardableResult
-    public func removeEntry(x: Double) -> Bool {
-        if let entry = entryForXValue(x, closestToY: Double.nan) {
-            return remove(entry)
-        }
-        return false
-    }
-}
