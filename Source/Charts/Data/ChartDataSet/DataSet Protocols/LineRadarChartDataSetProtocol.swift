@@ -17,12 +17,9 @@ public protocol LineRadarChartDataSetProtocol: LineScatterCandleRadarChartDataSe
 
     // MARK: - Styling functions and accessors
 
-    /// The color that is used for filling the line surface area.
-    var fillColor: NSUIColor { get set }
-
     /// - Returns: The object that is used for filling the area below the line.
     /// **default**: nil
-    var fill: Fill? { get set }
+    var fill: Fill { get set }
 
     /// The alpha value that is used for filling the line surface.
     /// **default**: 0.33

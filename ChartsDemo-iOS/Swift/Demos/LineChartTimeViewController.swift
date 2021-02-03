@@ -104,12 +104,12 @@ class LineChartTimeViewController: DemoBaseViewController {
         set1.axisDependency = .left
         set1.setColor(UIColor(red: 51 / 255, green: 181 / 255, blue: 229 / 255, alpha: 1))
         set1.lineWidth = 1.5
-        set1.drawCirclesEnabled = false
-        set1.drawValuesEnabled = false
+        set1.isDrawCirclesEnabled = false
+        set1.isDrawValuesEnabled = false
         set1.fillAlpha = 0.26
-        set1.fillColor = UIColor(red: 51 / 255, green: 181 / 255, blue: 229 / 255, alpha: 1)
+        set1.fill = ColorFill(color: UIColor(red: 51 / 255, green: 181 / 255, blue: 229 / 255, alpha: 1))
         set1.highlightColor = UIColor(red: 244 / 255, green: 117 / 255, blue: 117 / 255, alpha: 1)
-        set1.drawCircleHoleEnabled = false
+        set1.isDrawCircleHoleEnabled = false
 
         let data = LineChartData(dataSet: set1)
         data.setValueTextColor(.white)
@@ -124,13 +124,13 @@ class LineChartTimeViewController: DemoBaseViewController {
         switch option {
         case .toggleFilled:
             for case let set as LineChartDataSet in data {
-                set.drawFilledEnabled = !set.drawFilledEnabled
+                set.isDrawFilledEnabled.toggle()
             }
             chartView.setNeedsDisplay()
 
         case .toggleCircles:
             for case let set as LineChartDataSet in data {
-                set.drawCirclesEnabled = !set.drawCirclesEnabled
+                set.isDrawCirclesEnabled.toggle()
             }
             chartView.setNeedsDisplay()
 

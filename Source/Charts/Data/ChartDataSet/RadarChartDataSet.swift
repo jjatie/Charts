@@ -33,7 +33,7 @@ public class RadarChartDataSet: LineRadarChartDataSet, RadarChartDataSetProtocol
 
     /// flag indicating whether highlight circle should be drawn or not
     /// **default**: false
-    public var isDrawHighlightCircleEnabled: Bool = false
+    public var isDrawHighlightCircleEnabled = false
 
     public var highlightCircleFillColor: NSUIColor? = NSUIColor.white
 

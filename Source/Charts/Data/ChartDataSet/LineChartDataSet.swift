@@ -57,6 +57,7 @@ public class LineChartDataSet: LineRadarChartDataSet, LineChartDataSetProtocol {
             _cubicIntensity = newValue.clamped(to: 0.05 ... 1)
         }
     }
+    private var _cubicIntensity = CGFloat(0.2)
 
     public var isDrawLineWithGradientEnabled = false
 
@@ -108,7 +109,7 @@ public class LineChartDataSet: LineRadarChartDataSet, LineChartDataSetProtocol {
     public var isDrawCircleHoleEnabled = true
 
     /// This is how much (in pixels) into the dash pattern are we starting from.
-    public var lineDashPhase = CGFloat(0.0)
+    public var lineDashPhase: CGFloat = 0
 
     /// This is the actual dash pattern.
     /// I.e. [2, 3] will paint [--   --   ]
@@ -116,20 +117,12 @@ public class LineChartDataSet: LineRadarChartDataSet, LineChartDataSetProtocol {
     public var lineDashLengths: [CGFloat]?
 
     /// Line cap type, default is CGLineCap.Butt
-    public var lineCapType = CGLineCap.butt
+    public var lineCapType: CGLineCap = .butt
 
     /// formatter for customizing the position of the fill-line
-    private var _fillFormatter: FillFormatter = DefaultFillFormatter()
 
     /// Sets a custom FillFormatterProtocol to the chart that handles the position of the filled-line for each DataSet. Set this to null to use the default logic.
-    public var fillFormatter: FillFormatter? {
-        get {
-            return _fillFormatter
-        }
-        set {
-            _fillFormatter = newValue ?? DefaultFillFormatter()
-        }
-    }
+    public var fillFormatter: FillFormatter = DefaultFillFormatter()
 
     // MARK: NSCopying
 
@@ -146,7 +139,7 @@ public class LineChartDataSet: LineRadarChartDataSet, LineChartDataSetProtocol {
         copy.isDrawCirclesEnabled = isDrawCirclesEnabled
         copy.isDrawCircleHoleEnabled = isDrawCircleHoleEnabled
         copy.mode = mode
-        copy._fillFormatter = _fillFormatter
+        copy.fillFormatter = fillFormatter
         return copy
     }
 }

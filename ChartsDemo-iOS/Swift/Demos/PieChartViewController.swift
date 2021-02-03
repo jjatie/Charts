@@ -80,7 +80,7 @@ class PieChartViewController: DemoBaseViewController {
         }
 
         let set = PieChartDataSet(entries: entries, label: "Election Results")
-        set.drawIconsEnabled = false
+        set.isDrawIconsEnabled = false
         set.sliceSpace = 2
 
         let colors = ChartColorTemplates.vordiplom

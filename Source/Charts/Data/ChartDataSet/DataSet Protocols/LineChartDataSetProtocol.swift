@@ -73,5 +73,5 @@ public protocol LineChartDataSetProtocol: LineRadarChartDataSetProtocol {
     var lineCapType: CGLineCap { get set }
 
     /// Sets a custom FillFormatterProtocol to the chart that handles the position of the filled-line for each DataSet. Set this to null to use the default logic.
-    var fillFormatter: FillFormatter? { get set }
+    var fillFormatter: FillFormatter { get set }
 }

@@ -92,14 +92,14 @@ class CubicLineChartViewController: DemoBaseViewController {
 
         let set1 = LineChartDataSet(entries: yVals1, label: "DataSet 1")
         set1.mode = .cubicBezier
-        set1.drawCirclesEnabled = false
+        set1.isDrawCirclesEnabled = false
         set1.lineWidth = 1.8
         set1.circleRadius = 4
         set1.setCircleColor(.white)
         set1.highlightColor = UIColor(red: 244 / 255, green: 117 / 255, blue: 117 / 255, alpha: 1)
-        set1.fillColor = .white
+        set1.fill = ColorFill(color: .white)
         set1.fillAlpha = 1
-        set1.drawHorizontalHighlightIndicatorEnabled = false
+        set1.isHorizontalHighlightIndicatorEnabled = false
         set1.fillFormatter = CubicLineSampleFillFormatter()
 
         let data = LineChartData(dataSet: set1)
@@ -115,13 +115,13 @@ class CubicLineChartViewController: DemoBaseViewController {
         switch option {
         case .toggleFilled:
             for case let set as LineChartDataSet in data {
-                set.drawFilledEnabled = !set.drawFilledEnabled
+                set.isDrawFilledEnabled.toggle()
             }
             chartView.setNeedsDisplay()
 
         case .toggleCircles:
             for case let set as LineChartDataSet in data {
-                set.drawCirclesEnabled = !set.drawCirclesEnabled
+                set.isDrawCirclesEnabled.toggle()
             }
             chartView.setNeedsDisplay()
 

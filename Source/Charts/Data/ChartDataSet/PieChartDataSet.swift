@@ -33,29 +33,20 @@ public class PieChartDataSet: ChartDataSet, PieChartDataSetProtocol {
         initialize()
     }
 
-    override internal func calcMinMax(entry e: ChartDataEntry) {
+    override func calcMinMax(entry e: ChartDataEntry) {
         calcMinMaxY(entry: e)
     }
 
     // MARK: - Styling functions and accessors
 
-    private var _sliceSpace = CGFloat(0.0)
-
     /// the space in pixels between the pie-slices
     /// **default**: 0
     /// **maximum**: 20
     public var sliceSpace: CGFloat {
-        get {
-            return _sliceSpace
-        }
-        set {
-            switch newValue {
-            case ..<0.0: _sliceSpace = 0.0
-            case 20.0...: _sliceSpace = 20.0
-            default: _sliceSpace = newValue
-            }
-        }
+        get { _sliceSpace }
+        set { _sliceSpace = newValue.clamped(to: 0...20) }
     }
+    private var _sliceSpace = CGFloat(0.0)
 
     /// When enabled, slice spacing will be 0.0 when the smallest value is going to be smaller than the slice spacing itself.
     public var automaticallyDisableSliceSpacing: Bool = false

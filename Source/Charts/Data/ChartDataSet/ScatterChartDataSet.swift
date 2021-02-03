@@ -23,6 +23,18 @@ public class ScatterChartDataSet: LineScatterCandleRadarChartDataSet, ScatterCha
         case chevronDown
     }
 
+    public static func renderer(forShape shape: Shape) -> ShapeRenderer {
+        switch shape {
+        case .square: return SquareShapeRenderer()
+        case .circle: return CircleShapeRenderer()
+        case .triangle: return TriangleShapeRenderer()
+        case .cross: return CrossShapeRenderer()
+        case .x: return XShapeRenderer()
+        case .chevronUp: return ChevronUpShapeRenderer()
+        case .chevronDown: return ChevronDownShapeRenderer()
+        }
+    }
+
     /// The size the scatter shape will have
     public var scatterShapeSize = CGFloat(10.0)
 

@@ -72,7 +72,7 @@ class ColoredLineChartViewController: DemoBaseViewController {
         set1.setColor(.white)
         set1.setCircleColor(.white)
         set1.highlightColor = .white
-        set1.drawValuesEnabled = false
+        set1.isDrawValuesEnabled = false
 
         return LineChartData(dataSet: set1)
     }

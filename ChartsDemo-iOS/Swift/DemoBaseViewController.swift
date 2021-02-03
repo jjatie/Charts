@@ -128,13 +128,13 @@ class DemoBaseViewController: UIViewController, ChartViewDelegate {
         switch option {
         case .toggleValues:
             for set in chartView.data! {
-                set.drawValuesEnabled = !set.drawValuesEnabled
+                set.isDrawValuesEnabled.toggle()
             }
             chartView.setNeedsDisplay()
 
         case .toggleIcons:
             for set in chartView.data! {
-                set.drawIconsEnabled = !set.drawIconsEnabled
+                set.isDrawIconsEnabled.toggle()
             }
             chartView.setNeedsDisplay()
 
