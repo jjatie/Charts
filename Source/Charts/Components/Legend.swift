@@ -13,7 +13,7 @@ import CoreGraphics
 import Foundation
 
 open class Legend: ComponentBase {
-    public enum Form: Int {
+    public enum Form {
         /// Avoid drawing a form
         case none
 
@@ -33,24 +33,24 @@ open class Legend: ComponentBase {
         case line
     }
 
-    public enum HorizontalAlignment: Int {
+    public enum HorizontalAlignment {
         case left
         case center
         case right
     }
 
-    public enum VerticalAlignment: Int {
+    public enum VerticalAlignment {
         case top
         case center
         case bottom
     }
 
-    public enum Orientation: Int {
+    public enum Orientation {
         case horizontal
         case vertical
     }
 
-    public enum Direction: Int {
+    public enum Direction {
         case leftToRight
         case rightToLeft
     }

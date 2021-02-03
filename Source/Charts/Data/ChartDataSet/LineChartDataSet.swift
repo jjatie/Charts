@@ -13,7 +13,7 @@ import CoreGraphics
 import Foundation
 
 open class LineChartDataSet: LineRadarChartDataSet, LineChartDataSetProtocol {
-    public enum Mode: Int {
+    public enum Mode {
         case linear
         case stepped
         case cubicBezier

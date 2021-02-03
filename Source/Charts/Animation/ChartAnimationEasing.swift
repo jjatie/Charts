@@ -12,7 +12,7 @@
 import CoreGraphics
 import Foundation
 
-public enum ChartEasingOption: Int {
+public enum ChartEasingOption {
     case linear
     case easeInQuad
     case easeOutQuad

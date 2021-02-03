@@ -18,7 +18,7 @@ open class CombinedChartView: BarLineChartViewBase, CombinedChartDataProvider {
     internal var _fillFormatter: FillFormatter!
 
     /// enum that allows to specify the order in which the different data objects for the combined-chart are drawn
-    public enum DrawOrder: Int {
+    public enum DrawOrder {
         case bar
         case bubble
         case line
@@ -147,13 +147,9 @@ open class CombinedChartView: BarLineChartViewBase, CombinedChartDataProvider {
     /// the order in which the provided data objects should be drawn.
     /// The earlier you place them in the provided array, the further they will be in the background.
     /// e.g. if you provide [DrawOrder.Bar, DrawOrder.Line], the bars will be drawn behind the lines.
-    open var drawOrder: [Int] {
-        get {
-            return (renderer as! CombinedChartRenderer).drawOrder.map { $0.rawValue }
-        }
-        set {
-            (renderer as! CombinedChartRenderer).drawOrder = newValue.map { DrawOrder(rawValue: $0)! }
-        }
+    open var drawOrder: [DrawOrder] {
+        get { (renderer as! CombinedChartRenderer).drawOrder }
+        set { (renderer as! CombinedChartRenderer).drawOrder = newValue }
     }
 
     /// Set this to `true` to make the highlight operation full-bar oriented, `false` to make it highlight single values

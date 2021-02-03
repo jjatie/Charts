@@ -13,7 +13,7 @@ import CoreGraphics
 import Foundation
 
 open class ScatterChartDataSet: LineScatterCandleRadarChartDataSet, ScatterChartDataSetProtocol {
-    public enum Shape: Int {
+    public enum Shape {
         case square
         case circle
         case triangle
