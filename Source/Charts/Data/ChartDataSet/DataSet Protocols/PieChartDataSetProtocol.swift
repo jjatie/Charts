@@ -12,7 +12,7 @@
 import CoreGraphics
 import Foundation
 
-public protocol PieChartDataSetProtocol: ChartDataSetProtocol {
+public protocol PieChartDataSetProtocol {
     // MARK: - Styling functions and accessors
 
     /// the space in pixels between the pie-slices

@@ -28,7 +28,7 @@ public typealias ARange = ClosedRange<Double>
 /// The DataSet class represents one group or type of entries (Entry) in the Chart that belong together.
 /// It is designed to logically separate different groups of values inside the Chart (e.g. the values for a specific line in the LineChart, or the values of a specific group of bars in the BarChart).
 @dynamicMemberLookup
-public class ChartDataSet: ChartDataSetProtocol, NSCopying {
+public class ChartDataSet: NSCopying {
     /// - Note: Calls `notifyDataSetChanged()` after setting a new value.
     /// - Returns: The array of y-values that this DataSet represents.
     /// the entries that this dataset represents / holds together
@@ -37,13 +37,13 @@ public class ChartDataSet: ChartDataSetProtocol, NSCopying {
     /// The label string that describes the DataSet.
     public var label: String? = "DataSet"
 
-    public var style = ChartStyleValues<Element>()
-
     /// The axis this DataSet should be plotted against.
     public var axisDependency = YAxis.AxisDependency.left
 
     public internal(set) var xRange: AxisRange = (.greatestFiniteMagnitude, -.greatestFiniteMagnitude)
     public internal(set) var yRange: AxisRange = (.greatestFiniteMagnitude, -.greatestFiniteMagnitude)
+
+    public var style = ChartStyleValues<Element>()
 
     public subscript<T>(dynamicMember keyPath: WritableKeyPath<ChartStyleValues<Element>, T>) -> T {
         get { style[keyPath: keyPath] }
@@ -62,6 +62,11 @@ public class ChartDataSet: ChartDataSetProtocol, NSCopying {
 
     // MARK: - Data functions and accessors
 
+    /// Use this method to tell the data set that the underlying data has changed
+    public func notifyDataSetChanged() {
+        calcMinMax()
+    }
+
     /// Used to replace all entries of a data set while retaining styling properties.
     /// This is a separate method from a setter on `entries` to encourage usage
     /// of `Collection` conformances.
@@ -72,6 +77,7 @@ public class ChartDataSet: ChartDataSetProtocol, NSCopying {
         notifyDataSetChanged()
     }
 
+    /// Calculates the minimum and maximum x and y values (xMin, xMax, yMin, yMax).
     public func calcMinMax() {
         yRange.min = Double.greatestFiniteMagnitude
         yRange.max = -Double.greatestFiniteMagnitude
@@ -83,6 +89,8 @@ public class ChartDataSet: ChartDataSetProtocol, NSCopying {
         forEach(calcMinMax)
     }
 
+    /// Calculates the min and max y-values from the Entry closest to the given fromX to the Entry closest to the given toX value.
+    /// This is only needed for the autoScaleMinMax feature.
     public func calcMinMaxY(fromX: Double, toX: Double) {
         yRange.min = Double.greatestFiniteMagnitude
         yRange.max = -Double.greatestFiniteMagnitude
@@ -160,10 +168,13 @@ public class ChartDataSet: ChartDataSetProtocol, NSCopying {
 // MARK: - Styling functions and accessors
 
 extension ChartDataSet {
+    /// - Returns: The color at the given index of the DataSet's color array.
+    /// This prevents out-of-bounds by performing a modulus on the color index, so colours will repeat themselves.
     public func color(at index: Int) -> NSUIColor {
         style.colors[index % style.colors.count]
     }
 
+    /// - Returns: The color at the specified index that is used for drawing the values inside the chart. Uses modulus internally.
     public func valueTextColorAt(_ index: Int) -> NSUIColor {
         style.valueColors[index % style.valueColors.count]
     }
@@ -213,11 +224,7 @@ extension ChartDataSet: MutableCollection {
     }
 
     public subscript(position: Index) -> Element {
-        get {
-            // This is intentionally not a safe subscript to mirror
-            // the behaviour of the built in Swift Collection Types
-            entries[position]
-        }
+        get { entries[position] }
         set {
             calcMinMax(entry: newValue)
             entries[position] = newValue
@@ -299,13 +306,6 @@ extension ChartDataSet: CustomDebugStringConvertible {
         reduce(into: description + ":") {
             $0 += "\n\($1.description)"
         }
-    }
-}
-
-extension ChartDataSet {
-    /// Use this method to tell the data set that the underlying data has changed
-    public func notifyDataSetChanged() {
-        calcMinMax()
     }
 }
 
