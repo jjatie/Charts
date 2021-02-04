@@ -49,8 +49,6 @@ open class ScatterChartRenderer: LineScatterCandleRadarRenderer {
             .forEach(drawDataSet)
     }
 
-    private var _lineSegments = [CGPoint](repeating: CGPoint(), count: 2)
-
     open func drawDataSet(context: CGContext, dataSet: ScatterChartDataSet) {
         guard let dataProvider = dataProvider else { return }
 

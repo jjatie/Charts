@@ -484,3 +484,18 @@ extension ChartDataSet: CustomDebugStringConvertible {
         }
     }
 }
+
+extension ChartDataSet {
+    /// Use this method to tell the data set that the underlying data has changed
+    public func notifyDataSetChanged() {
+        calcMinMax()
+    }
+
+    @discardableResult
+    public func removeEntry(x: Double) -> Bool {
+        if let entry = entryForXValue(x, closestToY: Double.nan) {
+            return remove(entry)
+        }
+        return false
+    }
+}

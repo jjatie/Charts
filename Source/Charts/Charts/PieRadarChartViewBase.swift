@@ -427,7 +427,7 @@ open class PieRadarChartViewBase: ChartViewBase {
     private var _decelerationDisplayLink: NSUIDisplayLink!
     private var _decelerationAngularVelocity: CGFloat = 0.0
 
-    internal final func processRotationGestureBegan(location: CGPoint) {
+    private func processRotationGestureBegan(location: CGPoint) {
         resetVelocity()
 
         if rotationEnabled {
@@ -439,7 +439,7 @@ open class PieRadarChartViewBase: ChartViewBase {
         _rotationGestureStartPoint = location
     }
 
-    internal final func processRotationGestureMoved(location: CGPoint) {
+    private func processRotationGestureMoved(location: CGPoint) {
         if isDragDecelerationEnabled {
             sampleVelocity(touchLocation: location)
         }
@@ -459,7 +459,7 @@ open class PieRadarChartViewBase: ChartViewBase {
         }
     }
 
-    internal final func processRotationGestureEnded(location: CGPoint) {
+    private func processRotationGestureEnded(location: CGPoint) {
         if isDragDecelerationEnabled {
             stopDeceleration()
 
@@ -475,7 +475,7 @@ open class PieRadarChartViewBase: ChartViewBase {
         }
     }
 
-    internal final func processRotationGestureCancelled() {
+    private func processRotationGestureCancelled() {
         if _isRotating {
             _isRotating = false
         }
@@ -684,16 +684,6 @@ open class PieRadarChartViewBase: ChartViewBase {
         let dy = eventY - startY
         return sqrt(dx * dx + dy * dy)
     }
-
-    /// - Returns: The distance between two points
-    private func distance(from: CGPoint, to: CGPoint) -> CGFloat {
-        let dx = from.x - to.x
-        let dy = from.y - to.y
-        return sqrt(dx * dx + dy * dy)
-    }
-
-    /// reference to the last highlighted object
-    private var _lastHighlight: Highlight!
 
     @objc
     private func tapGestureRecognized(_ recognizer: NSUITapGestureRecognizer) {

@@ -107,11 +107,6 @@ public protocol ChartDataSetProtocol: AnyObject, RandomAccessCollection, Mutable
     /// - Returns: `true` if the entry was removed successfully, `false` ifthe entry does not exist or if this feature is not supported
     func removeEntry(x: Double) -> Bool
 
-    /// Checks if this DataSet contains the specified Entry.
-    ///
-    /// - Returns: `true` if contains the entry, `false` ifnot.
-    func contains(_ e: ChartDataEntry) -> Bool
-
     // MARK: - Styling functions and accessors
 
     /// The label string that describes the DataSet.
