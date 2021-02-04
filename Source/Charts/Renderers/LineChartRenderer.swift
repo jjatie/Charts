@@ -259,7 +259,7 @@ open class LineChartRenderer: LineRadarRenderer {
             return
         }
 
-        let fillMin = dataSet.fillFormatter?.getFillLinePosition(dataSet: dataSet, dataProvider: dataProvider) ?? 0.0
+        let fillMin = dataSet.fillFormatter.getFillLinePosition(dataSet: dataSet, dataProvider: dataProvider)
 
         var pt1 = CGPoint(x: CGFloat(dataSet[bounds.min + bounds.range].x), y: fillMin)
         var pt2 = CGPoint(x: CGFloat(dataSet[bounds.min].x), y: fillMin)
@@ -270,11 +270,7 @@ open class LineChartRenderer: LineRadarRenderer {
         spline.addLine(to: pt2)
         spline.closeSubpath()
 
-        if dataSet.fill != nil {
-            drawFilledPath(context: context, path: spline, fill: dataSet.fill!, fillAlpha: dataSet.fillAlpha)
-        } else {
-            drawFilledPath(context: context, path: spline, fillColor: dataSet.fillColor, fillAlpha: dataSet.fillAlpha)
-        }
+        drawFilledPath(context: context, path: spline, fill: dataSet.fill, fillAlpha: dataSet.fillAlpha)
     }
 
     private var _lineSegments = [CGPoint](repeating: CGPoint(), count: 2)
@@ -357,7 +353,7 @@ open class LineChartRenderer: LineRadarRenderer {
                 }
 
                 // get the color that is set for this line-segment
-                context.setStrokeColor(dataSet.color(atIndex: j).cgColor)
+                context.setStrokeColor(dataSet.color(at: j).cgColor)
                 context.strokeLineSegments(between: _lineSegments)
             }
         } else { // only one color per dataset
@@ -412,7 +408,7 @@ open class LineChartRenderer: LineRadarRenderer {
                 } else {
                     context.beginPath()
                     context.addPath(path)
-                    context.setStrokeColor(dataSet.color(atIndex: 0).cgColor)
+                    context.setStrokeColor(dataSet.color(at: 0).cgColor)
                     context.strokePath()
                 }
             }
@@ -425,16 +421,12 @@ open class LineChartRenderer: LineRadarRenderer {
 
         let filled = generateFilledPath(
             dataSet: dataSet,
-            fillMin: dataSet.fillFormatter?.getFillLinePosition(dataSet: dataSet, dataProvider: dataProvider) ?? 0.0,
+            fillMin: dataSet.fillFormatter.getFillLinePosition(dataSet: dataSet, dataProvider: dataProvider),
             bounds: bounds,
             matrix: trans.valueToPixelMatrix
         )
 
-        if dataSet.fill != nil {
-            drawFilledPath(context: context, path: filled, fill: dataSet.fill!, fillAlpha: dataSet.fillAlpha)
-        } else {
-            drawFilledPath(context: context, path: filled, fillColor: dataSet.fillColor, fillAlpha: dataSet.fillAlpha)
-        }
+        drawFilledPath(context: context, path: filled, fill: dataSet.fill, fillAlpha: dataSet.fillAlpha)
     }
 
     /// Generates the path that is used for filled drawing.
@@ -641,7 +633,7 @@ open class LineChartRenderer: LineRadarRenderer {
                     accessibilityOrderedElements[i].append(element)
                 }
 
-                context.setFillColor(dataSet.getCircleColor(atIndex: j)!.cgColor)
+                context.setFillColor(dataSet.getCircleColor(at: j)!.cgColor)
 
                 rect.origin.x = pt.x - circleRadius
                 rect.origin.y = pt.y - circleRadius

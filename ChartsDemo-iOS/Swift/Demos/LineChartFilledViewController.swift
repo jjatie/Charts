@@ -76,14 +76,14 @@ class LineChartFilledViewController: DemoBaseViewController {
         let set1 = LineChartDataSet(entries: yVals1, label: "DataSet 1")
         set1.axisDependency = .left
         set1.setColor(UIColor(red: 255 / 255, green: 241 / 255, blue: 46 / 255, alpha: 1))
-        set1.drawCirclesEnabled = false
+        set1.isDrawCirclesEnabled = false
         set1.lineWidth = 2
         set1.circleRadius = 3
         set1.fillAlpha = 1
-        set1.drawFilledEnabled = true
-        set1.fillColor = .white
+        set1.isDrawFilledEnabled = true
+        set1.fill = ColorFill(color: .white)
         set1.highlightColor = UIColor(red: 244 / 255, green: 117 / 255, blue: 117 / 255, alpha: 1)
-        set1.drawCircleHoleEnabled = false
+        set1.isDrawCircleHoleEnabled = false
         set1.fillFormatter = DefaultFillFormatter { _, _ -> CGFloat in
             CGFloat(self.chartView.leftAxis.axisMinimum)
         }
@@ -91,14 +91,14 @@ class LineChartFilledViewController: DemoBaseViewController {
         let set2 = LineChartDataSet(entries: yVals2, label: "DataSet 2")
         set2.axisDependency = .left
         set2.setColor(UIColor(red: 255 / 255, green: 241 / 255, blue: 46 / 255, alpha: 1))
-        set2.drawCirclesEnabled = false
+        set2.isDrawCirclesEnabled = false
         set2.lineWidth = 2
         set2.circleRadius = 3
         set2.fillAlpha = 1
-        set2.drawFilledEnabled = true
-        set2.fillColor = .white
+        set2.isDrawFilledEnabled = true
+        set2.fill = ColorFill(color: .white)
         set2.highlightColor = UIColor(red: 244 / 255, green: 117 / 255, blue: 117 / 255, alpha: 1)
-        set2.drawCircleHoleEnabled = false
+        set2.isDrawCircleHoleEnabled = false
         set2.fillFormatter = DefaultFillFormatter { _, _ -> CGFloat in
             CGFloat(self.chartView.leftAxis.axisMaximum)
         }

@@ -34,22 +34,22 @@ open class BarChartDataSet: BarLineScatterCandleBubbleChartDataSet, BarChartData
 
     /// the maximum number of bars that are stacked upon each other, this value
     /// is calculated from the Entries that are added to the DataSet
-    private var _stackSize = 1
+    public private(set) var stackSize = 1
 
     /// the overall entry count, including counting each stack-value individually
-    private var _entryCountStacks = 0
+    public private(set) var entryCountStacks = 0
 
     /// Calculates the total number of entries this DataSet represents, including
     /// stacks. All values belonging to a stack are calculated separately.
     private func calcEntryCountIncludingStacks(entries: [BarChartDataEntry]) {
-        _entryCountStacks = entries.lazy
+        entryCountStacks = entries.lazy
             .map(\.stackSize)
             .reduce(into: 0, +=)
     }
 
     /// calculates the maximum stacksize that occurs in the Entries array of this DataSet
     private func calcStackSize(entries: [BarChartDataEntry]) {
-        _stackSize = entries.lazy
+        stackSize = entries.lazy
             .map(\.stackSize)
             .max() ?? 1
     }
@@ -70,19 +70,9 @@ open class BarChartDataSet: BarLineScatterCandleBubbleChartDataSet, BarChartData
         calcMinMaxX(entry: e)
     }
 
-    /// The maximum number of bars that can be stacked upon another in this DataSet.
-    open var stackSize: Int {
-        return _stackSize
-    }
-
     /// `true` if this DataSet is stacked (stacksize > 1) or not.
-    open var isStacked: Bool {
-        return _stackSize > 1
-    }
-
-    /// The overall entry count, including counting each stack-value individually
-    open var entryCountStacks: Int {
-        return _entryCountStacks
+    public var isStacked: Bool {
+        stackSize > 1
     }
 
     /// array of labels used to describe the different values of the stacked bars
@@ -106,8 +96,8 @@ open class BarChartDataSet: BarLineScatterCandleBubbleChartDataSet, BarChartData
 
     override open func copy(with zone: NSZone? = nil) -> Any {
         let copy = super.copy(with: zone) as! BarChartDataSet
-        copy._stackSize = _stackSize
-        copy._entryCountStacks = _entryCountStacks
+        copy.stackSize = stackSize
+        copy.entryCountStacks = entryCountStacks
         copy.stackLabels = stackLabels
 
         copy.barShadowColor = barShadowColor

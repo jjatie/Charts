@@ -12,15 +12,15 @@
 import CoreGraphics
 import Foundation
 
-open class PieChartDataSet: ChartDataSet, PieChartDataSetProtocol {
+public class PieChartDataSet: ChartDataSet, PieChartDataSetProtocol {
     public enum ValuePosition {
         case insideSlice
         case outsideSlice
     }
 
     private func initialize() {
-        valueTextColor = NSUIColor.white
-        valueFont = NSUIFont.systemFont(ofSize: 13.0)
+        style.valueTextColor = NSUIColor.white
+        style.valueFont = NSUIFont.systemFont(ofSize: 13.0)
     }
 
     public required init() {
@@ -33,72 +33,63 @@ open class PieChartDataSet: ChartDataSet, PieChartDataSetProtocol {
         initialize()
     }
 
-    override internal func calcMinMax(entry e: ChartDataEntry) {
+    override func calcMinMax(entry e: ChartDataEntry) {
         calcMinMaxY(entry: e)
     }
 
     // MARK: - Styling functions and accessors
 
-    private var _sliceSpace = CGFloat(0.0)
-
     /// the space in pixels between the pie-slices
     /// **default**: 0
     /// **maximum**: 20
-    open var sliceSpace: CGFloat {
-        get {
-            return _sliceSpace
-        }
-        set {
-            switch newValue {
-            case ..<0.0: _sliceSpace = 0.0
-            case 20.0...: _sliceSpace = 20.0
-            default: _sliceSpace = newValue
-            }
-        }
+    public var sliceSpace: CGFloat {
+        get { _sliceSpace }
+        set { _sliceSpace = newValue.clamped(to: 0...20) }
     }
+    private var _sliceSpace = CGFloat(0.0)
 
     /// When enabled, slice spacing will be 0.0 when the smallest value is going to be smaller than the slice spacing itself.
-    open var automaticallyDisableSliceSpacing: Bool = false
+    public var automaticallyDisableSliceSpacing: Bool = false
 
     /// indicates the selection distance of a pie slice
-    open var selectionShift = CGFloat(18.0)
+    public var selectionShift = CGFloat(18.0)
 
-    open var xValuePosition: ValuePosition = .insideSlice
-    open var yValuePosition: ValuePosition = .insideSlice
+    public var xValuePosition: ValuePosition = .insideSlice
+    public var yValuePosition: ValuePosition = .insideSlice
 
     /// When valuePosition is OutsideSlice, indicates line color
-    open var valueLineColor: NSUIColor? = NSUIColor.black
+    public var valueLineColor: NSUIColor? = NSUIColor.black
 
     /// When valuePosition is OutsideSlice and enabled, line will have the same color as the slice
-    open var useValueColorForLine: Bool = false
+    public var useValueColorForLine: Bool = false
 
     /// When valuePosition is OutsideSlice, indicates line width
-    open var valueLineWidth: CGFloat = 1.0
+    public var valueLineWidth: CGFloat = 1.0
 
     /// When valuePosition is OutsideSlice, indicates offset as percentage out of the slice size
-    open var valueLinePart1OffsetPercentage: CGFloat = 0.75
+    public var valueLinePart1OffsetPercentage: CGFloat = 0.75
 
     /// When valuePosition is OutsideSlice, indicates length of first half of the line
-    open var valueLinePart1Length: CGFloat = 0.3
+    public var valueLinePart1Length: CGFloat = 0.3
 
     /// When valuePosition is OutsideSlice, indicates length of second half of the line
-    open var valueLinePart2Length: CGFloat = 0.4
+    public var valueLinePart2Length: CGFloat = 0.4
 
     /// When valuePosition is OutsideSlice, this allows variable line length
-    open var valueLineVariableLength: Bool = true
+    public var valueLineVariableLength: Bool = true
 
     /// the font for the slice-text labels
-    open var entryLabelFont: NSUIFont?
+    public var entryLabelFont: NSUIFont?
 
     /// the color for the slice-text labels
-    open var entryLabelColor: NSUIColor?
+    public var entryLabelColor: NSUIColor?
 
     /// the color for the highlighted sector
-    open var highlightColor: NSUIColor?
+    public var highlightColor: NSUIColor?
 
     // MARK: - NSCopying
 
-    override open func copy(with zone: NSZone? = nil) -> Any {
+    override public func copy(with zone: NSZone? = nil) -> Any {
         let copy = super.copy(with: zone) as! PieChartDataSet
         copy._sliceSpace = _sliceSpace
         copy.automaticallyDisableSliceSpacing = automaticallyDisableSliceSpacing

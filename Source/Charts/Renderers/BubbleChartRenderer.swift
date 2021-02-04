@@ -116,7 +116,7 @@ open class BubbleChartRenderer: BarLineScatterCandleBubbleRenderer {
 
             guard viewPortHandler.isInBoundsRight(_pointBuffer.x - shapeHalf) else { break }
 
-            let color = dataSet.color(atIndex: j)
+            let color = dataSet.color(at: j)
 
             let rect = CGRect(
                 x: _pointBuffer.x - shapeHalf,
@@ -273,7 +273,7 @@ open class BubbleChartRenderer: BarLineScatterCandleBubbleRenderer {
 
             guard viewPortHandler.isInBoundsRight(_pointBuffer.x - shapeHalf) else { break }
 
-            let originalColor = dataSet.color(atIndex: Int(entry.x))
+            let originalColor = dataSet.color(at: Int(entry.x))
 
             var h: CGFloat = 0.0
             var s: CGFloat = 0.0

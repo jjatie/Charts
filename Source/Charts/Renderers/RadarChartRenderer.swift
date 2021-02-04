@@ -138,16 +138,12 @@ open class RadarChartRenderer: LineRadarRenderer {
 
         // draw filled
         if dataSet.isDrawFilledEnabled {
-            if dataSet.fill != nil {
-                drawFilledPath(context: context, path: path, fill: dataSet.fill!, fillAlpha: dataSet.fillAlpha)
-            } else {
-                drawFilledPath(context: context, path: path, fillColor: dataSet.fillColor, fillAlpha: dataSet.fillAlpha)
-            }
+            drawFilledPath(context: context, path: path, fill: dataSet.fill, fillAlpha: dataSet.fillAlpha)
         }
 
         // draw the line (only if filled is disabled or alpha is below 255)
         if !dataSet.isDrawFilledEnabled || dataSet.fillAlpha < 1.0 {
-            context.setStrokeColor(dataSet.color(atIndex: 0).cgColor)
+            context.setStrokeColor(dataSet.color(at: 0).cgColor)
             context.setLineWidth(dataSet.lineWidth)
             context.setAlpha(1.0)
 
@@ -354,7 +350,7 @@ open class RadarChartRenderer: LineRadarRenderer {
                 if !_highlightPointBuffer.x.isNaN, !_highlightPointBuffer.y.isNaN {
                     var strokeColor = set.highlightCircleStrokeColor
                     if strokeColor == nil {
-                        strokeColor = set.color(atIndex: 0)
+                        strokeColor = set.color(at: 0)
                     }
                     if set.highlightCircleStrokeAlpha < 1.0 {
                         strokeColor = strokeColor?.withAlphaComponent(set.highlightCircleStrokeAlpha)

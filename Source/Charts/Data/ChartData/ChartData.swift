@@ -279,7 +279,7 @@ open class ChartData: ExpressibleByArrayLiteral {
 
     /// - Returns: The DataSet that contains the provided Entry, or null, if no DataSet contains this entry.
     open func getDataSetForEntry(_ e: ChartDataEntry) -> Element? {
-        return first { $0.entryForXValue(e.x, closestToY: e.y) === e }
+        first { $0.entryForXValue(e.x, closestToY: e.y) === e }
     }
 
     /// - Returns: The index of the provided DataSet in the DataSet array of this data object, or -1 if it does not exist.
@@ -289,12 +289,12 @@ open class ChartData: ExpressibleByArrayLiteral {
 
     /// - Returns: The first DataSet from the datasets-array that has it's dependency on the left axis. Returns null if no DataSet with left dependency could be found.
     open func getFirstLeft(dataSets _: [Element]) -> Element? {
-        return first { $0.axisDependency == .left }
+        first { $0.axisDependency == .left }
     }
 
     /// - Returns: The first DataSet from the datasets-array that has it's dependency on the right axis. Returns null if no DataSet with right dependency could be found.
     open func getFirstRight(dataSets _: [Element]) -> Element? {
-        return first { $0.axisDependency == .right }
+        first { $0.axisDependency == .right }
     }
 
     /// - Returns: All colors used across all DataSet objects this object represents.
@@ -325,7 +325,7 @@ open class ChartData: ExpressibleByArrayLiteral {
     /// Enables / disables highlighting values for all DataSets this data object contains.
     /// If set to true, this means that values can be highlighted programmatically or by touch gesture.
     open var isHighlightEnabled: Bool {
-        get { return allSatisfy { $0.isHighlightEnabled } }
+        get { allSatisfy { $0.isHighlightEnabled } }
         set { forEach { $0.isHighlightEnabled = newValue } }
     }
 
@@ -339,17 +339,17 @@ open class ChartData: ExpressibleByArrayLiteral {
     ///
     /// - Returns: `true` if so, `false` ifnot.
     open func contains(dataSet: Element) -> Bool {
-        return contains { $0 === dataSet }
+        contains { $0 === dataSet }
     }
 
     /// The total entry count across all DataSet objects this data object contains.
     open var entryCount: Int {
-        return reduce(0) { return $0 + $1.count }
+        reduce(0) { return $0 + $1.count }
     }
 
     /// The DataSet object with the maximum number of entries or null if there are no DataSets.
     open var maxEntryCountSet: Element? {
-        return self.max { $0.count > $1.count }
+        self.max { $0.count > $1.count }
     }
 }
 
@@ -360,19 +360,19 @@ extension ChartData: MutableCollection {
     public typealias Element = ChartDataSet
 
     public var startIndex: Index {
-        return dataSets.startIndex
+        dataSets.startIndex
     }
 
     public var endIndex: Index {
-        return dataSets.endIndex
+        dataSets.endIndex
     }
 
     public func index(after: Index) -> Index {
-        return dataSets.index(after: after)
+        dataSets.index(after: after)
     }
 
     public subscript(position: Index) -> Element {
-        get { return dataSets[position] }
+        get { dataSets[position] }
         set { _dataSets[position] = newValue }
     }
 }
@@ -381,7 +381,7 @@ extension ChartData: MutableCollection {
 
 extension ChartData: RandomAccessCollection {
     public func index(before: Index) -> Index {
-        return dataSets.index(before: before)
+        dataSets.index(before: before)
     }
 }
 

@@ -110,9 +110,9 @@ class LineChart2ViewController: DemoBaseViewController {
         set1.lineWidth = 2
         set1.circleRadius = 3
         set1.fillAlpha = 65 / 255
-        set1.fillColor = UIColor(red: 51 / 255, green: 181 / 255, blue: 229 / 255, alpha: 1)
+        set1.fill = ColorFill(color: UIColor(red: 51 / 255, green: 181 / 255, blue: 229 / 255, alpha: 1))
         set1.highlightColor = UIColor(red: 244 / 255, green: 117 / 255, blue: 117 / 255, alpha: 1)
-        set1.drawCircleHoleEnabled = false
+        set1.isDrawCircleHoleEnabled = false
 
         let set2 = LineChartDataSet(entries: yVals2, label: "DataSet 2")
         set2.axisDependency = .right
@@ -121,9 +121,9 @@ class LineChart2ViewController: DemoBaseViewController {
         set2.lineWidth = 2
         set2.circleRadius = 3
         set2.fillAlpha = 65 / 255
-        set2.fillColor = .red
+        set2.fill = ColorFill(color: .red)
         set2.highlightColor = UIColor(red: 244 / 255, green: 117 / 255, blue: 117 / 255, alpha: 1)
-        set2.drawCircleHoleEnabled = false
+        set2.isDrawCircleHoleEnabled = false
 
         let set3 = LineChartDataSet(entries: yVals3, label: "DataSet 3")
         set3.axisDependency = .right
@@ -132,9 +132,9 @@ class LineChart2ViewController: DemoBaseViewController {
         set3.lineWidth = 2
         set3.circleRadius = 3
         set3.fillAlpha = 65 / 255
-        set3.fillColor = UIColor.yellow.withAlphaComponent(200 / 255)
+        set3.fill = ColorFill(color: UIColor.yellow.withAlphaComponent(200 / 255))
         set3.highlightColor = UIColor(red: 244 / 255, green: 117 / 255, blue: 117 / 255, alpha: 1)
-        set3.drawCircleHoleEnabled = false
+        set3.isDrawCircleHoleEnabled = false
 
         let data: LineChartData = [set1, set2, set3]
         data.setValueTextColor(.white)
@@ -149,13 +149,13 @@ class LineChart2ViewController: DemoBaseViewController {
         switch option {
         case .toggleFilled:
             for case let set as LineChartDataSet in data {
-                set.drawFilledEnabled = !set.drawFilledEnabled
+                set.isDrawFilledEnabled.toggle()
             }
             chartView.setNeedsDisplay()
 
         case .toggleCircles:
             for case let set as LineChartDataSet in data {
-                set.drawCirclesEnabled = !set.drawCirclesEnabled
+                set.isDrawCirclesEnabled.toggle()
             }
             chartView.setNeedsDisplay()
 

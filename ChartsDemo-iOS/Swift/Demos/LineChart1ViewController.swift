@@ -114,7 +114,7 @@ class LineChart1ViewController: DemoBaseViewController {
         }
 
         let set1 = LineChartDataSet(entries: values, label: "DataSet 1")
-        set1.drawIconsEnabled = false
+        set1.isDrawIconsEnabled = false
         setup(set1)
 
         let value = ChartDataEntry(x: Double(3), y: 3)
@@ -127,7 +127,7 @@ class LineChart1ViewController: DemoBaseViewController {
 
         set1.fillAlpha = 1
         set1.fill = LinearGradientFill(gradient: gradient, angle: 90)
-        set1.drawFilledEnabled = true
+        set1.isDrawFilledEnabled = true
 
         let data = LineChartData(dataSet: set1)
 
@@ -139,29 +139,21 @@ class LineChart1ViewController: DemoBaseViewController {
             dataSet.lineDashLengths = nil
             dataSet.highlightLineDashLengths = nil
             dataSet.setColors(.black, .red, .white)
-            dataSet.setCircleColor(.black)
             dataSet.gradientPositions = [0, 40, 100]
-            dataSet.lineWidth = 1
-            dataSet.circleRadius = 3
-            dataSet.drawCircleHoleEnabled = false
-            dataSet.valueFont = .systemFont(ofSize: 9)
-            dataSet.formLineDashLengths = nil
-            dataSet.formLineWidth = 1
-            dataSet.formSize = 15
         } else {
             dataSet.lineDashLengths = [5, 2.5]
             dataSet.highlightLineDashLengths = [5, 2.5]
             dataSet.setColor(.black)
-            dataSet.setCircleColor(.black)
             dataSet.gradientPositions = nil
-            dataSet.lineWidth = 1
-            dataSet.circleRadius = 3
-            dataSet.drawCircleHoleEnabled = false
-            dataSet.valueFont = .systemFont(ofSize: 9)
-            dataSet.formLineDashLengths = [5, 2.5]
-            dataSet.formLineWidth = 1
-            dataSet.formSize = 15
         }
+        dataSet.setCircleColor(.black)
+        dataSet.lineWidth = 1
+        dataSet.circleRadius = 3
+        dataSet.isDrawCircleHoleEnabled = false
+        dataSet.valueFont = .systemFont(ofSize: 9)
+        dataSet.formLineDashLengths = nil
+        dataSet.formLineWidth = 1
+        dataSet.formSize = 15
     }
 
     override func optionTapped(_ option: Option) {
@@ -170,13 +162,13 @@ class LineChart1ViewController: DemoBaseViewController {
         switch option {
         case .toggleFilled:
             for case let set as LineChartDataSet in data {
-                set.drawFilledEnabled = !set.drawFilledEnabled
+                set.isDrawFilledEnabled.toggle()
             }
             chartView.setNeedsDisplay()
 
         case .toggleCircles:
             for case let set as LineChartDataSet in data {
-                set.drawCirclesEnabled = !set.drawCirclesEnabled
+                set.isDrawCirclesEnabled.toggle()
             }
             chartView.setNeedsDisplay()
 

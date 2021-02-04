@@ -91,13 +91,13 @@ class CandleStickChartViewController: DemoBaseViewController {
         let set1 = CandleChartDataSet(entries: yVals1, label: "Data Set")
         set1.axisDependency = .left
         set1.setColor(UIColor(white: 80 / 255, alpha: 1))
-        set1.drawIconsEnabled = false
+        set1.isDrawIconsEnabled = false
         set1.shadowColor = .darkGray
         set1.shadowWidth = 0.7
         set1.decreasingColor = .red
-        set1.decreasingFilled = true
+        set1.isDecreasingFilled = true
         set1.increasingColor = UIColor(red: 122 / 255, green: 242 / 255, blue: 84 / 255, alpha: 1)
-        set1.increasingFilled = false
+        set1.isIncreasingFilled = false
         set1.neutralColor = .blue
 
         let data = CandleChartData(dataSet: set1)
@@ -108,12 +108,12 @@ class CandleStickChartViewController: DemoBaseViewController {
         switch option {
         case .toggleShadowColorSameAsCandle:
             for case let set as CandleChartDataSet in chartView.data! {
-                set.shadowColorSameAsCandle = !set.shadowColorSameAsCandle
+                set.isShadowColorSameAsCandle.toggle()
             }
             chartView.notifyDataSetChanged()
         case .toggleShowCandleBar:
             for set in chartView.data!.dataSets as! [CandleChartDataSet] {
-                set.showCandleBar = !set.showCandleBar
+                set.showCandleBar.toggle()
             }
             chartView.notifyDataSetChanged()
         default:

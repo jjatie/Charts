@@ -9,6 +9,7 @@
 //  https://github.com/danielgindi/Charts
 //
 
+import Algorithms
 import CoreGraphics
 import Foundation
 
@@ -327,22 +328,20 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer {
         let isSingleColor = dataSet.colors.count == 1
 
         if isSingleColor {
-            context.setFillColor(dataSet.color(atIndex: 0).cgColor)
+            context.setFillColor(dataSet.color(at: 0).cgColor)
         }
 
         // In case the chart is stacked, we need to accomodate individual bars within accessibilityOrdereredElements
         let isStacked = dataSet.isStacked
         let stackSize = isStacked ? dataSet.stackSize : 1
 
-        for j in buffer.indices {
-            let barRect = buffer[j]
-
+        for (j, barRect) in buffer.indexed() {
             guard viewPortHandler.isInBoundsLeft(barRect.origin.x + barRect.size.width) else { continue }
             guard viewPortHandler.isInBoundsRight(barRect.origin.x) else { break }
 
             if !isSingleColor {
                 // Set the color for the currently drawn value. If the index is out of bounds, reuse colors.
-                context.setFillColor(dataSet.color(atIndex: j).cgColor)
+                context.setFillColor(dataSet.color(at: j).cgColor)
             }
 
             context.fill(barRect)

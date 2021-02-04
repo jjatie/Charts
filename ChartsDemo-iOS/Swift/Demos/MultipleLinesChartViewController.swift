@@ -105,13 +105,13 @@ class MultipleLinesChartViewController: DemoBaseViewController {
         switch option {
         case .toggleFilled:
             for case let set as LineChartDataSet in data {
-                set.drawFilledEnabled = !set.drawFilledEnabled
+                set.isDrawFilledEnabled.toggle()
             }
             chartView.setNeedsDisplay()
 
         case .toggleCircles:
             for case let set as LineChartDataSet in data {
-                set.drawCirclesEnabled = !set.drawCirclesEnabled
+                set.isDrawCirclesEnabled.toggle()
             }
             chartView.setNeedsDisplay()
 

@@ -43,11 +43,13 @@ class CombinedChartViewController: DemoBaseViewController {
         chartView.drawBarShadowEnabled = false
         chartView.highlightFullBarEnabled = false
 
-        chartView.drawOrder = [CombinedChartView.DrawOrder.bar.rawValue,
-                               CombinedChartView.DrawOrder.bubble.rawValue,
-                               CombinedChartView.DrawOrder.candle.rawValue,
-                               CombinedChartView.DrawOrder.line.rawValue,
-                               CombinedChartView.DrawOrder.scatter.rawValue]
+        chartView.drawOrder = [
+            .bar,
+            .bubble,
+            .candle,
+            .line,
+            .scatter
+        ]
 
         let l = chartView.legend
         l.wordWrapEnabled = true
@@ -99,7 +101,7 @@ class CombinedChartViewController: DemoBaseViewController {
         case .toggleLineValues:
             for set in chartView.data! {
                 if let set = set as? LineChartDataSet {
-                    set.drawValuesEnabled = !set.drawValuesEnabled
+                    set.isDrawValuesEnabled.toggle()
                 }
             }
             chartView.setNeedsDisplay()
@@ -107,7 +109,7 @@ class CombinedChartViewController: DemoBaseViewController {
         case .toggleBarValues:
             for set in chartView.data! {
                 if let set = set as? BarChartDataSet {
-                    set.drawValuesEnabled = !set.drawValuesEnabled
+                    set.isDrawValuesEnabled.toggle()
                 }
             }
             chartView.setNeedsDisplay()
@@ -134,9 +136,9 @@ class CombinedChartViewController: DemoBaseViewController {
         set.setCircleColor(UIColor(red: 240 / 255, green: 238 / 255, blue: 70 / 255, alpha: 1))
         set.circleRadius = 5
         set.circleHoleRadius = 2.5
-        set.fillColor = UIColor(red: 240 / 255, green: 238 / 255, blue: 70 / 255, alpha: 1)
+        set.fill = ColorFill(color: UIColor(red: 240 / 255, green: 238 / 255, blue: 70 / 255, alpha: 1))
         set.mode = .cubicBezier
-        set.drawValuesEnabled = true
+        set.isDrawValuesEnabled = true
         set.valueFont = .systemFont(ofSize: 10)
         set.valueTextColor = UIColor(red: 240 / 255, green: 238 / 255, blue: 70 / 255, alpha: 1)
 
@@ -189,7 +191,7 @@ class CombinedChartViewController: DemoBaseViewController {
         let set = ScatterChartDataSet(entries: entries, label: "Scatter DataSet")
         set.colors = ChartColorTemplates.material
         set.scatterShapeSize = 4.5
-        set.drawValuesEnabled = false
+        set.isDrawValuesEnabled = false
         set.valueFont = .systemFont(ofSize: 10)
 
         return ScatterChartData(dataSet: set)
@@ -205,7 +207,7 @@ class CombinedChartViewController: DemoBaseViewController {
         set.decreasingColor = UIColor(red: 142 / 255, green: 150 / 255, blue: 175 / 255, alpha: 1)
         set.shadowColor = .darkGray
         set.valueFont = .systemFont(ofSize: 10)
-        set.drawValuesEnabled = false
+        set.isDrawValuesEnabled = false
 
         return CandleChartData(dataSet: set)
     }
@@ -221,7 +223,7 @@ class CombinedChartViewController: DemoBaseViewController {
         set.setColors(ChartColorTemplates.vordiplom, alpha: 1)
         set.valueTextColor = .white
         set.valueFont = .systemFont(ofSize: 10)
-        set.drawValuesEnabled = true
+        set.isDrawValuesEnabled = true
 
         return BubbleChartData(dataSet: set)
     }
