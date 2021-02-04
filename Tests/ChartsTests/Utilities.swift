@@ -3,8 +3,6 @@ import SnapshotTesting
 import UIKit
 
 private enum Snapshot {
-    static let tolerance: Float = 0.001
-
     static func identifier(_ size: CGSize) -> String {
         #if os(tvOS)
             let identifier = "tvOS"
