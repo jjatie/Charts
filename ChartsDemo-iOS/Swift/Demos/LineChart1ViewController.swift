@@ -120,8 +120,8 @@ class LineChart1ViewController: DemoBaseViewController {
         let value = ChartDataEntry(x: Double(3), y: 3)
         set1.addEntryOrdered(value)
         let gradientColors = [
-            UIColor(red: 1, green: 0, blue: 0, alpha: 0),
-            UIColor(red: 1, green: 0, blue: 0, alpha: 1),
+            UIColor(red: 1, green: 0, blue: 0, alpha: 0).cgColor,
+            UIColor(red: 1, green: 0, blue: 0, alpha: 1).cgColor,
         ]
         let gradient = CGGradient(colorsSpace: nil, colors: gradientColors as CFArray, locations: nil)!
 
