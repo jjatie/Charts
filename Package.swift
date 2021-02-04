@@ -32,7 +32,10 @@ let package = Package(
         .testTarget(
             name: "ChartsTests",
             dependencies: ["Charts", "SnapshotTesting"],
-            exclude: ["__Snapshots__"]
+            exclude: ["__Snapshots__"],
+            resources: [
+                .process("Resources")
+            ]
         )
     ],
     swiftLanguageVersions: [.v5]
