@@ -24,13 +24,13 @@ import Foundation
 /// Be aware that not all features the YLabels class provides are suitable for the RadarChart.
 /// Customizations that affect the value range of the axis need to be applied before setting data for the chart.
 open class YAxis: AxisBase {
-    public enum LabelPosition: Int {
+    public enum LabelPosition {
         case outsideChart
         case insideChart
     }
 
     ///  Enum that specifies the axis a DataSet should be plotted against, either Left or Right.
-    public enum AxisDependency: Int {
+    public enum AxisDependency {
         case left
         case right
     }

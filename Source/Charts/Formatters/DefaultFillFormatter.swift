@@ -15,7 +15,7 @@ import Foundation
 /// Default formatter that calculates the position of the filled line.
 open class DefaultFillFormatter: FillFormatter {
     public typealias Block = (
-        _ dataSet: LineChartDataSetProtocol,
+        _ dataSet: LineChartDataSet,
         _ dataProvider: LineChartDataProvider
     ) -> CGFloat
 
@@ -32,7 +32,7 @@ open class DefaultFillFormatter: FillFormatter {
     }
 
     open func getFillLinePosition(
-        dataSet: LineChartDataSetProtocol,
+        dataSet: LineChartDataSet,
         dataProvider: LineChartDataProvider
     ) -> CGFloat {
         guard block == nil else { return block!(dataSet, dataProvider) }

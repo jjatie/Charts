@@ -26,7 +26,7 @@ class LineChartTests: XCTestCase {
         }
 
         dataSet = LineChartDataSet(entries: entries, label: "First unit test data")
-        dataSet.drawIconsEnabled = false
+        dataSet.isDrawIconsEnabled = false
         dataSet.iconsOffset = CGPoint(x: 0, y: 20.0)
 
         chart = LineChartView(frame: CGRect(x: 0, y: 0, width: 480, height: 350))
@@ -46,7 +46,7 @@ class LineChartTests: XCTestCase {
     }
 
     func testHidesValues() {
-        dataSet.drawValuesEnabled = false
+        dataSet.isDrawValuesEnabled = false
         assertChartSnapshot(matching: chart)
     }
 
@@ -66,7 +66,7 @@ class LineChartTests: XCTestCase {
     }
 
     func testDrawIcons() {
-        dataSet.drawIconsEnabled = true
+        dataSet.isDrawIconsEnabled = true
         assertChartSnapshot(matching: chart)
     }
 }

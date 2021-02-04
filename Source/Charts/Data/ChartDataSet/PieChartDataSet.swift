@@ -13,7 +13,7 @@ import CoreGraphics
 import Foundation
 
 open class PieChartDataSet: ChartDataSet, PieChartDataSetProtocol {
-    public enum ValuePosition: Int {
+    public enum ValuePosition {
         case insideSlice
         case outsideSlice
     }
