@@ -3,6 +3,8 @@ import SnapshotTesting
 import XCTest
 
 class PieChartTests: XCTestCase {
+    let icon = UIImage(named: "icon", in: .module, compatibleWith: nil)!
+
     var chart: PieChartView!
     var dataSet: PieChartDataSet!
 
@@ -18,7 +20,7 @@ class PieChartTests: XCTestCase {
         var entries: [PieChartDataEntry] = Array()
 
         for value in values {
-            entries.append(PieChartDataEntry(value: value, icon: UIImage(named: "icon", in: Bundle(for: classForCoder), compatibleWith: nil)))
+            entries.append(PieChartDataEntry(value: value, icon: icon))
         }
 
         dataSet = PieChartDataSet(entries: entries, label: "First unit test data")
