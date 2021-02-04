@@ -19,8 +19,8 @@ open class PieChartDataSet: ChartDataSet, PieChartDataSetProtocol {
     }
 
     private func initialize() {
-        valueTextColor = NSUIColor.white
-        valueFont = NSUIFont.systemFont(ofSize: 13.0)
+        style.valueTextColor = NSUIColor.white
+        style.valueFont = NSUIFont.systemFont(ofSize: 13.0)
     }
 
     public required init() {

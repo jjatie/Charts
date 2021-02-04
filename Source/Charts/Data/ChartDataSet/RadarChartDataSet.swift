@@ -14,7 +14,7 @@ import Foundation
 
 open class RadarChartDataSet: LineRadarChartDataSet, RadarChartDataSetProtocol {
     private func initialize() {
-        valueFont = NSUIFont.systemFont(ofSize: 13.0)
+        style.valueFont = NSUIFont.systemFont(ofSize: 13.0)
     }
 
     public required init() {
