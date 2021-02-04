@@ -12,7 +12,7 @@
 import CoreGraphics
 import Foundation
 
-open class LineRadarChartDataSet: LineScatterCandleRadarChartDataSet, LineRadarChartDataSetProtocol
+public class LineRadarChartDataSet: LineScatterCandleRadarChartDataSet, LineRadarChartDataSetProtocol
 {
     // MARK: - Data functions and accessors
 
@@ -55,12 +55,7 @@ open class LineRadarChartDataSet: LineScatterCandleRadarChartDataSet, LineRadarC
     /// Set to `true` if the DataSet should be drawn filled (surface), and not just as a line.
     /// Disabling this will give great performance boost.
     /// Please note that this method uses the path clipping for drawing the filled area (with images, gradients and layers).
-    open var drawFilledEnabled = false
-
-    /// `true` if filled drawing is enabled, `false` ifnot
-    open var isDrawFilledEnabled: Bool {
-        return drawFilledEnabled
-    }
+    open var isDrawFilledEnabled = false
 
     // MARK: NSCopying
 
@@ -70,7 +65,7 @@ open class LineRadarChartDataSet: LineScatterCandleRadarChartDataSet, LineRadarC
         copy.fillAlpha = fillAlpha
         copy._fillColor = _fillColor
         copy._lineWidth = _lineWidth
-        copy.drawFilledEnabled = drawFilledEnabled
+        copy.isDrawFilledEnabled = isDrawFilledEnabled
         return copy
     }
 }

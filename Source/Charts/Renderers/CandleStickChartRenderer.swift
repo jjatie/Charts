@@ -114,18 +114,18 @@ open class CandleStickChartRenderer: LineScatterCandleRadarRenderer {
                 // draw the shadows
 
                 var shadowColor: NSUIColor!
-                if dataSet.shadowColorSameAsCandle {
+                if dataSet.isShadowColorSameAsCandle {
                     if open > close {
-                        shadowColor = dataSet.decreasingColor ?? dataSet.color(atIndex: j)
+                        shadowColor = dataSet.decreasingColor ?? dataSet.color(at: j)
                     } else if open < close {
-                        shadowColor = dataSet.increasingColor ?? dataSet.color(atIndex: j)
+                        shadowColor = dataSet.increasingColor ?? dataSet.color(at: j)
                     } else {
-                        shadowColor = dataSet.neutralColor ?? dataSet.color(atIndex: j)
+                        shadowColor = dataSet.neutralColor ?? dataSet.color(at: j)
                     }
                 }
 
                 if shadowColor === nil {
-                    shadowColor = dataSet.shadowColor ?? dataSet.color(atIndex: j)
+                    shadowColor = dataSet.shadowColor ?? dataSet.color(at: j)
                 }
 
                 context.setStrokeColor(shadowColor.cgColor)
@@ -145,7 +145,7 @@ open class CandleStickChartRenderer: LineScatterCandleRadarRenderer {
                 if open > close {
                     accessibilityMovementDescription = "decreasing"
 
-                    let color = dataSet.decreasingColor ?? dataSet.color(atIndex: j)
+                    let color = dataSet.decreasingColor ?? dataSet.color(at: j)
 
                     if dataSet.isDecreasingFilled {
                         context.setFillColor(color.cgColor)
@@ -157,7 +157,7 @@ open class CandleStickChartRenderer: LineScatterCandleRadarRenderer {
                 } else if open < close {
                     accessibilityMovementDescription = "increasing"
 
-                    let color = dataSet.increasingColor ?? dataSet.color(atIndex: j)
+                    let color = dataSet.increasingColor ?? dataSet.color(at: j)
 
                     if dataSet.isIncreasingFilled {
                         context.setFillColor(color.cgColor)
@@ -167,7 +167,7 @@ open class CandleStickChartRenderer: LineScatterCandleRadarRenderer {
                         context.stroke(_bodyRect)
                     }
                 } else {
-                    let color = dataSet.neutralColor ?? dataSet.color(atIndex: j)
+                    let color = dataSet.neutralColor ?? dataSet.color(at: j)
 
                     context.setStrokeColor(color.cgColor)
                     context.stroke(_bodyRect)
@@ -197,12 +197,12 @@ open class CandleStickChartRenderer: LineScatterCandleRadarRenderer {
 
                 if open > close {
                     accessibilityMovementDescription = "decreasing"
-                    barColor = dataSet.decreasingColor ?? dataSet.color(atIndex: j)
+                    barColor = dataSet.decreasingColor ?? dataSet.color(at: j)
                 } else if open < close {
                     accessibilityMovementDescription = "increasing"
-                    barColor = dataSet.increasingColor ?? dataSet.color(atIndex: j)
+                    barColor = dataSet.increasingColor ?? dataSet.color(at: j)
                 } else {
-                    barColor = dataSet.neutralColor ?? dataSet.color(atIndex: j)
+                    barColor = dataSet.neutralColor ?? dataSet.color(at: j)
                 }
 
                 context.setStrokeColor(barColor.cgColor)

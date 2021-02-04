@@ -327,7 +327,7 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer {
         let isSingleColor = dataSet.colors.count == 1
 
         if isSingleColor {
-            context.setFillColor(dataSet.color(atIndex: 0).cgColor)
+            context.setFillColor(dataSet.color(at: 0).cgColor)
         }
 
         // In case the chart is stacked, we need to accomodate individual bars within accessibilityOrdereredElements
@@ -342,7 +342,7 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer {
 
             if !isSingleColor {
                 // Set the color for the currently drawn value. If the index is out of bounds, reuse colors.
-                context.setFillColor(dataSet.color(atIndex: j).cgColor)
+                context.setFillColor(dataSet.color(at: j).cgColor)
             }
 
             context.fill(barRect)

@@ -51,7 +51,7 @@ class LineChartTests: XCTestCase {
     }
 
     func testDoesntDrawCircles() {
-        dataSet.drawCirclesEnabled = false
+        dataSet.isDrawCirclesEnabled = false
         assertChartSnapshot(matching: chart)
     }
 
@@ -61,7 +61,7 @@ class LineChartTests: XCTestCase {
     }
 
     func testDoesntDrawCircleHole() {
-        dataSet.drawCircleHoleEnabled = false
+        dataSet.isDrawCircleHoleEnabled = false
         assertChartSnapshot(matching: chart)
     }
 

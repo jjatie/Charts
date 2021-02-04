@@ -272,7 +272,7 @@ open class ChartDataSet: ChartDataSetProtocol, NSCopying {
 // MARK: - Styling functions and accessors
 
 extension ChartDataSet {
-    open func color(atIndex index: Int) -> NSUIColor {
+    open func color(at index: Int) -> NSUIColor {
         style.colors[index % style.colors.count]
     }
 

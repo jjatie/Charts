@@ -15,11 +15,9 @@ import Foundation
 open class BubbleChartDataSet: BarLineScatterCandleBubbleChartDataSet, BubbleChartDataSetProtocol {
     // MARK: - Data functions and accessors
 
-    internal var _maxSize = CGFloat(0.0)
+    public private(set) var maxSize: CGFloat = 0
 
-    open var maxSize: CGFloat { return _maxSize }
-    open var normalizeSizeEnabled: Bool = true
-    open var isNormalizeSizeEnabled: Bool { return normalizeSizeEnabled }
+    public private(set) var isNormalizeSizeEnabled: Bool = true
 
     override open func calcMinMax(entry e: ChartDataEntry) {
         guard let e = e as? BubbleChartDataEntry
@@ -27,7 +25,7 @@ open class BubbleChartDataSet: BarLineScatterCandleBubbleChartDataSet, BubbleCha
 
         super.calcMinMax(entry: e)
 
-        _maxSize = Swift.max(e.size, maxSize)
+        maxSize = Swift.max(e.size, maxSize)
     }
 
     // MARK: - Styling functions and accessors
@@ -41,8 +39,8 @@ open class BubbleChartDataSet: BarLineScatterCandleBubbleChartDataSet, BubbleCha
         let copy = super.copy(with: zone) as! BubbleChartDataSet
         copy.xMin = xMin
         copy.xMax = xMax
-        copy._maxSize = _maxSize
-        copy.normalizeSizeEnabled = normalizeSizeEnabled
+        copy.maxSize = maxSize
+        copy.isNormalizeSizeEnabled = isNormalizeSizeEnabled
         copy.highlightCircleWidth = highlightCircleWidth
         return copy
     }

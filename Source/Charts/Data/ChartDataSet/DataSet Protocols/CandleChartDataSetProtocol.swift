@@ -36,9 +36,6 @@ public protocol CandleChartDataSetProtocol: LineScatterCandleRadarChartDataSetPr
     var shadowColor: NSUIColor? { get set }
 
     /// use candle color for the shadow
-    var shadowColorSameAsCandle: Bool { get set }
-
-    /// Is the shadow color same as the candle color?
     var isShadowColorSameAsCandle: Bool { get }
 
     /// color for open == close
@@ -51,13 +48,7 @@ public protocol CandleChartDataSetProtocol: LineScatterCandleRadarChartDataSetPr
     var decreasingColor: NSUIColor? { get set }
 
     /// Are increasing values drawn as filled?
-    var increasingFilled: Bool { get set }
-
-    /// Are increasing values drawn as filled?
     var isIncreasingFilled: Bool { get }
-
-    /// Are decreasing values drawn as filled?
-    var decreasingFilled: Bool { get set }
 
     /// Are decreasing values drawn as filled?
     var isDecreasingFilled: Bool { get }

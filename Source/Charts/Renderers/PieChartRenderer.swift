@@ -167,7 +167,7 @@ open class PieChartRenderer: DataRenderer {
 
             let accountForSliceSpacing = sliceSpace > 0.0 && sliceAngle <= 180.0
 
-            context.setFillColor(dataSet.color(atIndex: j).cgColor)
+            context.setFillColor(dataSet.color(at: j).cgColor)
 
             let sliceSpaceAngleOuter = visibleAngleCount == 1 ?
                 0.0 :
@@ -415,7 +415,7 @@ open class PieChartRenderer: DataRenderer {
 
                     DrawLine: do {
                         if dataSet.useValueColorForLine {
-                            context.setStrokeColor(dataSet.color(atIndex: j).cgColor)
+                            context.setStrokeColor(dataSet.color(at: j).cgColor)
                         } else if let valueLineColor = dataSet.valueLineColor {
                             context.setStrokeColor(valueLineColor.cgColor)
                         } else {
@@ -690,7 +690,7 @@ open class PieChartRenderer: DataRenderer {
 
             let accountForSliceSpacing = sliceSpace > 0.0 && sliceAngle <= 180.0
 
-            context.setFillColor(set.highlightColor?.cgColor ?? set.color(atIndex: index).cgColor)
+            context.setFillColor(set.highlightColor?.cgColor ?? set.color(at: index).cgColor)
 
             let sliceSpaceAngleOuter = visibleAngleCount == 1 ?
                 0.0 :
