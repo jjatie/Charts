@@ -14,12 +14,11 @@ import Foundation
 
 // This defines a viewport modification job, used for delaying or animating viewport changes
 open class ViewPortJob {
-    internal var point: CGPoint = .zero
-    internal unowned var viewPortHandler: ViewPortHandler
-    internal var xValue = 0.0
-    internal var yValue = 0.0
-    internal unowned var transformer: Transformer
-    internal unowned var view: ChartViewBase
+    unowned var viewPortHandler: ViewPortHandler
+    var xValue = 0.0
+    var yValue = 0.0
+    unowned var transformer: Transformer
+    unowned var view: ChartViewBase
 
     public init(
         viewPortHandler: ViewPortHandler,
