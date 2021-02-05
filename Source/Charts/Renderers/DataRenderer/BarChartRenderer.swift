@@ -52,6 +52,9 @@ public class BarChartRenderer: DataRenderer {
 
     public weak var dataProvider: BarChartDataProvider?
 
+    // [CGRect] per dataset
+    private var _buffers = [Buffer]()
+
     public init(
         dataProvider: BarChartDataProvider,
         animator: Animator,
@@ -61,9 +64,6 @@ public class BarChartRenderer: DataRenderer {
         self.animator = animator
         self.dataProvider = dataProvider
     }
-
-    // [CGRect] per dataset
-    private var _buffers = [Buffer]()
 
     public func initBuffers() {
         guard let barData = dataProvider?.barData else { return _buffers.removeAll() }
