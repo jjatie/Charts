@@ -13,7 +13,15 @@ import Algorithms
 import CoreGraphics
 import Foundation
 
-open class RadarChartRenderer: LineRadarRenderer {
+public class RadarChartRenderer: DataRenderer {
+    public let viewPortHandler: ViewPortHandler
+
+    public final var accessibleChartElements: [NSUIAccessibilityElement] = []
+
+    public let animator: Animator
+
+    let xBounds = XBounds()
+
     private lazy var accessibilityXLabels: [String] = {
         guard let chart = chart else { return [] }
         guard let formatter = chart.xAxis.valueFormatter else { return [] }
@@ -27,12 +35,12 @@ open class RadarChartRenderer: LineRadarRenderer {
     open weak var chart: RadarChartView?
 
     public init(chart: RadarChartView, animator: Animator, viewPortHandler: ViewPortHandler) {
-        super.init(animator: animator, viewPortHandler: viewPortHandler)
-
+        self.viewPortHandler = viewPortHandler
+        self.animator = animator
         self.chart = chart
     }
 
-    override open func drawData(context: CGContext) {
+    public func drawData(context: CGContext) {
         guard let chart = chart,
               let radarData = chart.data as? RadarChartData
         else {
@@ -167,7 +175,7 @@ open class RadarChartRenderer: LineRadarRenderer {
         context.restoreGState()
     }
 
-    override open func drawValues(context: CGContext) {
+    public func drawValues(context: CGContext) {
         guard
             let chart = chart,
             let data = chart.data
@@ -228,7 +236,7 @@ open class RadarChartRenderer: LineRadarRenderer {
         }
     }
 
-    override open func drawExtras(context: CGContext) {
+    public func drawExtras(context: CGContext) {
         drawWeb(context: context)
     }
 
@@ -299,7 +307,7 @@ open class RadarChartRenderer: LineRadarRenderer {
 
     private var _highlightPointBuffer = CGPoint()
 
-    override open func drawHighlighted(context: CGContext, indices: [Highlight]) {
+    public func drawHighlighted(context: CGContext, indices: [Highlight]) {
         guard
             let chart = chart,
             let radarData = chart.data as? RadarChartData
@@ -405,14 +413,15 @@ open class RadarChartRenderer: LineRadarRenderer {
         context.restoreGState()
     }
 
-    private func createAccessibleElement(withDescription description: String,
-                                         container: RadarChartView,
-                                         dataSet _: RadarChartDataSet,
-                                         modifier: (NSUIAccessibilityElement) -> Void) -> NSUIAccessibilityElement
-    {
+    private func createAccessibleElement(
+        withDescription description: String,
+        container: RadarChartView,
+        dataSet _: RadarChartDataSet,
+        modifier: (NSUIAccessibilityElement) -> Void
+    ) -> NSUIAccessibilityElement {
         let element = NSUIAccessibilityElement(accessibilityContainer: container)
         element.accessibilityLabel = description
-
+        
         // The modifier allows changing of traits and frame depending on highlight, rotation, etc
         modifier(element)
 

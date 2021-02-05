@@ -12,13 +12,11 @@
 import CoreGraphics
 import Foundation
 
-open class LineRadarRenderer: LineScatterCandleRadarRenderer {
-    override public init(animator: Animator, viewPortHandler: ViewPortHandler) {
-        super.init(animator: animator, viewPortHandler: viewPortHandler)
-    }
+//open class LineRadarRenderer: LineScatterCandleRadarRenderer { }
 
+extension DataRenderer {
     /// Draws the provided path in filled mode with the provided drawable.
-    open func drawFilledPath(context: CGContext, path: CGPath, fill: Fill, fillAlpha: CGFloat) {
+    public func drawFilledPath(context: CGContext, path: CGPath, fill: Fill, fillAlpha: CGFloat) {
         context.saveGState()
         context.beginPath()
         context.addPath(path)

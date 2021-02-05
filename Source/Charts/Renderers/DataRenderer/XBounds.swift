@@ -1,64 +1,3 @@
-//
-//  BarLineScatterCandleBubbleRenderer.swift
-//  Charts
-//
-//  Copyright 2015 Daniel Cohen Gindi & Philipp Jahoda
-//  A port of MPAndroidChart for iOS
-//  Licensed under Apache License 2.0
-//
-//  https://github.com/danielgindi/Charts
-//
-
-import CoreGraphics
-import Foundation
-
-open class BarLineScatterCandleBubbleRenderer: DataRenderer {
-    public let viewPortHandler: ViewPortHandler
-
-    public final var accessibleChartElements: [NSUIAccessibilityElement] = []
-
-    public let animator: Animator
-
-    internal var _xBounds = XBounds() // Reusable XBounds object
-
-    public init(animator: Animator, viewPortHandler: ViewPortHandler) {
-        self.viewPortHandler = viewPortHandler
-        self.animator = animator
-    }
-
-    open func drawData(context _: CGContext) {}
-
-    open func drawValues(context _: CGContext) {}
-
-    open func drawExtras(context _: CGContext) {}
-
-    open func drawHighlighted(context _: CGContext, indices _: [Highlight]) {}
-
-    /// Checks if the provided entry object is in bounds for drawing considering the current animation phase.
-    internal func isInBoundsX(entry e: ChartDataEntry, dataSet: BarLineScatterCandleBubbleChartDataSet) -> Bool
-    {
-        let entryIndex = dataSet.firstIndex(of: e)!
-        return Double(entryIndex) < Double(dataSet.count) * animator.phaseX
-    }
-
-    /// - Returns: `true` if the DataSet values should be drawn, `false` if not.
-    internal func shouldDrawValues(forDataSet set: ChartDataSet) -> Bool {
-        return set.isVisible && (set.isDrawValuesEnabled || set.isDrawIconsEnabled)
-    }
-
-    open func initBuffers() {}
-
-    open func isDrawingValuesAllowed(dataProvider: ChartDataProvider?) -> Bool {
-        guard let data = dataProvider?.data else { return false }
-        return data.entryCount < Int(CGFloat(dataProvider?.maxVisibleCount ?? 0) * viewPortHandler.scaleX)
-    }
-
-
-    public func createAccessibleHeader(usingChart chart: ChartViewBase, andData data: ChartData, withDefaultDescription defaultDescription: String) -> NSUIAccessibilityElement {
-        return AccessibleHeader.create(usingChart: chart, andData: data, withDefaultDescription: defaultDescription)
-    }
-}
-
 /// Class representing the bounds of the current viewport in terms of indices in the values array of a DataSet.
 public class XBounds {
     /// minimum visible entry index
@@ -87,7 +26,7 @@ public class XBounds {
         animator: Animator?
     ) {
         let phaseX = Swift.max(0.0, Swift.min(1.0, animator?.phaseX ?? 1.0))
-        
+
         let low = chart.lowestVisibleX
         let high = chart.highestVisibleX
 

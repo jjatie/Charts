@@ -17,14 +17,14 @@ import Foundation
     import UIKit
 #endif
 
-open class PieChartRenderer: DataRenderer {
+public class PieChartRenderer: DataRenderer {
     public let viewPortHandler: ViewPortHandler
 
     public final var accessibleChartElements: [NSUIAccessibilityElement] = []
 
     public let animator: Animator
 
-    open weak var chart: PieChartView?
+    public weak var chart: PieChartView?
 
     public init(chart: PieChartView, animator: Animator, viewPortHandler: ViewPortHandler) {
         self.viewPortHandler = viewPortHandler
@@ -32,7 +32,7 @@ open class PieChartRenderer: DataRenderer {
         self.chart = chart
     }
 
-    open func drawData(context: CGContext) {
+    public func drawData(context: CGContext) {
         guard let chart = chart, let pieData = chart.data else { return }
 
         // If we redraw the data, remove and repopulate accessible elements to update label values and frames
@@ -45,7 +45,7 @@ open class PieChartRenderer: DataRenderer {
         }
     }
 
-    open func calculateMinimumRadiusForSpacedSlice(
+    public func calculateMinimumRadiusForSpacedSlice(
         center: CGPoint,
         radius: CGFloat,
         angle: CGFloat,
@@ -87,7 +87,7 @@ open class PieChartRenderer: DataRenderer {
     }
 
     /// Calculates the sliceSpace to use based on visible values and their size compared to the set sliceSpace.
-    open func getSliceSpace(dataSet: PieChartDataSet) -> CGFloat {
+    public func getSliceSpace(dataSet: PieChartDataSet) -> CGFloat {
         guard
             dataSet.automaticallyDisableSliceSpacing,
             let data = chart?.data as? PieChartData
@@ -103,7 +103,7 @@ open class PieChartRenderer: DataRenderer {
         return sliceSpace
     }
 
-    open func drawDataSet(context: CGContext, dataSet: PieChartDataSet) {
+    public func drawDataSet(context: CGContext, dataSet: PieChartDataSet) {
         guard let chart = chart else { return }
 
         var angle: CGFloat = 0.0
@@ -273,7 +273,7 @@ open class PieChartRenderer: DataRenderer {
         context.restoreGState()
     }
 
-    open func drawValues(context: CGContext) {
+    public func drawValues(context: CGContext) {
         guard
             let chart = chart,
             let data = chart.data
@@ -523,16 +523,14 @@ open class PieChartRenderer: DataRenderer {
         }
     }
 
-    open func drawExtras(context: CGContext) {
+    public func drawExtras(context: CGContext) {
         drawHole(context: context)
         drawCenterText(context: context)
     }
 
-    open func initBuffers() {}
-
-    open func isDrawingValuesAllowed(dataProvider: ChartDataProvider?) -> Bool {
-        guard let data = dataProvider?.data else { return false }
-        return data.entryCount < Int(CGFloat(dataProvider?.maxVisibleCount ?? 0) * viewPortHandler.scaleX)
+    public func isDrawingValuesAllowed(dataProvider: ChartDataProvider) -> Bool {
+        guard let data = dataProvider.data else { return false }
+        return data.entryCount < Int(CGFloat(dataProvider.maxVisibleCount) * viewPortHandler.scaleX)
     }
 
     /// draws the hole in the center of the chart and the transparent circle / hole
@@ -635,7 +633,7 @@ open class PieChartRenderer: DataRenderer {
         }
     }
 
-    open func drawHighlighted(context: CGContext, indices highlights: [Highlight]) {
+    public func drawHighlighted(context: CGContext, indices highlights: [Highlight]) {
         guard
             let chart = chart,
             let data = chart.data
@@ -807,11 +805,12 @@ open class PieChartRenderer: DataRenderer {
 
     /// Creates an NSUIAccessibilityElement representing a slice of the PieChart.
     /// The element only has it's container and label set based on the chart and dataSet. Use the modifier to alter traits and frame.
-    private func createAccessibleElement(withIndex idx: Int,
-                                         container: PieChartView,
-                                         dataSet: PieChartDataSet,
-                                         modifier: (NSUIAccessibilityElement) -> Void) -> NSUIAccessibilityElement
-    {
+    private func createAccessibleElement(
+        withIndex idx: Int,
+        container: PieChartView,
+        dataSet: PieChartDataSet,
+        modifier: (NSUIAccessibilityElement) -> Void
+    ) -> NSUIAccessibilityElement {
         let element = NSUIAccessibilityElement(accessibilityContainer: container)
 
         let e = dataSet[idx]
@@ -848,9 +847,5 @@ open class PieChartRenderer: DataRenderer {
         modifier(element)
 
         return element
-    }
-
-    public func createAccessibleHeader(usingChart chart: ChartViewBase, andData data: ChartData, withDefaultDescription defaultDescription: String) -> NSUIAccessibilityElement {
-        return AccessibleHeader.create(usingChart: chart, andData: data, withDefaultDescription: defaultDescription)
     }
 }
