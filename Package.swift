@@ -32,7 +32,7 @@ let package = Package(
         .testTarget(
             name: "ChartsTests",
             dependencies: ["Charts", "SnapshotTesting"],
-            exclude: ["__Snapshots__"],
+            exclude: ["__Snapshots__Silicon__", "__Snapshots__x86__"],
             resources: [
                 .process("Resources")
             ]
