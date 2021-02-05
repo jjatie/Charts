@@ -27,9 +27,7 @@ public class HorizontalBarChartRenderer: DataRenderer {
 
     final lazy var accessibilityOrderedElements: [[NSUIAccessibilityElement]] = accessibilityCreateEmptyOrderedElements()
 
-    private class Buffer {
-        var rects = [CGRect]()
-    }
+    typealias Buffer = [CGRect]
 
     public weak var dataProvider: BarChartDataProvider?
 
@@ -61,8 +59,8 @@ public class HorizontalBarChartRenderer: DataRenderer {
             for i in barData.indices {
                 let set = barData[i] as! BarChartDataSet
                 let size = set.count * (set.isStacked ? set.stackSize : 1)
-                if _buffers[i].rects.count != size {
-                    _buffers[i].rects = [CGRect](repeating: CGRect(), count: size)
+                if _buffers[i].count != size {
+                    _buffers[i] = [CGRect](repeating: CGRect(), count: size)
                 }
             }
         } else {
@@ -78,7 +76,6 @@ public class HorizontalBarChartRenderer: DataRenderer {
 
         let barWidthHalf = barData.barWidth / 2.0
 
-        let buffer = _buffers[index]
         var bufferIndex = 0
         let containsStacks = dataSet.isStacked
 
@@ -119,7 +116,7 @@ public class HorizontalBarChartRenderer: DataRenderer {
                 barRect.origin.y = top
                 barRect.size.height = bottom - top
 
-                buffer.rects[bufferIndex] = barRect
+                _buffers[index][bufferIndex] = barRect
                 bufferIndex += 1
             } else {
                 var posY = 0.0
@@ -162,7 +159,7 @@ public class HorizontalBarChartRenderer: DataRenderer {
                     barRect.origin.y = top
                     barRect.size.height = bottom - top
 
-                    buffer.rects[bufferIndex] = barRect
+                    _buffers[index][bufferIndex] = barRect
                     bufferIndex += 1
                 }
             }
@@ -212,7 +209,7 @@ public class HorizontalBarChartRenderer: DataRenderer {
         let trans = dataProvider.getTransformer(forAxis: dataSet.axisDependency)
 
         prepareBuffer(dataSet: dataSet, index: index)
-        trans.rectValuesToPixel(&_buffers[index].rects)
+        trans.rectValuesToPixel(&_buffers[index])
 
         let borderWidth = dataSet.barBorderWidth
         let borderColor = dataSet.barBorderColor
@@ -268,9 +265,7 @@ public class HorizontalBarChartRenderer: DataRenderer {
         let isStacked = dataSet.isStacked
         let stackSize = isStacked ? dataSet.stackSize : 1
 
-        for j in buffer.rects.indices {
-            let barRect = buffer.rects[j]
-
+        for (j, barRect) in buffer.indexed() {
             if !viewPortHandler.isInBoundsTop(barRect.origin.y + barRect.size.height) {
                 break
             }
@@ -374,7 +369,7 @@ public class HorizontalBarChartRenderer: DataRenderer {
                 for j in 0 ..< Int(ceil(Double(dataSet.count) * animator.phaseX)) {
                     guard let e = dataSet[j] as? BarChartDataEntry else { continue }
 
-                    let rect = buffer.rects[j]
+                    let rect = buffer[j]
 
                     let y = rect.origin.y + rect.size.height / 2.0
 
@@ -444,7 +439,7 @@ public class HorizontalBarChartRenderer: DataRenderer {
                 for index in 0 ..< Int(ceil(Double(dataSet.count) * animator.phaseX)) {
                     guard let e = dataSet[index] as? BarChartDataEntry else { continue }
 
-                    let rect = buffer.rects[bufferIndex]
+                    let rect = buffer[bufferIndex]
 
                     let vals = e.yValues
 
