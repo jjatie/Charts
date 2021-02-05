@@ -13,17 +13,25 @@ import Algorithms
 import CoreGraphics
 import Foundation
 
-open class ScatterChartRenderer: LineScatterCandleRadarRenderer {
+public class ScatterChartRenderer: DataRenderer {
+    public let viewPortHandler: ViewPortHandler
+
+    public final var accessibleChartElements: [NSUIAccessibilityElement] = []
+
+    public let animator: Animator
+
+    let xBounds = XBounds()
+
     open weak var dataProvider: ScatterChartDataProvider?
 
     public init(dataProvider: ScatterChartDataProvider, animator: Animator, viewPortHandler: ViewPortHandler)
     {
-        super.init(animator: animator, viewPortHandler: viewPortHandler)
-
+        self.viewPortHandler = viewPortHandler
+        self.animator = animator
         self.dataProvider = dataProvider
     }
 
-    override open func drawData(context: CGContext) {
+    public func drawData(context: CGContext) {
         guard let scatterData = dataProvider?.scatterData else { return }
 
         // If we redraw the data, remove and repopulate accessible elements to update label values and frames
@@ -49,7 +57,7 @@ open class ScatterChartRenderer: LineScatterCandleRadarRenderer {
             .forEach(drawDataSet)
     }
 
-    open func drawDataSet(context: CGContext, dataSet: ScatterChartDataSet) {
+    public func drawDataSet(context: CGContext, dataSet: ScatterChartDataSet) {
         guard let dataProvider = dataProvider else { return }
 
         let trans = dataProvider.getTransformer(forAxis: dataSet.axisDependency)
@@ -92,86 +100,85 @@ open class ScatterChartRenderer: LineScatterCandleRadarRenderer {
         }
     }
 
-    override open func drawValues(context: CGContext) {
+    public func drawValues(context: CGContext) {
         guard
             let dataProvider = dataProvider,
+            isDrawingValuesAllowed(dataProvider: dataProvider),
             let scatterData = dataProvider.scatterData
         else { return }
 
         // if values are drawn
-        if isDrawingValuesAllowed(dataProvider: dataProvider) {
-            let phaseY = animator.phaseY
+        let phaseY = animator.phaseY
 
-            var pt = CGPoint()
+        var pt = CGPoint()
 
-            for i in scatterData.indices {
-                guard let dataSet = scatterData[i] as? ScatterChartDataSet,
-                      shouldDrawValues(forDataSet: dataSet)
-                else { continue }
+        for i in scatterData.indices {
+            guard let dataSet = scatterData[i] as? ScatterChartDataSet,
+                  shouldDrawValues(forDataSet: dataSet)
+            else { continue }
 
-                let valueFont = dataSet.valueFont
+            let valueFont = dataSet.valueFont
 
-                let formatter = dataSet.valueFormatter
+            let formatter = dataSet.valueFormatter
 
-                let trans = dataProvider.getTransformer(forAxis: dataSet.axisDependency)
-                let valueToPixelMatrix = trans.valueToPixelMatrix
+            let trans = dataProvider.getTransformer(forAxis: dataSet.axisDependency)
+            let valueToPixelMatrix = trans.valueToPixelMatrix
 
-                let iconsOffset = dataSet.iconsOffset
+            let iconsOffset = dataSet.iconsOffset
 
-                let angleRadians = dataSet.valueLabelAngle.DEG2RAD
+            let angleRadians = dataSet.valueLabelAngle.DEG2RAD
 
-                let shapeSize = dataSet.scatterShapeSize
-                let lineHeight = valueFont.lineHeight
+            let shapeSize = dataSet.scatterShapeSize
+            let lineHeight = valueFont.lineHeight
 
-                _xBounds.set(chart: dataProvider, dataSet: dataSet, animator: animator)
+            xBounds.set(chart: dataProvider, dataSet: dataSet, animator: animator)
 
-                for (j, e) in dataSet[_xBounds].indexed() {
-                    pt.x = CGFloat(e.x)
-                    pt.y = CGFloat(e.y * phaseY)
-                    pt = pt.applying(valueToPixelMatrix)
+            for (j, e) in dataSet[xBounds].indexed() {
+                pt.x = CGFloat(e.x)
+                pt.y = CGFloat(e.y * phaseY)
+                pt = pt.applying(valueToPixelMatrix)
 
-                    if !viewPortHandler.isInBoundsRight(pt.x) {
-                        break
-                    }
+                if !viewPortHandler.isInBoundsRight(pt.x) {
+                    break
+                }
 
-                    // make sure the lines don't do shitty things outside bounds
-                    if !viewPortHandler.isInBoundsLeft(pt.x)
-                        || !viewPortHandler.isInBoundsY(pt.y)
-                    {
-                        continue
-                    }
+                // make sure the lines don't do shitty things outside bounds
+                if !viewPortHandler.isInBoundsLeft(pt.x)
+                    || !viewPortHandler.isInBoundsY(pt.y)
+                {
+                    continue
+                }
 
-                    let text = formatter.stringForValue(
-                        e.y,
-                        entry: e,
-                        dataSetIndex: i,
-                        viewPortHandler: viewPortHandler
-                    )
+                let text = formatter.stringForValue(
+                    e.y,
+                    entry: e,
+                    dataSetIndex: i,
+                    viewPortHandler: viewPortHandler
+                )
 
-                    if dataSet.isDrawValuesEnabled {
-                        context.drawText(text,
-                                         at: CGPoint(x: pt.x,
-                                                     y: pt.y - shapeSize - lineHeight),
-                                         align: .center,
-                                         angleRadians: angleRadians,
-                                         attributes: [.font: valueFont,
-                                                      .foregroundColor: dataSet.valueTextColorAt(j)])
-                    }
+                if dataSet.isDrawValuesEnabled {
+                    context.drawText(text,
+                                     at: CGPoint(x: pt.x,
+                                                 y: pt.y - shapeSize - lineHeight),
+                                     align: .center,
+                                     angleRadians: angleRadians,
+                                     attributes: [.font: valueFont,
+                                                  .foregroundColor: dataSet.valueTextColorAt(j)])
+                }
 
-                    if let icon = e.icon, dataSet.isDrawIconsEnabled {
-                        context.drawImage(icon,
-                                          atCenter: CGPoint(x: pt.x + iconsOffset.x,
-                                                            y: pt.y + iconsOffset.y),
-                                          size: icon.size)
-                    }
+                if let icon = e.icon, dataSet.isDrawIconsEnabled {
+                    context.drawImage(icon,
+                                      atCenter: CGPoint(x: pt.x + iconsOffset.x,
+                                                        y: pt.y + iconsOffset.y),
+                                      size: icon.size)
                 }
             }
         }
     }
 
-    override open func drawExtras(context _: CGContext) {}
+    public func drawExtras(context _: CGContext) {}
 
-    override open func drawHighlighted(context: CGContext, indices: [Highlight]) {
+    public func drawHighlighted(context: CGContext, indices: [Highlight]) {
         guard
             let dataProvider = dataProvider,
             let scatterData = dataProvider.scatterData
@@ -180,14 +187,13 @@ open class ScatterChartRenderer: LineScatterCandleRadarRenderer {
         context.saveGState()
 
         for high in indices {
-            guard
-                let set = scatterData[high.dataSetIndex] as? ScatterChartDataSet,
-                set.isHighlightEnabled
-            else { continue }
-
-            guard let entry = set.entryForXValue(high.x, closestToY: high.y) else { continue }
-
-            if !isInBoundsX(entry: entry, dataSet: set) { continue }
+            guard let set = scatterData[high.dataSetIndex] as? ScatterChartDataSet,
+                  set.isHighlightEnabled,
+                  let entry = set.entryForXValue(high.x, closestToY: high.y),
+                  isInBoundsX(entry: entry, dataSet: set)
+            else {
+                continue
+            }
 
             context.setStrokeColor(set.highlightColor.cgColor)
             context.setLineWidth(set.highlightLineWidth)

@@ -12,20 +12,31 @@
 import CoreGraphics
 import Foundation
 
-open class BubbleChartRenderer: BarLineScatterCandleBubbleRenderer {
+public class BubbleChartRenderer: DataRenderer {
+    public let viewPortHandler: ViewPortHandler
+
+    public let animator: Animator
+
+    let xBounds = XBounds()
+
+    public final var accessibleChartElements: [NSUIAccessibilityElement] = []
+
     /// A nested array of elements ordered logically (i.e not in visual/drawing order) for use with VoiceOver.
     private lazy var accessibilityOrderedElements: [[NSUIAccessibilityElement]] = accessibilityCreateEmptyOrderedElements()
 
     open weak var dataProvider: BubbleChartDataProvider?
 
-    public init(dataProvider: BubbleChartDataProvider, animator: Animator, viewPortHandler: ViewPortHandler)
-    {
-        super.init(animator: animator, viewPortHandler: viewPortHandler)
-
+    public init(
+        dataProvider: BubbleChartDataProvider,
+        animator: Animator,
+        viewPortHandler: ViewPortHandler
+    ) {
+        self.viewPortHandler = viewPortHandler
+        self.animator = animator
         self.dataProvider = dataProvider
     }
 
-    override open func drawData(context: CGContext) {
+    public func drawData(context: CGContext) {
         guard
             let dataProvider = dataProvider,
             let bubbleData = dataProvider.bubbleData
@@ -77,7 +88,7 @@ open class BubbleChartRenderer: BarLineScatterCandleBubbleRenderer {
 
         let phaseY = animator.phaseY
 
-        _xBounds.set(chart: dataProvider, dataSet: dataSet, animator: animator)
+        xBounds.set(chart: dataProvider, dataSet: dataSet, animator: animator)
 
         let valueToPixelMatrix = trans.valueToPixelMatrix
 
@@ -98,7 +109,7 @@ open class BubbleChartRenderer: BarLineScatterCandleBubbleRenderer {
         let maxBubbleHeight: CGFloat = abs(viewPortHandler.contentBottom - viewPortHandler.contentTop)
         let referenceSize: CGFloat = min(maxBubbleHeight, maxBubbleWidth)
 
-        for j in _xBounds {
+        for j in xBounds {
             guard let entry = dataSet[j] as? BubbleChartDataEntry else { continue }
 
             _pointBuffer.x = CGFloat(entry.x)
@@ -143,7 +154,7 @@ open class BubbleChartRenderer: BarLineScatterCandleBubbleRenderer {
         }
     }
 
-    override open func drawValues(context: CGContext) {
+    public func drawValues(context: CGContext) {
         guard let
             dataProvider = dataProvider,
             let bubbleData = dataProvider.bubbleData,
@@ -165,7 +176,7 @@ open class BubbleChartRenderer: BarLineScatterCandleBubbleRenderer {
             let formatter = dataSet.valueFormatter
             let alpha = phaseX == 1 ? phaseY : phaseX
 
-            _xBounds.set(chart: dataProvider, dataSet: dataSet, animator: animator)
+            xBounds.set(chart: dataProvider, dataSet: dataSet, animator: animator)
 
             let trans = dataProvider.getTransformer(forAxis: dataSet.axisDependency)
             let valueToPixelMatrix = trans.valueToPixelMatrix
@@ -174,7 +185,7 @@ open class BubbleChartRenderer: BarLineScatterCandleBubbleRenderer {
 
             let angleRadians = dataSet.valueLabelAngle.DEG2RAD
 
-            for j in _xBounds {
+            for j in xBounds {
                 guard let e = dataSet[j] as? BubbleChartDataEntry else { break }
 
                 let valueTextColor = dataSet.valueTextColorAt(j).withAlphaComponent(CGFloat(alpha))
@@ -221,9 +232,9 @@ open class BubbleChartRenderer: BarLineScatterCandleBubbleRenderer {
         }
     }
 
-    override open func drawExtras(context _: CGContext) {}
+    public func drawExtras(context _: CGContext) {}
 
-    override open func drawHighlighted(context: CGContext, indices: [Highlight]) {
+    public func drawHighlighted(context: CGContext, indices: [Highlight]) {
         guard
             let dataProvider = dataProvider,
             let bubbleData = dataProvider.bubbleData

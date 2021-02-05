@@ -12,17 +12,25 @@
 import CoreGraphics
 import Foundation
 
-open class CandleStickChartRenderer: LineScatterCandleRadarRenderer {
+public class CandleStickChartRenderer: DataRenderer {
+    public let viewPortHandler: ViewPortHandler
+
+    public final var accessibleChartElements: [NSUIAccessibilityElement] = []
+
+    public let animator: Animator
+
+    let xBounds = XBounds()
+
     open weak var dataProvider: CandleChartDataProvider?
 
     public init(dataProvider: CandleChartDataProvider, animator: Animator, viewPortHandler: ViewPortHandler)
     {
-        super.init(animator: animator, viewPortHandler: viewPortHandler)
-
+        self.viewPortHandler = viewPortHandler
+        self.animator = animator
         self.dataProvider = dataProvider
     }
 
-    override open func drawData(context: CGContext) {
+    public func drawData(context: CGContext) {
         guard let dataProvider = dataProvider, let candleData = dataProvider.candleData else { return }
 
         // If we redraw the data, remove and repopulate accessible elements to update label values and frames
@@ -58,13 +66,13 @@ open class CandleStickChartRenderer: LineScatterCandleRadarRenderer {
         let barSpace = dataSet.barSpace
         let showCandleBar = dataSet.showCandleBar
 
-        _xBounds.set(chart: dataProvider, dataSet: dataSet, animator: animator)
+        xBounds.set(chart: dataProvider, dataSet: dataSet, animator: animator)
 
         context.saveGState()
 
         context.setLineWidth(dataSet.shadowWidth)
 
-        for j in _xBounds {
+        for j in xBounds {
             // get the entry
             guard let e = dataSet[j] as? CandleChartDataEntry else { continue }
 
@@ -226,7 +234,7 @@ open class CandleStickChartRenderer: LineScatterCandleRadarRenderer {
         context.restoreGState()
     }
 
-    override open func drawValues(context: CGContext) {
+    public func drawValues(context: CGContext) {
         guard
             let dataProvider = dataProvider,
             let candleData = dataProvider.candleData
@@ -255,12 +263,12 @@ open class CandleStickChartRenderer: LineScatterCandleRadarRenderer {
 
                 let angleRadians = dataSet.valueLabelAngle.DEG2RAD
 
-                _xBounds.set(chart: dataProvider, dataSet: dataSet, animator: animator)
+                xBounds.set(chart: dataProvider, dataSet: dataSet, animator: animator)
 
                 let lineHeight = valueFont.lineHeight
                 let yOffset: CGFloat = lineHeight + 5.0
 
-                for j in _xBounds {
+                for j in xBounds {
                     guard let e = dataSet[j] as? CandleChartDataEntry else { break }
 
                     pt.x = CGFloat(e.x)
@@ -299,9 +307,9 @@ open class CandleStickChartRenderer: LineScatterCandleRadarRenderer {
         }
     }
 
-    override open func drawExtras(context _: CGContext) {}
+    public func drawExtras(context _: CGContext) {}
 
-    override open func drawHighlighted(context: CGContext, indices: [Highlight]) {
+    public func drawHighlighted(context: CGContext, indices: [Highlight]) {
         guard
             let dataProvider = dataProvider,
             let candleData = dataProvider.candleData

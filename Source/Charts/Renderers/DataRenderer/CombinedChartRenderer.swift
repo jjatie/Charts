@@ -134,11 +134,6 @@ open class CombinedChartRenderer: DataRenderer {
         }
     }
 
-    open func isDrawingValuesAllowed(dataProvider: ChartDataProvider?) -> Bool {
-        guard let data = dataProvider?.data else { return false }
-        return data.entryCount < Int(CGFloat(dataProvider?.maxVisibleCount ?? 0) * viewPortHandler.scaleX)
-    }
-
     /// All sub-renderers.
     open var subRenderers: [DataRenderer] {
         get { return _renderers }
@@ -163,9 +158,5 @@ open class CombinedChartRenderer: DataRenderer {
                 _drawOrder = newValue
             }
         }
-    }
-
-    public func createAccessibleHeader(usingChart chart: ChartViewBase, andData data: ChartData, withDefaultDescription defaultDescription: String) -> NSUIAccessibilityElement {
-        return AccessibleHeader.create(usingChart: chart, andData: data, withDefaultDescription: defaultDescription)
     }
 }
