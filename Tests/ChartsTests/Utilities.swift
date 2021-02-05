@@ -1,6 +1,7 @@
 import Charts
 import SnapshotTesting
 import UIKit
+import XCTest
 
 private enum Snapshot {
     static func identifier(_ size: CGSize) -> String {
@@ -26,13 +27,30 @@ func assertChartSnapshot<Value: ChartViewBase>(
     testName: String = #function,
     line: UInt = #line
 ) {
-    assertSnapshot(
+    let fileUrl = URL(fileURLWithPath: "\(file)", isDirectory: false)
+    let fileName = fileUrl.deletingPathExtension().lastPathComponent
+
+    #if arch(arm64)
+    let snapshotDirectory = fileUrl.deletingLastPathComponent()
+        .appendingPathComponent("__Snapshots__Silicon__")
+        .appendingPathComponent(fileName)
+        .path
+    #else
+    let snapshotDirectory = fileUrl.deletingLastPathComponent()
+        .appendingPathComponent("__Snapshots__x86__")
+        .appendingPathComponent(fileName)
+        .path
+    #endif
+
+    let failure = verifySnapshot(
         matching: try value(),
         as: .image,
         record: recording,
+        snapshotDirectory: snapshotDirectory,
         timeout: timeout,
         file: file,
-        testName: testName + Snapshot.identifier(UIScreen.main.bounds.size),
-        line: line
+        testName: testName + Snapshot.identifier(UIScreen.main.bounds.size)
     )
+    guard let message = failure else { return }
+    XCTFail(message, file: file, line: line)
 }
