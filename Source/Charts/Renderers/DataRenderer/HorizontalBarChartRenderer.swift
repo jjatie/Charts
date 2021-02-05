@@ -605,8 +605,7 @@ public class HorizontalBarChartRenderer: DataRenderer {
     }
 
     public func isDrawingValuesAllowed(dataProvider: ChartDataProvider) -> Bool {
-        guard let data = dataProvider.data
-        else { return false }
+        guard let data = dataProvider.data else { return false }
         return data.entryCount < Int(CGFloat(dataProvider.maxVisibleCount) * viewPortHandler.scaleY)
     }
 

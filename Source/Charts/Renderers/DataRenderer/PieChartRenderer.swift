@@ -528,11 +528,6 @@ public class PieChartRenderer: DataRenderer {
         drawCenterText(context: context)
     }
 
-    public func isDrawingValuesAllowed(dataProvider: ChartDataProvider) -> Bool {
-        guard let data = dataProvider.data else { return false }
-        return data.entryCount < Int(CGFloat(dataProvider.maxVisibleCount) * viewPortHandler.scaleX)
-    }
-
     /// draws the hole in the center of the chart and the transparent circle / hole
     private func drawHole(context: CGContext) {
         guard let chart = chart else { return }
