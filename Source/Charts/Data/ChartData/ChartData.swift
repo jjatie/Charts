@@ -211,7 +211,7 @@ open class ChartData: ExpressibleByArrayLiteral {
     /// - Returns: The entry that is highlighted
     open func entry(for highlight: Highlight) -> ChartDataEntry? {
         guard highlight.dataSetIndex < dataSets.endIndex else { return nil }
-        return self[highlight.dataSetIndex].entryForXValue(highlight.x, closestToY: highlight.y)
+        return self[highlight.dataSetIndex].element(withX: highlight.x, closestToY: highlight.y)
     }
 
     /// **IMPORTANT: This method does calculations at runtime. Use with care in performance critical situations.**
@@ -271,7 +271,7 @@ open class ChartData: ExpressibleByArrayLiteral {
     @discardableResult open func removeEntry(xValue: Double, dataSetIndex: Index) -> Bool {
         guard
             dataSets.indices.contains(dataSetIndex),
-            let entry = self[dataSetIndex].entryForXValue(xValue, closestToY: .nan)
+            let entry = self[dataSetIndex].element(withX: xValue, closestToY: .nan)
         else { return false }
 
         return removeEntry(entry, dataSetIndex: dataSetIndex)
@@ -279,7 +279,7 @@ open class ChartData: ExpressibleByArrayLiteral {
 
     /// - Returns: The DataSet that contains the provided Entry, or null, if no DataSet contains this entry.
     open func getDataSetForEntry(_ e: ChartDataEntry) -> Element? {
-        first { $0.entryForXValue(e.x, closestToY: e.y) === e }
+        first { $0.element(withX: e.x, closestToY: e.y) === e }
     }
 
     /// - Returns: The index of the provided DataSet in the DataSet array of this data object, or -1 if it does not exist.
@@ -478,7 +478,7 @@ public extension ChartData {
     subscript(entry entry: ChartDataEntry) -> Element? {
         assert(!(self is CombinedChartData), "\(#function) not supported for CombinedData")
 
-        guard let index = firstIndex(where: { $0.entryForXValue(entry.x, closestToY: entry.y) === entry }) else { return nil }
+        guard let index = firstIndex(where: { $0.element(withX: entry.x, closestToY: entry.y) === entry }) else { return nil }
         return self[index]
     }
 }

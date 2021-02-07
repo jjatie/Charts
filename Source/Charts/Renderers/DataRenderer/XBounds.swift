@@ -30,8 +30,8 @@ public class XBounds {
         let low = chart.lowestVisibleX
         let high = chart.highestVisibleX
 
-        let entryFrom = dataSet.entryForXValue(low, closestToY: .nan, rounding: .down)
-        let entryTo = dataSet.entryForXValue(high, closestToY: .nan, rounding: .up)
+        let entryFrom = dataSet.element(withX: low, closestToY: .nan, rounding: .down)
+        let entryTo = dataSet.element(withX: high, closestToY: .nan, rounding: .up)
 
         min = entryFrom.flatMap(dataSet.firstIndex(of:)) ?? 0
         max = entryTo.flatMap(dataSet.firstIndex(of:)) ?? 0

@@ -713,7 +713,7 @@ public class LineChartRenderer: DataRenderer {
                   set.isHighlightEnabled
             else { continue }
 
-            guard let e = set.entryForXValue(high.x, closestToY: high.y) else { continue }
+            guard let e = set.element(withX: high.x, closestToY: high.y) else { continue }
 
             if !isInBoundsX(entry: e, dataSet: set) {
                 continue

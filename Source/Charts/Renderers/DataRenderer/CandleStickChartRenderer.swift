@@ -323,7 +323,7 @@ public class CandleStickChartRenderer: DataRenderer {
                 set.isHighlightEnabled
             else { continue }
 
-            guard let e = set.entryForXValue(high.x, closestToY: high.y) as? CandleChartDataEntry else { continue }
+            guard let e = set.element(withX: high.x, closestToY: high.y) as? CandleChartDataEntry else { continue }
 
             if !isInBoundsX(entry: e, dataSet: set) {
                 continue
