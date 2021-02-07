@@ -83,54 +83,29 @@ open class CombinedChartData: BarLineScatterCandleBubbleChartData {
     override open func calcMinMax() {
         _dataSets.removeAll()
 
-        yMax = -Double.greatestFiniteMagnitude
-        yMin = Double.greatestFiniteMagnitude
-        xMax = -Double.greatestFiniteMagnitude
-        xMin = Double.greatestFiniteMagnitude
 
-        leftAxisMax = -Double.greatestFiniteMagnitude
-        leftAxisMin = Double.greatestFiniteMagnitude
-        rightAxisMax = -Double.greatestFiniteMagnitude
-        rightAxisMin = Double.greatestFiniteMagnitude
-
-        let allData = self.allData
+//        yMax = -Double.greatestFiniteMagnitude
+//        yMin = Double.greatestFiniteMagnitude
+//        xMax = -Double.greatestFiniteMagnitude
+//        xMin = Double.greatestFiniteMagnitude
+//
+//        leftAxisMax = -Double.greatestFiniteMagnitude
+//        leftAxisMin = Double.greatestFiniteMagnitude
+//        rightAxisMax = -Double.greatestFiniteMagnitude
+//        rightAxisMin = Double.greatestFiniteMagnitude
 
         for data in allData {
             data.calcMinMax()
 
             _dataSets.append(contentsOf: data)
 
-            if data.yMax > yMax {
-                yMax = data.yMax
-            }
-
-            if data.yMin < yMin {
-                yMin = data.yMin
-            }
-
-            if data.xMax > xMax {
-                xMax = data.xMax
-            }
-
-            if data.xMin < xMin {
-                xMin = data.xMin
-            }
+            xRange = merge(xRange, data.xRange)
 
             for set in data {
                 if set.axisDependency == .left {
-                    if set.yMax > leftAxisMax {
-                        leftAxisMax = set.yMax
-                    }
-                    if set.yMin < leftAxisMin {
-                        leftAxisMin = set.yMin
-                    }
+                    leftAxisRange = merge(leftAxisRange, set.yRange)
                 } else {
-                    if set.yMax > rightAxisMax {
-                        rightAxisMax = set.yMax
-                    }
-                    if set.yMin < rightAxisMin {
-                        rightAxisMin = set.yMin
-                    }
+                    rightAxisRange = merge(rightAxisRange, set.yRange)
                 }
             }
         }

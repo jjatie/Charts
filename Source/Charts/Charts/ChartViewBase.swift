@@ -55,7 +55,7 @@ open class ChartViewBase: NSUIView, ChartDataProvider, AnimatorDelegate {
             guard let data = data else { return }
 
             // calculate how many digits are needed
-            setupDefaultFormatter(min: data.yMin, max: data.yMax)
+            setupDefaultFormatter(min: data.yRange.min, max: data.yRange.max)
 
             for set in data where set.valueFormatter is DefaultValueFormatter {
                 set.valueFormatter = defaultValueFormatter
@@ -600,12 +600,12 @@ open class ChartViewBase: NSUIView, ChartDataProvider, AnimatorDelegate {
 
     /// The current y-max value across all DataSets
     open var chartYMax: Double {
-        return data?.yMax ?? 0.0
+        return data?.yRange.max ?? 0.0
     }
 
     /// The current y-min value across all DataSets
     open var chartYMin: Double {
-        return data?.yMin ?? 0.0
+        return data?.yRange.min ?? 0.0
     }
 
     open var chartXMax: Double {

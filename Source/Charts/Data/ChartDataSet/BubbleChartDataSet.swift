@@ -19,7 +19,7 @@ open class BubbleChartDataSet: BarLineScatterCandleBubbleChartDataSet, BubbleCha
 
     public private(set) var isNormalizeSizeEnabled: Bool = true
 
-    override open func calcMinMax(entry e: ChartDataEntry) {
+    override public func calcMinMax(entry e: ChartDataEntry) {
         guard let e = e as? BubbleChartDataEntry
         else { return }
 
@@ -37,8 +37,6 @@ open class BubbleChartDataSet: BarLineScatterCandleBubbleChartDataSet, BubbleCha
 
     override open func copy(with zone: NSZone? = nil) -> Any {
         let copy = super.copy(with: zone) as! BubbleChartDataSet
-        copy.xMin = xMin
-        copy.xMax = xMax
         copy.maxSize = maxSize
         copy.isNormalizeSizeEnabled = isNormalizeSizeEnabled
         copy.highlightCircleWidth = highlightCircleWidth

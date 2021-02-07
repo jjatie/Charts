@@ -56,7 +56,7 @@ open class BarChartData: BarLineScatterCandleBubbleChartData {
             let start = fromX
             fromX += groupSpaceWidthHalf
 
-            (_dataSets as! [BarChartDataSet]).forEach { set in
+            (dataSets as! [BarChartDataSet]).forEach { set in
                 fromX += barSpaceHalf
                 fromX += barWidthHalf
 

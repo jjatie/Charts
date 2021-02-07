@@ -37,11 +37,11 @@ open class BarChartView: BarLineChartViewBase, BarChartDataProvider {
 
         if fitBars {
             xAxis.calculate(
-                min: data.xMin - data.barWidth / 2.0,
-                max: data.xMax + data.barWidth / 2.0
+                min: data.xRange.min - data.barWidth / 2.0,
+                max: data.xRange.max + data.barWidth / 2.0
             )
         } else {
-            xAxis.calculate(min: data.xMin, max: data.xMax)
+            xAxis.calculate(min: data.xRange.min, max: data.xRange.max)
         }
 
         // calculate axis range (min / max) according to provided data

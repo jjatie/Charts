@@ -813,7 +813,7 @@ public class LineChartRenderer: DataRenderer {
     private func accessibilityCreateEmptyOrderedElements() -> [[NSUIAccessibilityElement]] {
         guard let chart = dataProvider as? LineChartView else { return [] }
 
-        let dataSetCount = chart.lineData?.dataSetCount ?? 0
+        let dataSetCount = chart.lineData?.count ?? 0
 
         return Array(repeating: [NSUIAccessibilityElement](),
                      count: dataSetCount)
@@ -844,7 +844,7 @@ public class LineChartRenderer: DataRenderer {
                                                                      dataSetIndex: dataSetIndex,
                                                                      viewPortHandler: viewPortHandler)
 
-        let dataSetCount = dataProvider.lineData?.dataSetCount ?? -1
+        let dataSetCount = dataProvider.lineData?.count ?? -1
         let doesContainMultipleDataSets = dataSetCount > 1
 
         element.accessibilityLabel = "\(doesContainMultipleDataSets ? (dataSet.label ?? "") + ", " : "") \(label): \(elementValueText)"

@@ -738,7 +738,7 @@ extension HorizontalBarChartRenderer {
             }
         }
 
-        let dataSetCount = dataProvider.barData?.dataSetCount ?? -1
+        let dataSetCount = dataProvider.barData?.count ?? -1
         let doesContainMultipleDataSets = dataSetCount > 1
 
         element.accessibilityLabel = "\(doesContainMultipleDataSets ? (dataSet.label ?? "") + ", " : "") \(label): \(elementValueText)"

@@ -11,15 +11,22 @@
 
 import Foundation
 
+func merge(_ lhs: AxisRange, _ rhs: AxisRange) -> AxisRange {
+    (min(lhs.min, rhs.min), max(lhs.max, rhs.max))
+}
+
+func merge(_ lhs: AxisRange, _ rhs: Double) -> AxisRange {
+    (min(lhs.min, rhs), max(lhs.max, rhs))
+}
+
 open class ChartData: ExpressibleByArrayLiteral {
-    public internal(set) var xMax = -Double.greatestFiniteMagnitude
-    public internal(set) var xMin = Double.greatestFiniteMagnitude
-    public internal(set) var yMax = -Double.greatestFiniteMagnitude
-    public internal(set) var yMin = Double.greatestFiniteMagnitude
-    var leftAxisMax = -Double.greatestFiniteMagnitude
-    var leftAxisMin = Double.greatestFiniteMagnitude
-    var rightAxisMax = -Double.greatestFiniteMagnitude
-    var rightAxisMin = Double.greatestFiniteMagnitude
+    public internal(set) var xRange: AxisRange = (0, 0)
+    public var yRange: AxisRange {
+        merge(leftAxisRange, rightAxisRange)
+    }
+
+    final var leftAxisRange: AxisRange = (.greatestFiniteMagnitude, -.greatestFiniteMagnitude)
+    final var rightAxisRange: AxisRange = (.greatestFiniteMagnitude, -.greatestFiniteMagnitude)
 
     // MARK: - Accessibility
 
@@ -68,136 +75,83 @@ open class ChartData: ExpressibleByArrayLiteral {
 
     /// calc minimum and maximum y value over all datasets
     open func calcMinMax() {
-        leftAxisMax = -.greatestFiniteMagnitude
-        leftAxisMin = .greatestFiniteMagnitude
-        rightAxisMax = -.greatestFiniteMagnitude
-        rightAxisMin = .greatestFiniteMagnitude
-        yMax = -.greatestFiniteMagnitude
-        yMin = .greatestFiniteMagnitude
-        xMax = -.greatestFiniteMagnitude
-        xMin = .greatestFiniteMagnitude
-
         forEach { calcMinMax(dataSet: $0) }
+        leftAxisRange = calcAxisRange(.left)
+        rightAxisRange = calcAxisRange(.right)
+    }
 
-        // left axis
-        let firstLeft = getFirstLeft(dataSets: dataSets)
-
-        if firstLeft !== nil {
-            leftAxisMax = firstLeft!.yMax
-            leftAxisMin = firstLeft!.yMin
-
-            for dataSet in _dataSets where dataSet.axisDependency == .left {
-                if dataSet.yMin < leftAxisMin {
-                    leftAxisMin = dataSet.yMin
-                }
-
-                if dataSet.yMax > leftAxisMax {
-                    leftAxisMax = dataSet.yMax
-                }
-            }
-        }
-
-        // right axis
-        let firstRight = getFirstRight(dataSets: dataSets)
-
-        if firstRight !== nil {
-            rightAxisMax = firstRight!.yMax
-            rightAxisMin = firstRight!.yMin
-
-            for dataSet in _dataSets where dataSet.axisDependency == .right {
-                if dataSet.yMin < rightAxisMin {
-                    rightAxisMin = dataSet.yMin
-                }
-
-                if dataSet.yMax > rightAxisMax {
-                    rightAxisMax = dataSet.yMax
-                }
-            }
-        }
+    private func calcAxisRange(_ axis: YAxis.AxisDependency) -> AxisRange {
+        lazy.filter { $0.axisDependency == axis }
+            .map(\.yRange)
+            .reduce((.greatestFiniteMagnitude, -.greatestFiniteMagnitude), merge)
     }
 
     /// Adjusts the current minimum and maximum values based on the provided Entry object.
     open func calcMinMax(entry e: ChartDataEntry, axis: YAxis.AxisDependency) {
-        xMax = Swift.max(xMax, e.x)
-        xMin = Swift.min(xMin, e.x)
-        yMax = Swift.max(yMax, e.y)
-        yMin = Swift.min(yMin, e.y)
+        xRange = merge(xRange, e.x)
 
         switch axis {
         case .left:
-            leftAxisMax = Swift.max(leftAxisMax, e.y)
-            leftAxisMin = Swift.min(leftAxisMin, e.y)
+            leftAxisRange = merge(leftAxisRange, e.y)
 
         case .right:
-            rightAxisMax = Swift.max(rightAxisMax, e.y)
-            rightAxisMin = Swift.min(rightAxisMin, e.y)
+            rightAxisRange = merge(rightAxisRange, e.y)
         }
     }
 
     /// Adjusts the minimum and maximum values based on the given DataSet.
     open func calcMinMax(dataSet d: Element) {
-        xMax = Swift.max(xMax, d.xMax)
-        xMin = Swift.min(xMin, d.xMin)
-        yMax = Swift.max(yMax, d.yMax)
-        yMin = Swift.min(yMin, d.yMin)
+        xRange = merge(xRange, d.xRange)
 
         switch d.axisDependency {
         case .left:
-            leftAxisMax = Swift.max(leftAxisMax, d.yMax)
-            leftAxisMin = Swift.min(leftAxisMin, d.yMin)
+            leftAxisRange = merge(leftAxisRange, d.yRange)
 
         case .right:
-            rightAxisMax = Swift.max(rightAxisMax, d.yMax)
-            rightAxisMin = Swift.min(rightAxisMin, d.yMin)
+            rightAxisRange = merge(rightAxisRange, d.yRange)
         }
-    }
-
-    /// The number of LineDataSets this object contains
-    // exists only for objc compatibility
-    open var dataSetCount: Int {
-        return dataSets.count
     }
 
     open func getYMin(axis: YAxis.AxisDependency) -> Double {
         // TODO: Why does it make sense to return the other axisMin if there is none for the one requested?
         switch axis {
         case .left:
-            if leftAxisMin == .greatestFiniteMagnitude {
-                return rightAxisMin
+            if leftAxisRange.min == .greatestFiniteMagnitude {
+                return rightAxisRange.min
             } else {
-                return leftAxisMin
+                return leftAxisRange.min
             }
 
         case .right:
-            if rightAxisMin == .greatestFiniteMagnitude {
-                return leftAxisMin
+            if rightAxisRange.min == .greatestFiniteMagnitude {
+                return leftAxisRange.min
             } else {
-                return rightAxisMin
+                return rightAxisRange.min
             }
         }
     }
 
     open func getYMax(axis: YAxis.AxisDependency) -> Double {
-        if axis == .left {
-            if leftAxisMax == -.greatestFiniteMagnitude {
-                return rightAxisMax
+        switch axis {
+        case .left:
+            if leftAxisRange.max == -.greatestFiniteMagnitude {
+                return rightAxisRange.max
             } else {
-                return leftAxisMax
+                return leftAxisRange.max
             }
-        } else {
-            if rightAxisMax == -.greatestFiniteMagnitude {
-                return leftAxisMax
+
+        case .right:
+            if rightAxisRange.max == -.greatestFiniteMagnitude {
+                return leftAxisRange.max
             } else {
-                return rightAxisMax
+                return rightAxisRange.max
             }
         }
     }
 
     /// All DataSet objects this ChartData object holds.
     open var dataSets: [Element] {
-        get {
-            return _dataSets
-        }
+        get { _dataSets }
         set {
             _dataSets = newValue
             notifyDataChanged()

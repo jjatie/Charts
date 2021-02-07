@@ -28,12 +28,12 @@ public class PieChartDataSet: ChartDataSet, PieChartDataSetProtocol {
         initialize()
     }
 
-    override public init(entries: [ChartDataEntry], label: String) {
+    override public init(entries: [Element], label: String) {
         super.init(entries: entries, label: label)
         initialize()
     }
 
-    override func calcMinMax(entry e: ChartDataEntry) {
+    override public func calcMinMax(entry e: Element) {
         calcMinMaxY(entry: e)
     }
 

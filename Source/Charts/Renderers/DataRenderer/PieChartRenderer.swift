@@ -94,7 +94,7 @@ public class PieChartRenderer: DataRenderer {
         else { return dataSet.sliceSpace }
 
         let spaceSizeRatio = dataSet.sliceSpace / min(viewPortHandler.contentWidth, viewPortHandler.contentHeight)
-        let minValueRatio = dataSet.yMin / data.yValueSum * 2.0
+        let minValueRatio = dataSet.yRange.min / data.yValueSum * 2.0
 
         let sliceSpace = spaceSizeRatio > CGFloat(minValueRatio)
             ? 0.0

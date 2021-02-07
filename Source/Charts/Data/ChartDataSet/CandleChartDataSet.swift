@@ -23,25 +23,25 @@ public class CandleChartDataSet: LineScatterCandleRadarChartDataSet, CandleChart
 
     // MARK: - Data functions and accessors
 
-    override public func calcMinMax(entry e: ChartDataEntry) {
+    override public func calcMinMax(entry e: Element) {
         guard let e = e as? CandleChartDataEntry
         else { return }
 
-        yMin = Swift.min(e.low, yMin)
-        yMax = Swift.max(e.high, yMax)
+        yRange.min = Swift.min(e.low, yRange.min)
+        yRange.max = Swift.max(e.high, yRange.max)
 
         calcMinMaxX(entry: e)
     }
 
-    override public func calcMinMaxY(entry e: ChartDataEntry) {
+    override public func calcMinMaxY(entry e: Element) {
         guard let e = e as? CandleChartDataEntry
         else { return }
 
-        yMin = Swift.min(e.low, yMin)
-        yMax = Swift.max(e.high, yMin)
+        yRange.min = Swift.min(e.low, yRange.min)
+        yRange.max = Swift.max(e.high, yRange.min)
 
-        yMin = Swift.min(e.low, yMax)
-        yMax = Swift.max(e.high, yMax)
+        yRange.min = Swift.min(e.low, yRange.max)
+        yRange.max = Swift.max(e.high, yRange.max)
     }
 
     // MARK: - Styling functions and accessors
