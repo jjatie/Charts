@@ -44,26 +44,15 @@ public protocol ChartDataSetProtocol: AnyObject, RandomAccessCollection, Mutable
     /// - Returns: The first Entry object found at the given x-value with binary search.
     /// If the no Entry at the specified x-value is found, this method returns the Entry at the closest x-value according to the rounding.
     /// nil if no Entry object at that x-value.
-    func entryForXValue(
-        _ xValue: Double,
+    func element(
+        withX xValue: Double,
         closestToY yValue: Double,
         rounding: ChartDataSetRounding
     ) -> ChartDataEntry?
 
-    /// - Parameters:
-    ///   - xValue: the x-value
-    ///   - closestToY: If there are multiple y-values for the specified x-value,
-    /// - Returns: The first Entry object found at the given x-value with binary search.
-    /// If the no Entry at the specified x-value is found, this method returns the Entry at the closest x-value.
-    /// nil if no Entry object at that x-value.
-    func entryForXValue(
-        _ xValue: Double,
-        closestToY yValue: Double
-    ) -> ChartDataEntry?
-
     /// - Returns: All Entry objects found at the given x-value with binary search.
     /// An empty array if no Entry object at that x-value.
-    func entriesForXValue(_ xValue: Double) -> [ChartDataEntry]
+    func elements(withX xValue: Double) -> SubSequence
 
     /// - Parameters:
     ///   - xValue: x-value of the entry to search for
@@ -71,11 +60,11 @@ public protocol ChartDataSetProtocol: AnyObject, RandomAccessCollection, Mutable
     ///   - rounding: Rounding method if exact value was not found
     /// - Returns: The array-index of the specified entry.
     /// If the no Entry at the specified x-value is found, this method returns the index of the Entry at the closest x-value according to the rounding.
-    func entryIndex(
-        x xValue: Double,
+    func index(
+        ofX xValue: Double,
         closestToY yValue: Double,
         rounding: ChartDataSetRounding
-    ) -> Int
+    ) -> Index?
 
     /// Adds an Entry to the DataSet dynamically.
     /// Entries are added to their appropriate index in the values array respective to their x-position.
@@ -97,15 +86,6 @@ public protocol ChartDataSetProtocol: AnyObject, RandomAccessCollection, Mutable
     ///   - entry: the entry to remove
     /// - Returns: `true` if the entry was removed successfully, `false` ifthe entry does not exist or if this feature is not supported
     func remove(_ entry: ChartDataEntry) -> Bool
-
-    /// Removes the Entry object closest to the given x-value from the DataSet.
-    ///
-    /// *optional feature, can return `false` ifnot implemented*
-    ///
-    /// - Parameters:
-    ///   - x: the x-value to remove
-    /// - Returns: `true` if the entry was removed successfully, `false` ifthe entry does not exist or if this feature is not supported
-    func removeEntry(x: Double) -> Bool
 
     // MARK: - Styling functions and accessors
 

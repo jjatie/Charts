@@ -205,7 +205,7 @@ open class CombinedChartData: BarLineScatterCandleBubbleChartData {
     override open func entry(for highlight: Highlight) -> ChartDataEntry? {
         // The value of the highlighted entry could be NaN - if we are not interested in highlighting a specific value.
         getDataSetByHighlight(highlight)?
-            .entriesForXValue(highlight.x)
+            .elements(withX: highlight.x)
             .first { $0.y == highlight.y || highlight.y.isNaN }
     }
 

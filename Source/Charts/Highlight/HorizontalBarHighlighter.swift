@@ -39,11 +39,11 @@ open class HorizontalBarHighlighter: BarHighlighter {
     ) -> [Highlight] {
         guard let chart = self.chart as? BarLineScatterCandleBubbleChartDataProvider else { return [] }
 
-        var entries = set.entriesForXValue(xValue)
-        if entries.isEmpty, let closest = set.entryForXValue(xValue, closestToY: .nan, rounding: rounding)
+        var entries = Array(set.elements(withX: xValue))
+        if entries.isEmpty, let closest = set.element(withX: xValue, closestToY: .nan, rounding: rounding)
         {
             // Try to find closest x-value and take all entries for that x-value
-            entries = set.entriesForXValue(closest.x)
+            entries = Array(set.elements(withX: closest.x))
         }
 
         return entries.map { e in

@@ -79,14 +79,14 @@ open class ChartDataSet: ChartDataSetProtocol, NSCopying {
         yMax = -Double.greatestFiniteMagnitude
         yMin = Double.greatestFiniteMagnitude
 
-        guard !isEmpty else { return }
+        guard !isEmpty,
+              let indexFrom = index(ofX: fromX, closestToY: .nan, rounding: .down),
+              let indexTo = self[indexFrom...].index(ofX: toX, closestToY: .nan, rounding: .up),
+              indexTo >= indexFrom
+              else { return }
 
-        let indexFrom = entryIndex(x: fromX, closestToY: .nan, rounding: .down)
-        let indexTo = entryIndex(x: toX, closestToY: .nan, rounding: .up)
-
-        guard indexTo >= indexFrom else { return }
         // only recalculate y
-        self[indexFrom ... indexTo].forEach(calcMinMaxY)
+        self[indexFrom...indexTo].forEach(calcMinMaxY)
     }
 
     open func calcMinMaxX(entry e: ChartDataEntry) {
@@ -103,7 +103,7 @@ open class ChartDataSet: ChartDataSetProtocol, NSCopying {
     ///
     /// - Parameters:
     ///   - e:
-    internal func calcMinMax(entry e: ChartDataEntry) {
+    func calcMinMax(entry e: ChartDataEntry) {
         calcMinMaxX(entry: e)
         calcMinMaxY(entry: e)
     }
@@ -120,108 +120,6 @@ open class ChartDataSet: ChartDataSetProtocol, NSCopying {
     /// The maximum x-value this DataSet holds
     public internal(set) var xMax: Double = -Double.greatestFiniteMagnitude
 
-    /// - Parameters:
-    ///   - xValue: the x-value
-    ///   - closestToY: If there are multiple y-values for the specified x-value,
-    ///   - rounding: determine whether to round up/down/closest if there is no Entry matching the provided x-value
-    /// - Returns: The first Entry object found at the given x-value with binary search.
-    /// If the no Entry at the specified x-value is found, this method returns the Entry at the closest x-value according to the rounding.
-    /// nil if no Entry object at that x-value.
-    public func entryForXValue(
-        _ xValue: Double,
-        closestToY yValue: Double,
-        rounding: ChartDataSetRounding
-    ) -> ChartDataEntry? {
-        let index = entryIndex(x: xValue, closestToY: yValue, rounding: rounding)
-        if index > -1 {
-            return self[index]
-        }
-        return nil
-    }
-
-    /// - Parameters:
-    ///   - xValue: the x-value
-    ///   - closestToY: If there are multiple y-values for the specified x-value,
-    /// - Returns: The first Entry object found at the given x-value with binary search.
-    /// If the no Entry at the specified x-value is found, this method returns the Entry at the closest x-value.
-    /// nil if no Entry object at that x-value.
-    public func entryForXValue(
-        _ xValue: Double,
-        closestToY yValue: Double
-    ) -> ChartDataEntry? {
-        entryForXValue(xValue, closestToY: yValue, rounding: .closest)
-    }
-
-    /// - Returns: All Entry objects found at the given xIndex with binary search.
-    /// An empty array if no Entry object at that index.
-    public func entriesForXValue(_ xValue: Double) -> [ChartDataEntry] {
-        let match: (ChartDataEntry) -> Bool = { $0.x == xValue }
-        let i = partitioningIndex(where: match)
-        guard i < endIndex else { return [] }
-        return self[i...].prefix(while: match)
-    }
-
-    /// - Parameters:
-    ///   - xValue: x-value of the entry to search for
-    ///   - closestToY: If there are multiple y-values for the specified x-value,
-    ///   - rounding: Rounding method if exact value was not found
-    /// - Returns: The array-index of the specified entry.
-    /// If the no Entry at the specified x-value is found, this method returns the index of the Entry at the closest x-value according to the rounding.
-    public func entryIndex(
-        x xValue: Double,
-        closestToY yValue: Double,
-        rounding: ChartDataSetRounding
-    ) -> Int {
-        var closest = partitioningIndex { $0.x >= xValue }
-        guard closest < endIndex else { return closest }
-
-        let closestXValue = self[closest].x
-
-        switch rounding {
-        case .up:
-            // If rounding up, and found x-value is lower than specified x, and we can go upper...
-            if closestXValue < xValue, closest < index(before: endIndex) {
-                formIndex(after: &closest)
-            }
-
-        case .down:
-            // If rounding down, and found x-value is upper than specified x, and we can go lower...
-            if closestXValue > xValue, closest > startIndex {
-                formIndex(before: &closest)
-            }
-
-        case .closest:
-            break
-        }
-
-        guard closest < endIndex else { return endIndex }
-
-        // Search by closest to y-value
-        if !yValue.isNaN {
-            while closest > startIndex, self[index(before: closest)].x == closestXValue {
-                formIndex(before: &closest)
-            }
-
-            var closestYValue = self[closest].y
-            var closestYIndex = closest
-
-            while closest < endIndex - 1 {
-                formIndex(after: &closest)
-                let value = self[closest]
-
-                if value.x != closestXValue { break }
-                if abs(value.y - yValue) <= abs(closestYValue - yValue) {
-                    closestYValue = yValue
-                    closestYIndex = closest
-                }
-            }
-
-            closest = closestYIndex
-        }
-
-        return closest
-    }
-
     /// Adds an Entry to the DataSet dynamically.
     /// Entries are added to their appropriate index respective to it's x-index.
     /// This will also recalculate the current minimum and maximum values of the DataSet and the value-sum.
@@ -229,12 +127,10 @@ open class ChartDataSet: ChartDataSetProtocol, NSCopying {
     /// - Parameters:
     ///   - e: the entry to add
     public func addEntryOrdered(_ e: ChartDataEntry) {
-        if let last = last, last.x > e.x {
-            let startIndex = entryIndex(x: e.x, closestToY: e.y, rounding: .up)
-            let closestIndex = self[startIndex...].lastIndex { $0.x < e.x }
-                ?? startIndex
-            calcMinMax(entry: e)
-            entries.insert(e, at: closestIndex)
+        if let last = last, last.x > e.x,
+           let startIndex = index(ofX: e.x, closestToY: e.y, rounding: .up),
+           let closestIndex = self[startIndex...].lastIndex(where: { $0.x < e.x }) {
+            insert(e, at: closestIndex)
         } else {
             append(e)
         }
@@ -430,6 +326,12 @@ extension ChartDataSet: RangeReplaceableCollection {
         entries.append(newElement)
     }
 
+    public func insert(_ newElement: ChartDataEntry, at i: Int) {
+        calcMinMax(entry: newElement)
+        entries.insert(newElement, at: i)
+    }
+
+    // TODO: Optimize when to calculate min/max
     public func remove(at position: Index) -> Element {
         let element = entries.remove(at: position)
         notifyDataSetChanged()
@@ -490,12 +392,94 @@ extension ChartDataSet {
     public func notifyDataSetChanged() {
         calcMinMax()
     }
+}
 
-    @discardableResult
-    public func removeEntry(x: Double) -> Bool {
-        if let entry = entryForXValue(x, closestToY: Double.nan) {
-            return remove(entry)
+extension BidirectionalCollection where
+    Element: ChartDataEntry
+{
+    /// - Parameters:
+    ///   - xValue: the x-value
+    ///   - closestToY: If there are multiple y-values for the specified x-value,
+    ///   - rounding: determine whether to round up/down/closest if there is no Entry matching the provided x-value
+    /// - Returns: The first element object found at the given x-value with binary search.
+    /// If the no Entry at the specified x-value is found, this method returns the Entry at the closest x-value according to the rounding.
+    /// nil if no Entry object at that x-value.
+    public func element(
+        withX xValue: Double,
+        closestToY yValue: Double,
+        rounding: ChartDataSetRounding = .closest
+    ) -> Element? {
+        index(ofX: xValue, closestToY: yValue, rounding: rounding)
+            .map { self[$0] }
+    }
+
+    /// - Returns: All Entry objects found at the given xIndex with binary search.
+    /// An empty array if no Entry object at that index.
+    public func elements(withX xValue: Double) -> SubSequence {
+        let match: (Element) -> Bool = { $0.x != xValue }
+        let i = partitioningIndex(where: match)
+        guard i < endIndex else { return self[endIndex...] }
+        let lastIndex = self[i...].firstIndex(where: match) ?? endIndex
+        return self[i..<lastIndex]
+    }
+
+    /// - Parameters:
+    ///   - xValue: x-value of the element to search for
+    ///   - closestToY: If there are multiple y-values for the specified x-value,
+    ///   - rounding: Rounding method if exact value was not found
+    /// - Returns: The array-index of the specified element.
+    /// If the no Entry at the specified x-value is found, this method returns the index of the Entry at the closest x-value according to the rounding.
+    public func index(
+        ofX xValue: Double,
+        closestToY yValue: Double,
+        rounding: ChartDataSetRounding
+    ) -> Index? {
+        var closest = partitioningIndex { $0.x >= xValue }
+        guard closest < endIndex else { return nil }
+
+        let closestXValue = self[closest].x
+
+        switch rounding {
+        case .up:
+            // If rounding up, and found x-value is lower than specified x, and we can go upper...
+            if closestXValue < xValue, closest < index(before: endIndex) {
+                formIndex(after: &closest)
+            }
+
+        case .down:
+            // If rounding down, and found x-value is upper than specified x, and we can go lower...
+            if closestXValue > xValue, closest > startIndex {
+                formIndex(before: &closest)
+            }
+
+        case .closest:
+            break
         }
-        return false
+
+        // Search by closest to y-value
+        guard !yValue.isNaN else {
+            return closest
+        }
+
+        while closest > startIndex, self[index(before: closest)].x == closestXValue {
+            formIndex(before: &closest)
+        }
+
+        var closestYValue = self[closest].y
+        var closestYIndex = closest
+
+        while closest < index(before: endIndex) {
+            formIndex(after: &closest)
+            let value = self[closest]
+
+            if value.x != closestXValue { break }
+            if abs(value.y - yValue) <= abs(closestYValue - yValue) {
+                closestYValue = yValue
+                closestYIndex = closest
+            }
+        }
+
+        closest = closestYIndex
+        return closest
     }
 }

@@ -646,7 +646,7 @@ public class BarChartRenderer: DataRenderer {
                 set.isHighlightEnabled
             else { continue }
 
-            if let e = set.entryForXValue(high.x, closestToY: high.y) as? BarChartDataEntry {
+            if let e = set.element(withX: high.x, closestToY: high.y) as? BarChartDataEntry {
                 guard isInBoundsX(entry: e, dataSet: set) else { continue }
 
                 let trans = dataProvider.getTransformer(forAxis: set.axisDependency)
