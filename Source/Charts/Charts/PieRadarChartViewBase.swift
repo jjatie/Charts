@@ -92,7 +92,7 @@ open class PieRadarChartViewBase: ChartViewBase {
         var legendBottom = CGFloat(0.0)
         var legendTop = CGFloat(0.0)
 
-        if legend.enabled, !legend.drawInside {
+        if legend.isEnabled, !legend.drawInside {
             let fullLegendWidth = min(legend.neededWidth, viewPortHandler.chartWidth * legend.maxSizePercent)
 
             switch legend.orientation {

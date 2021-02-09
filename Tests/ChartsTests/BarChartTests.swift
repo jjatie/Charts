@@ -269,7 +269,7 @@ class BarChartTests: XCTestCase {
         let dataEntries = setupDefaultValuesDataEntries()
         let dataSet = setupDefaultDataSet(chartDataEntries: dataEntries)
         let chart = setupDefaultChart(dataSets: [dataSet])
-        chart.leftAxis.enabled = false
+        chart.leftAxis.isEnabled = false
         chart.notifyDataSetChanged()
         assertChartSnapshot(matching: chart)
     }
@@ -278,7 +278,7 @@ class BarChartTests: XCTestCase {
         let dataEntries = setupDefaultValuesDataEntries()
         let dataSet = setupDefaultDataSet(chartDataEntries: dataEntries)
         let chart = setupDefaultChart(dataSets: [dataSet])
-        chart.rightAxis.enabled = false
+        chart.rightAxis.isEnabled = false
         chart.notifyDataSetChanged()
         assertChartSnapshot(matching: chart)
     }

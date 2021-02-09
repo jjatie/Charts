@@ -57,7 +57,7 @@ class HorizontalBarChartViewController: DemoBaseViewController {
         leftAxis.axisMinimum = 0
 
         let rightAxis = chartView.rightAxis
-        rightAxis.enabled = true
+        rightAxis.isEnabled = true
         rightAxis.labelFont = .systemFont(ofSize: 10)
         rightAxis.drawAxisLineEnabled = true
         rightAxis.axisMinimum = 0

@@ -45,9 +45,9 @@ class PositiveNegativeBarChartViewController: DemoBaseViewController {
         chartView.isDrawBarShadowEnabled = false
         chartView.isDrawValueAboveBarEnabled = true
 
-        chartView.chartDescription.enabled = false
+        chartView.chartDescription.isEnabled = false
 
-        chartView.rightAxis.enabled = false
+        chartView.rightAxis.isEnabled = false
 
         let xAxis = chartView.xAxis
         xAxis.labelPosition = .bottom

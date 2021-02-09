@@ -36,7 +36,7 @@ class AnotherBarChartViewController: DemoBaseViewController {
 
         chartView.delegate = self
 
-        chartView.chartDescription.enabled = false
+        chartView.chartDescription.isEnabled = false
         chartView.maxVisibleCount = 60
         chartView.isPinchZoomEnabled = false
         chartView.isDrawBarShadowEnabled = false
@@ -44,7 +44,7 @@ class AnotherBarChartViewController: DemoBaseViewController {
         let xAxis = chartView.xAxis
         xAxis.labelPosition = .bottom
 
-        chartView.legend.enabled = false
+        chartView.legend.isEnabled = false
 
         sliderX.value = 10
         sliderY.value = 100

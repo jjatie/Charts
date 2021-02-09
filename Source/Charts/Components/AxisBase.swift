@@ -13,10 +13,12 @@ import CoreGraphics
 import Foundation
 
 /// Base class for all axes
-open class AxisBase: ComponentBase {
-    override public init() {
-        super.init()
-    }
+open class AxisBase: Component {
+    public var isEnabled = true
+
+    public var xOffset: CGFloat = 5
+
+    public var yOffset: CGFloat = 5
 
     /// Custom formatter that is used instead of the auto-formatter if set
     private lazy var _axisValueFormatter: AxisValueFormatter = DefaultAxisValueFormatter(decimals: decimals)

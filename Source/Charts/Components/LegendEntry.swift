@@ -16,8 +16,8 @@ open class LegendEntry {
     public init() {}
 
     /// - Parameters:
-    ///   - label:                  The legend entry text.
-    ///                                     A `nil` label will start a group.
+    /// - label: The legend entry text.
+    /// A `nil` label will start a group.
     public init(label: String?) {
         self.label = label
     }

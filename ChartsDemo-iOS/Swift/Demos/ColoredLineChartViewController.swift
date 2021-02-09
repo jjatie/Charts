@@ -38,20 +38,20 @@ class ColoredLineChartViewController: DemoBaseViewController {
         chart.delegate = self
         chart.backgroundColor = color
 
-        chart.chartDescription.enabled = false
+        chart.chartDescription.isEnabled = false
 
         chart.isDragEnabled = true
         chart.setScaleEnabled(true)
         chart.isPinchZoomEnabled = false
         chart.setViewPortOffsets(left: 10, top: 0, right: 10, bottom: 0)
 
-        chart.legend.enabled = false
+        chart.legend.isEnabled = false
 
-        chart.leftAxis.enabled = false
+        chart.leftAxis.isEnabled = false
         chart.leftAxis.spaceTop = 0.4
         chart.leftAxis.spaceBottom = 0.4
-        chart.rightAxis.enabled = false
-        chart.xAxis.enabled = false
+        chart.rightAxis.isEnabled = false
+        chart.xAxis.isEnabled = false
 
         chart.data = data
 

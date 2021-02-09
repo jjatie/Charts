@@ -46,7 +46,7 @@ class StackedBarChartViewController: DemoBaseViewController {
 
         chartView.delegate = self
 
-        chartView.chartDescription.enabled = false
+        chartView.chartDescription.isEnabled = false
 
         chartView.maxVisibleCount = 40
         chartView.isDrawBarShadowEnabled = false
@@ -57,7 +57,7 @@ class StackedBarChartViewController: DemoBaseViewController {
         leftAxis.valueFormatter = DefaultAxisValueFormatter(formatter: formatter)
         leftAxis.axisMinimum = 0
 
-        chartView.rightAxis.enabled = false
+        chartView.rightAxis.isEnabled = false
 
         let xAxis = chartView.xAxis
         xAxis.labelPosition = .top

@@ -40,7 +40,7 @@ class LineChart2ViewController: DemoBaseViewController {
 
         chartView.delegate = self
 
-        chartView.chartDescription.enabled = false
+        chartView.chartDescription.isEnabled = false
         chartView.isDragEnabled = true
         chartView.setScaleEnabled(true)
         chartView.isPinchZoomEnabled = true

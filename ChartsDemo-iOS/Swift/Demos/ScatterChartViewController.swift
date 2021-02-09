@@ -35,7 +35,7 @@ class ScatterChartViewController: DemoBaseViewController {
 
         chartView.delegate = self
 
-        chartView.chartDescription.enabled = false
+        chartView.chartDescription.isEnabled = false
 
         chartView.isDragEnabled = true
         chartView.setScaleEnabled(true)
@@ -54,7 +54,7 @@ class ScatterChartViewController: DemoBaseViewController {
         leftAxis.labelFont = .systemFont(ofSize: 10, weight: .light)
         leftAxis.axisMinimum = 0
 
-        chartView.rightAxis.enabled = false
+        chartView.rightAxis.isEnabled = false
 
         let xAxis = chartView.xAxis
         xAxis.labelFont = .systemFont(ofSize: 10, weight: .light)

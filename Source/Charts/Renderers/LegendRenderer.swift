@@ -150,7 +150,7 @@ open class LegendRenderer: Renderer {
     open func renderLegend(context: CGContext) {
         guard let legend = legend else { return }
 
-        if !legend.enabled {
+        if !legend.isEnabled {
             return
         }
 

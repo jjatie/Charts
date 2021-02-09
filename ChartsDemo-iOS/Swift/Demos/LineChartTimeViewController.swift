@@ -38,7 +38,7 @@ class LineChartTimeViewController: DemoBaseViewController {
 
         chartView.delegate = self
 
-        chartView.chartDescription.enabled = false
+        chartView.chartDescription.isEnabled = false
 
         chartView.isDragEnabled = true
         chartView.setScaleEnabled(true)
@@ -47,7 +47,7 @@ class LineChartTimeViewController: DemoBaseViewController {
 
         chartView.backgroundColor = .white
 
-        chartView.legend.enabled = false
+        chartView.legend.isEnabled = false
 
         let xAxis = chartView.xAxis
         xAxis.labelPosition = .topInside
@@ -69,7 +69,7 @@ class LineChartTimeViewController: DemoBaseViewController {
         leftAxis.yOffset = -9
         leftAxis.labelTextColor = UIColor(red: 255 / 255, green: 192 / 255, blue: 56 / 255, alpha: 1)
 
-        chartView.rightAxis.enabled = false
+        chartView.rightAxis.isEnabled = false
 
         chartView.legend.form = .line
 

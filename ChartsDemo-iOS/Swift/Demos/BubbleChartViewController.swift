@@ -36,7 +36,7 @@ class BubbleChartViewController: DemoBaseViewController {
 
         chartView.delegate = self
 
-        chartView.chartDescription.enabled = false
+        chartView.chartDescription.isEnabled = false
 
         chartView.isDragEnabled = false
         chartView.setScaleEnabled(true)
@@ -54,7 +54,7 @@ class BubbleChartViewController: DemoBaseViewController {
         chartView.leftAxis.spaceBottom = 0.3
         chartView.leftAxis.axisMinimum = 0
 
-        chartView.rightAxis.enabled = false
+        chartView.rightAxis.isEnabled = false
 
         chartView.xAxis.labelPosition = .bottom
         chartView.xAxis.labelFont = UIFont(name: "HelveticaNeue-Light", size: 10)!

@@ -37,7 +37,7 @@ class MultipleBarChartViewController: DemoBaseViewController {
 
         chartView.delegate = self
 
-        chartView.chartDescription.enabled = false
+        chartView.chartDescription.isEnabled = false
 
         chartView.isPinchZoomEnabled = false
         chartView.isDrawBarShadowEnabled = false
@@ -73,7 +73,7 @@ class MultipleBarChartViewController: DemoBaseViewController {
         leftAxis.spaceTop = 0.35
         leftAxis.axisMinimum = 0
 
-        chartView.rightAxis.enabled = false
+        chartView.rightAxis.isEnabled = false
 
         sliderX.value = 10
         sliderY.value = 100

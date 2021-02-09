@@ -68,7 +68,7 @@ class BarChartViewController: DemoBaseViewController {
         leftAxis.axisMinimum = 0 // FIXME: HUH?? this replaces startAtZero = YES
 
         let rightAxis = chartView.rightAxis
-        rightAxis.enabled = true
+        rightAxis.isEnabled = true
         rightAxis.labelFont = .systemFont(ofSize: 10)
         rightAxis.labelCount = 8
         rightAxis.valueFormatter = leftAxis.valueFormatter

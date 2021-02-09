@@ -20,8 +20,8 @@ import Foundation
     import Cocoa
 #endif
 
-open class Description: ComponentBase {
-    override public init() {
+open class Description: Component {
+    public init() {
         #if os(tvOS)
             // 23 is the smallest recommended font size on the TV
             font = .systemFont(ofSize: 23)
@@ -30,9 +30,13 @@ open class Description: ComponentBase {
         #else
             font = .systemFont(ofSize: 8.0)
         #endif
-
-        super.init()
     }
+
+    public var isEnabled = true
+
+    public var xOffset: CGFloat = 5
+
+    public var yOffset: CGFloat = 5
 
     /// The text to be shown as the description.
     open var text: String?

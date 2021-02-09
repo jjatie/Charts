@@ -32,22 +32,22 @@ class LineChartFilledViewController: DemoBaseViewController {
 
         chartView.isDrawBordersEnabled = true
 
-        chartView.chartDescription.enabled = false
+        chartView.chartDescription.isEnabled = false
 
         chartView.isPinchZoomEnabled = false
         chartView.isDragEnabled = true
         chartView.setScaleEnabled(true)
 
-        chartView.legend.enabled = false
+        chartView.legend.isEnabled = false
 
-        chartView.xAxis.enabled = false
+        chartView.xAxis.isEnabled = false
 
         let leftAxis = chartView.leftAxis
         leftAxis.axisMaximum = 900
         leftAxis.axisMinimum = -250
         leftAxis.drawAxisLineEnabled = false
 
-        chartView.rightAxis.enabled = false
+        chartView.rightAxis.isEnabled = false
 
         sliderX.value = 100
         sliderY.value = 60
