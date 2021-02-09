@@ -52,18 +52,6 @@ open class BarDemoViewController: NSViewController {
         barChartView.chartDescription.text = "Barchart Demo"
     }
 
-    @IBAction func save(_: Any) {
-        let panel = NSSavePanel()
-        panel.allowedFileTypes = ["png"]
-        panel.beginSheetModal(for: view.window!) { (result) -> Void in
-            if result.rawValue == NSFileHandlingPanelOKButton {
-                if let path = panel.url?.path {
-                    _ = self.barChartView.save(to: path, format: .png, compressionQuality: 1.0)
-                }
-            }
-        }
-    }
-
     override open func viewWillAppear() {
         barChartView.animate(xAxisDuration: 1.0, yAxisDuration: 1.0)
     }

@@ -124,7 +124,7 @@ open class ViewPortHandler {
     }
 
     open var contentCenter: CGPoint {
-        return CGPoint(x: contentRect.origin.x + contentRect.size.width / 2.0, y: contentRect.origin.y + contentRect.size.height / 2.0)
+        contentRect.center
     }
 
     // MARK: - Scaling/Panning etc.

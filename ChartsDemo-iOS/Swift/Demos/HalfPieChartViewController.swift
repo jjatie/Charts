@@ -40,7 +40,7 @@ class HalfPieChartViewController: DemoBaseViewController {
         chartView.transparentCircleColor = NSUIColor.white.withAlphaComponent(0.43)
         chartView.holeRadiusPercent = 0.58
         chartView.rotationEnabled = false
-        chartView.highlightPerTapEnabled = true
+        chartView.isHighLightPerTapEnabled = true
 
         chartView.maxAngle = 180 // Half chart
         chartView.rotationAngle = 180 // Rotate to make the half on the upper side

@@ -21,10 +21,9 @@ import AppKit
 /// Base-class of LineChart, BarChart, ScatterChart and CandleStickChart.
 open class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChartDataProvider, NSUIGestureRecognizerDelegate
 {
-    /// the maximum number of entries to which values will be drawn
-    /// (entry numbers greater than this value will cause value-labels to disappear)
     /// the number of maximum visible drawn values on the chart only active when `drawValuesEnabled` is enabled
-    override open var maxVisibleCount: Int {
+    /// - Note: entry numbers greater than this value will cause value-labels to disappear
+    public final var maxVisibleCount: Int {
         get { _maxVisibleCount }
         set { _maxVisibleCount = newValue }
     }
@@ -248,7 +247,7 @@ open class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChartD
         }
 
         // if highlighting is enabled
-        if valuesToHighlight() {
+        if valuesToHighlight {
             renderer.drawHighlighted(context: context, indices: highlighted)
         }
 
@@ -344,7 +343,7 @@ open class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChartD
         setNeedsDisplay()
     }
 
-    override func calcMinMax() {
+    func calcMinMax() {
         // calculate / set x-axis range
         xAxis.calculate(min: data?.xRange.min ?? 0.0, max: data?.xRange.max ?? 0.0)
 
@@ -1099,7 +1098,7 @@ open class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChartD
     ///   - yRange:
     ///   - axis: - the axis for which this limit should apply
     public func setVisibleYRangeMaximum(_ maxYRange: Double, axis: YAxis.AxisDependency) {
-        let yScale = getAxisRange(axis: axis) / maxYRange
+        let yScale = getAxis(axis).axisRange / maxYRange
         viewPortHandler.setMinimumScaleY(CGFloat(yScale))
     }
 
@@ -1109,7 +1108,7 @@ open class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChartD
     ///   - yRange:
     ///   - axis: - the axis for which this limit should apply
     public func setVisibleYRangeMinimum(_ minYRange: Double, axis: YAxis.AxisDependency) {
-        let yScale = getAxisRange(axis: axis) / minYRange
+        let yScale = getAxis(axis).axisRange / minYRange
         viewPortHandler.setMaximumScaleY(CGFloat(yScale))
     }
 
@@ -1120,8 +1119,8 @@ open class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChartD
     ///   - maxYRange:
     ///   - axis:
     public func setVisibleYRange(minYRange: Double, maxYRange: Double, axis: YAxis.AxisDependency) {
-        let minScale = getAxisRange(axis: axis) / minYRange
-        let maxScale = getAxisRange(axis: axis) / maxYRange
+        let minScale = getAxis(axis).axisRange / minYRange
+        let maxScale = getAxis(axis).axisRange / maxYRange
         viewPortHandler.setMinMaxScaleY(minScaleY: CGFloat(minScale), maxScaleY: CGFloat(maxScale))
     }
 
@@ -1146,7 +1145,7 @@ open class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChartD
     ///   - yValue:
     ///   - axis: - which axis should be used as a reference for the y-axis
     public final func moveViewToY(_ yValue: Double, axis: YAxis.AxisDependency) {
-        let yInView = getAxisRange(axis: axis) / Double(viewPortHandler.scaleY)
+        let yInView = getAxis(axis).axisRange / Double(viewPortHandler.scaleY)
 
         let job = MoveViewJob(
             viewPortHandler: viewPortHandler,
@@ -1167,7 +1166,7 @@ open class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChartD
     ///   - yValue:
     ///   - axis: - which axis should be used as a reference for the y-axis
     public final func moveViewTo(xValue: Double, yValue: Double, axis: YAxis.AxisDependency) {
-        let yInView = getAxisRange(axis: axis) / Double(viewPortHandler.scaleY)
+        let yInView = getAxis(axis).axisRange / Double(viewPortHandler.scaleY)
 
         let job = MoveViewJob(
             viewPortHandler: viewPortHandler,
@@ -1201,7 +1200,7 @@ open class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChartD
             axis: axis
         )
 
-        let yInView = getAxisRange(axis: axis) / Double(viewPortHandler.scaleY)
+        let yInView = getAxis(axis).axisRange / Double(viewPortHandler.scaleY)
 
         let job = AnimatedMoveViewJob(
             viewPortHandler: viewPortHandler,
@@ -1249,7 +1248,7 @@ open class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChartD
         yValue: Double,
         axis: YAxis.AxisDependency
     ) {
-        let yInView = getAxisRange(axis: axis) / Double(viewPortHandler.scaleY)
+        let yInView = getAxis(axis).axisRange / Double(viewPortHandler.scaleY)
         let xInView = xAxis.axisRange / Double(viewPortHandler.scaleX)
 
         let job = MoveViewJob(
@@ -1283,7 +1282,7 @@ open class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChartD
             axis: axis
         )
 
-        let yInView = getAxisRange(axis: axis) / Double(viewPortHandler.scaleY)
+        let yInView = getAxis(axis).axisRange / Double(viewPortHandler.scaleY)
         let xInView = xAxis.axisRange / Double(viewPortHandler.scaleX)
 
         let job = AnimatedMoveViewJob(
@@ -1321,7 +1320,7 @@ open class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChartD
 
     /// Sets custom offsets for the current `ChartViewPort` (the offsets on the sides of the actual chart window). Setting this will prevent the chart from automatically calculating it's offsets. Use `resetViewPortOffsets()` to undo this.
     /// ONLY USE THIS WHEN YOU KNOW WHAT YOU ARE DOING, else use `setExtraOffsets(...)`.
-    final func setViewPortOffsets(left: CGFloat, top: CGFloat, right: CGFloat, bottom: CGFloat) {
+    public final func setViewPortOffsets(left: CGFloat, top: CGFloat, right: CGFloat, bottom: CGFloat) {
         _customViewPortEnabled = true
 
         if Thread.isMainThread {
@@ -1343,10 +1342,10 @@ open class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChartD
 
     // MARK: - Accessors
 
-    /// - Returns: The range of the specified axis.
-    public final func getAxisRange(axis: YAxis.AxisDependency) -> Double {
-        getAxis(axis).axisRange
-    }
+//    /// - Returns: The range of the specified axis.
+//    public final func getAxisRange(axis: YAxis.AxisDependency) -> Double {
+//        getAxis(axis).axisRange
+//    }
 
     /// - Returns: The position (in pixels) the provided Entry has inside the chart view
     public func getPosition(entry e: ChartDataEntry, axis: YAxis.AxisDependency) -> CGPoint {
@@ -1495,48 +1494,17 @@ open class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChartD
     /// `true` if both drag offsets (x and y) are zero or smaller.
     public final var hasNoDragOffset: Bool { viewPortHandler.hasNoDragOffset }
 
-    override public final var chartYMax: Double {
+    public final var chartYMax: Double {
         max(leftAxis._axisMaximum, rightAxis._axisMaximum)
     }
 
-    override public final var chartYMin: Double {
+    public final var chartYMin: Double {
         min(leftAxis._axisMinimum, rightAxis._axisMinimum)
     }
 
     /// `true` if either the left or the right or both axes are inverted.
-    public final var isAnyAxisInverted: Bool {
+    private var isAnyAxisInverted: Bool {
         leftAxis.isInverted || rightAxis.isInverted
-    }
-
-    /// Sets a minimum width to the specified y axis.
-    public final func setYAxisMinWidth(_ axis: YAxis.AxisDependency, width: CGFloat) {
-        if axis == .left {
-            leftAxis.minWidth = width
-        } else {
-            rightAxis.minWidth = width
-        }
-    }
-
-    /// **default**: 0.0
-    ///
-    /// - Returns: The (custom) minimum width of the specified Y axis.
-    public final func getYAxisMinWidth(_ axis: YAxis.AxisDependency) -> CGFloat {
-        getAxis(axis).minWidth
-    }
-
-    /// Sets a maximum width to the specified y axis.
-    /// Zero (0.0) means there's no maximum width
-    public final func setYAxisMaxWidth(_ axis: YAxis.AxisDependency, width: CGFloat) {
-        getAxis(axis).maxWidth = width
-    }
-
-    /// Zero (0.0) means there's no maximum width
-    ///
-    /// **default**: 0.0 (no maximum specified)
-    ///
-    /// - Returns: The (custom) maximum width of the specified Y axis.
-    public final func getYAxisMaxWidth(_ axis: YAxis.AxisDependency) -> CGFloat {
-        getAxis(axis).maxWidth
     }
 
     /// - Returns the width of the specified y axis.

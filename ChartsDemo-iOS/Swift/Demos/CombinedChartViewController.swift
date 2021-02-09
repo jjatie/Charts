@@ -91,7 +91,7 @@ class CombinedChartViewController: DemoBaseViewController {
         data.scatterData = generateScatterData()
         data.candleData = generateCandleData()
 
-        chartView.xAxis.axisMaximum = data.xMax + 0.25
+        chartView.xAxis.axisMaximum = data.xRange.max + 0.25
 
         chartView.data = data
     }
@@ -115,7 +115,7 @@ class CombinedChartViewController: DemoBaseViewController {
             chartView.setNeedsDisplay()
 
         case .removeDataSet:
-            let rnd = Int(arc4random_uniform(UInt32(chartView.data!.dataSetCount)))
+            let rnd = Int(arc4random_uniform(UInt32(chartView.data!.count)))
             chartView.data?.removeDataSet(chartView.data![rnd])
             chartView.data?.notifyDataChanged()
             chartView.notifyDataSetChanged()
