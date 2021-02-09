@@ -46,7 +46,7 @@ class LineChart1ViewController: DemoBaseViewController {
         chartView.isPinchZoomEnabled = true
 
         // x-axis limit line
-        let llXAxis = ChartLimitLine(limit: 10, label: "Index 10")
+        var llXAxis = ChartLimitLine(limit: 10, label: "Index 10")
         llXAxis.lineWidth = 4
         llXAxis.lineDashLengths = [10, 10, 0]
         llXAxis.labelPosition = .bottomRight
@@ -55,13 +55,13 @@ class LineChart1ViewController: DemoBaseViewController {
         chartView.xAxis.gridLineDashLengths = [10, 10]
         chartView.xAxis.gridLineDashPhase = 0
 
-        let ll1 = ChartLimitLine(limit: 150, label: "Upper Limit")
+        var ll1 = ChartLimitLine(limit: 150, label: "Upper Limit")
         ll1.lineWidth = 4
         ll1.lineDashLengths = [5, 5]
         ll1.labelPosition = .topRight
         ll1.valueFont = .systemFont(ofSize: 10)
 
-        let ll2 = ChartLimitLine(limit: -30, label: "Lower Limit")
+        var ll2 = ChartLimitLine(limit: -30, label: "Lower Limit")
         ll2.lineWidth = 4
         ll2.lineDashLengths = [5, 5]
         ll2.labelPosition = .bottomRight
@@ -76,6 +76,7 @@ class LineChart1ViewController: DemoBaseViewController {
         leftAxis.gridLineDashLengths = [5, 5]
         leftAxis.drawLimitLinesBehindDataEnabled = true
 
+        chartView.xAxis.addLimitLine(llXAxis)
         chartView.rightAxis.isEnabled = false
 
         // [_chartView.viewPortHandler setMaximumScaleY: 2.f];
