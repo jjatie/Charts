@@ -42,8 +42,8 @@ class PositiveNegativeBarChartViewController: DemoBaseViewController {
 
         chartView.setExtraOffsets(left: 70, top: -30, right: 70, bottom: 10)
 
-        chartView.drawBarShadowEnabled = false
-        chartView.drawValueAboveBarEnabled = true
+        chartView.isDrawBarShadowEnabled = false
+        chartView.isDrawValueAboveBarEnabled = true
 
         chartView.chartDescription.enabled = false
 

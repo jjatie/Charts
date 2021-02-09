@@ -98,7 +98,7 @@ class HorizontalBarChartTests: XCTestCase {
         let dataEntries = setupDefaultValuesDataEntries()
         let dataSet = setupDefaultDataSet(chartDataEntries: dataEntries)
         let chart = setupDefaultChart(dataSets: [dataSet])
-        chart.drawValueAboveBarEnabled = false
+        chart.isDrawValueAboveBarEnabled = false
         chart.notifyDataSetChanged()
         assertChartSnapshot(matching: chart)
     }
@@ -124,7 +124,7 @@ class HorizontalBarChartTests: XCTestCase {
         let dataEntries = setupStackedvaluesDataEntries()
         let dataSet = setupDefaultStackedDataSet(chartDataEntries: dataEntries)
         let chart = setupDefaultChart(dataSets: [dataSet])
-        chart.drawValueAboveBarEnabled = false
+        chart.isDrawValueAboveBarEnabled = false
         chart.notifyDataSetChanged()
         assertChartSnapshot(matching: chart)
     }

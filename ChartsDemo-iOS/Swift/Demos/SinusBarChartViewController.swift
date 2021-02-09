@@ -35,8 +35,8 @@ class SinusBarChartViewController: DemoBaseViewController {
 
         chartView.chartDescription.enabled = false
 
-        chartView.drawBarShadowEnabled = false
-        chartView.drawValueAboveBarEnabled = false
+        chartView.isDrawBarShadowEnabled = false
+        chartView.isDrawValueAboveBarEnabled = false
         chartView.maxVisibleCount = 60
 
         let xAxis = chartView.xAxis

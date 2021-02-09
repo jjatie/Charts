@@ -39,7 +39,7 @@ class AnotherBarChartViewController: DemoBaseViewController {
         chartView.chartDescription.enabled = false
         chartView.maxVisibleCount = 60
         chartView.pinchZoomEnabled = false
-        chartView.drawBarShadowEnabled = false
+        chartView.isDrawBarShadowEnabled = false
 
         let xAxis = chartView.xAxis
         xAxis.labelPosition = .bottom

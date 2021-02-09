@@ -14,11 +14,31 @@ import Foundation
 
 /// Chart that draws bars.
 open class BarChartView: BarLineChartViewBase, BarChartDataProvider {
+    // MARK: - BarChartDataProvider
+
+    open var barData: BarChartData? { return data as? BarChartData }
+
     /// if set to true, all values are drawn above their bars, instead of below their top
-    private var _drawValueAboveBarEnabled = true
+    public var isDrawValueAboveBarEnabled = true {
+        didSet { setNeedsDisplay() }
+    }
 
     /// if set to true, a grey area is drawn behind each bar that indicates the maximum value
-    private var _drawBarShadowEnabled = false
+    public var isDrawBarShadowEnabled = false {
+        didSet { setNeedsDisplay() }
+    }
+
+    // MARK: Style
+
+    /// Adds half of the bar width to each side of the x-axis range in order to allow the bars of the barchart to be fully displayed.
+    /// **default**: false
+    public var fitBars = false
+
+    /// Set this to `true` to make the highlight operation full-bar oriented, `false` to make it highlight single values (relevant only for stacked).
+    /// If enabled, highlighting operations will highlight the whole bar, even if only a single stack entry was tapped.
+    public var isHighlightFullBarEnabled: Bool = false
+
+    // MARK: -
 
     override internal func initialize() {
         super.initialize()
@@ -130,45 +150,4 @@ open class BarChartView: BarLineChartViewBase, BarChartDataProvider {
     open func highlightValue(x: Double, dataSetIndex: Int, stackIndex: Int) {
         highlightValue(Highlight(x: x, dataSetIndex: dataSetIndex, stackIndex: stackIndex))
     }
-
-    // MARK: Accessors
-
-    /// if set to true, all values are drawn above their bars, instead of below their top
-    open var drawValueAboveBarEnabled: Bool {
-        get { return _drawValueAboveBarEnabled }
-        set {
-            _drawValueAboveBarEnabled = newValue
-            setNeedsDisplay()
-        }
-    }
-
-    /// if set to true, a grey area is drawn behind each bar that indicates the maximum value
-    open var drawBarShadowEnabled: Bool {
-        get { return _drawBarShadowEnabled }
-        set {
-            _drawBarShadowEnabled = newValue
-            setNeedsDisplay()
-        }
-    }
-
-    /// Adds half of the bar width to each side of the x-axis range in order to allow the bars of the barchart to be fully displayed.
-    /// **default**: false
-    open var fitBars = false
-
-    /// Set this to `true` to make the highlight operation full-bar oriented, `false` to make it highlight single values (relevant only for stacked).
-    /// If enabled, highlighting operations will highlight the whole bar, even if only a single stack entry was tapped.
-    open var highlightFullBarEnabled: Bool = false
-
-    /// `true` the highlight is be full-bar oriented, `false` ifsingle-value
-    open var isHighlightFullBarEnabled: Bool { return highlightFullBarEnabled }
-
-    // MARK: - BarChartDataProvider
-
-    open var barData: BarChartData? { return data as? BarChartData }
-
-    /// `true` if drawing values above bars is enabled, `false` ifnot
-    open var isDrawValueAboveBarEnabled: Bool { return drawValueAboveBarEnabled }
-
-    /// `true` if drawing shadows (maxvalue) for each bar is enabled, `false` ifnot
-    open var isDrawBarShadowEnabled: Bool { return drawBarShadowEnabled }
 }

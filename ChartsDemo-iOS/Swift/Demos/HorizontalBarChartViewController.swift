@@ -39,8 +39,8 @@ class HorizontalBarChartViewController: DemoBaseViewController {
 
         chartView.delegate = self
 
-        chartView.drawBarShadowEnabled = false
-        chartView.drawValueAboveBarEnabled = true
+        chartView.isDrawBarShadowEnabled = false
+        chartView.isDrawValueAboveBarEnabled = true
 
         chartView.maxVisibleCount = 60
 
