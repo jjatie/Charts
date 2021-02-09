@@ -154,12 +154,12 @@ class DemoBaseViewController: UIViewController, ChartViewDelegate {
 
         case .togglePinchZoom:
             let barLineChart = chartView as! BarLineChartViewBase
-            barLineChart.pinchZoomEnabled = !barLineChart.pinchZoomEnabled
+            barLineChart.isPinchZoomEnabled = !barLineChart.isPinchZoomEnabled
             chartView.setNeedsDisplay()
 
         case .toggleAutoScaleMinMax:
             let barLineChart = chartView as! BarLineChartViewBase
-            barLineChart.autoScaleMinMaxEnabled = !barLineChart.isAutoScaleMinMaxEnabled
+            barLineChart.isAutoScaleMinMaxEnabled = !barLineChart.isAutoScaleMinMaxEnabled
             chartView.notifyDataSetChanged()
 
         case .toggleData:
@@ -283,9 +283,9 @@ class DemoBaseViewController: UIViewController, ChartViewDelegate {
     func setup(barLineChartView chartView: BarLineChartViewBase) {
         chartView.chartDescription.enabled = false
 
-        chartView.dragEnabled = true
+        chartView.isDragEnabled = true
         chartView.setScaleEnabled(true)
-        chartView.pinchZoomEnabled = false
+        chartView.isPinchZoomEnabled = false
 
         // ChartYAxis *leftAxis = chartView.leftAxis;
 

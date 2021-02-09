@@ -38,10 +38,10 @@ class BubbleChartViewController: DemoBaseViewController {
 
         chartView.chartDescription.enabled = false
 
-        chartView.dragEnabled = false
+        chartView.isDragEnabled = false
         chartView.setScaleEnabled(true)
         chartView.maxVisibleCount = 200
-        chartView.pinchZoomEnabled = true
+        chartView.isPinchZoomEnabled = true
 
         chartView.legend.horizontalAlignment = .right
         chartView.legend.verticalAlignment = .top

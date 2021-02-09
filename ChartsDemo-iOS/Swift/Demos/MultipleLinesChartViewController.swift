@@ -45,7 +45,7 @@ class MultipleLinesChartViewController: DemoBaseViewController {
         chartView.rightAxis.drawAxisLineEnabled = false
         chartView.xAxis.drawAxisLineEnabled = false
 
-        chartView.drawBordersEnabled = false
+        chartView.isDrawBordersEnabled = false
         chartView.setScaleEnabled(true)
 
         let l = chartView.legend

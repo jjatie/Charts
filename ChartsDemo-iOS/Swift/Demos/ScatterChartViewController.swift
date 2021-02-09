@@ -37,10 +37,10 @@ class ScatterChartViewController: DemoBaseViewController {
 
         chartView.chartDescription.enabled = false
 
-        chartView.dragEnabled = true
+        chartView.isDragEnabled = true
         chartView.setScaleEnabled(true)
         chartView.maxVisibleCount = 200
-        chartView.pinchZoomEnabled = true
+        chartView.isPinchZoomEnabled = true
 
         let l = chartView.legend
         l.horizontalAlignment = .right

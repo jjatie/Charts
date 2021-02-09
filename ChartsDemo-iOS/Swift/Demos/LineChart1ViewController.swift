@@ -41,9 +41,9 @@ class LineChart1ViewController: DemoBaseViewController {
         chartView.delegate = self
 
         chartView.chartDescription.enabled = false
-        chartView.dragEnabled = true
+        chartView.isDragEnabled = true
         chartView.setScaleEnabled(true)
-        chartView.pinchZoomEnabled = true
+        chartView.isPinchZoomEnabled = true
 
         // x-axis limit line
         let llXAxis = ChartLimitLine(limit: 10, label: "Index 10")

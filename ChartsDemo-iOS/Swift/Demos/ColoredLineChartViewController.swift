@@ -40,9 +40,9 @@ class ColoredLineChartViewController: DemoBaseViewController {
 
         chart.chartDescription.enabled = false
 
-        chart.dragEnabled = true
+        chart.isDragEnabled = true
         chart.setScaleEnabled(true)
-        chart.pinchZoomEnabled = false
+        chart.isPinchZoomEnabled = false
         chart.setViewPortOffsets(left: 10, top: 0, right: 10, bottom: 0)
 
         chart.legend.enabled = false

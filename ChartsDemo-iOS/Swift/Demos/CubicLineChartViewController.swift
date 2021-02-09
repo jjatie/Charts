@@ -50,9 +50,9 @@ class CubicLineChartViewController: DemoBaseViewController {
         chartView.setViewPortOffsets(left: 0, top: 20, right: 0, bottom: 0)
         chartView.backgroundColor = UIColor(red: 104 / 255, green: 241 / 255, blue: 175 / 255, alpha: 1)
 
-        chartView.dragEnabled = true
+        chartView.isDragEnabled = true
         chartView.setScaleEnabled(true)
-        chartView.pinchZoomEnabled = false
+        chartView.isPinchZoomEnabled = false
         chartView.maxHighlightDistance = 300
 
         chartView.xAxis.enabled = false

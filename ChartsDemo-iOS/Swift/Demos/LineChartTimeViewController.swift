@@ -40,10 +40,10 @@ class LineChartTimeViewController: DemoBaseViewController {
 
         chartView.chartDescription.enabled = false
 
-        chartView.dragEnabled = true
+        chartView.isDragEnabled = true
         chartView.setScaleEnabled(true)
-        chartView.pinchZoomEnabled = false
-        chartView.highlightPerDragEnabled = true
+        chartView.isPinchZoomEnabled = false
+        chartView.isHighlightPerDragEnabled = true
 
         chartView.backgroundColor = .white
 

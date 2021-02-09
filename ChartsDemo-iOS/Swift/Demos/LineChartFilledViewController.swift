@@ -28,14 +28,14 @@ class LineChartFilledViewController: DemoBaseViewController {
 
         chartView.backgroundColor = .white
         chartView.gridBackgroundColor = UIColor(red: 51 / 255, green: 181 / 255, blue: 229 / 255, alpha: 150 / 255)
-        chartView.drawGridBackgroundEnabled = true
+        chartView.isDrawGridBackgroundEnabled = true
 
-        chartView.drawBordersEnabled = true
+        chartView.isDrawBordersEnabled = true
 
         chartView.chartDescription.enabled = false
 
-        chartView.pinchZoomEnabled = false
-        chartView.dragEnabled = true
+        chartView.isPinchZoomEnabled = false
+        chartView.isDragEnabled = true
         chartView.setScaleEnabled(true)
 
         chartView.legend.enabled = false
