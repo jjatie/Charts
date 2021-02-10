@@ -62,7 +62,7 @@ class BarChartTests: XCTestCase {
     }
 
     func setupDefaultStackedDataSet(chartDataEntries: [BarChartDataEntry]) -> BarChartDataSet {
-        let dataSet = BarChartDataSet(entries: chartDataEntries, label: "Stacked bar chart unit test data")
+        var dataSet = BarChartDataSet(entries: chartDataEntries, label: "Stacked bar chart unit test data")
         dataSet.isDrawIconsEnabled = false
         dataSet.iconsOffset = CGPoint(x: 0, y: -10.0)
         dataSet.colors = Array(arrayLiteral: NSUIColor(red: 46 / 255.0, green: 204 / 255.0, blue: 113 / 255.0, alpha: 1.0),
@@ -73,7 +73,7 @@ class BarChartTests: XCTestCase {
     }
 
     func setupDefaultDataSet(chartDataEntries: [BarChartDataEntry]) -> BarChartDataSet {
-        let dataSet = BarChartDataSet(entries: chartDataEntries, label: "Bar chart unit test data")
+        var dataSet = BarChartDataSet(entries: chartDataEntries, label: "Bar chart unit test data")
         dataSet.isDrawIconsEnabled = false
         dataSet.iconsOffset = CGPoint(x: 0, y: -10.0)
         return dataSet
@@ -98,7 +98,7 @@ class BarChartTests: XCTestCase {
 
     func testDefaultBarDataSetLabels() {
         let dataEntries = setupDefaultValuesDataEntries()
-        let dataSet = BarChartDataSet(entries: dataEntries)
+        var dataSet = BarChartDataSet(entries: dataEntries)
         dataSet.isDrawIconsEnabled = false
         let chart = setupDefaultChart(dataSets: [dataSet])
         assertChartSnapshot(matching: chart)
@@ -222,9 +222,9 @@ class BarChartTests: XCTestCase {
 
     func testHidesValues() {
         let dataEntries = setupDefaultValuesDataEntries()
-        let dataSet = setupDefaultDataSet(chartDataEntries: dataEntries)
-        let chart = setupDefaultChart(dataSets: [dataSet])
+        var dataSet = setupDefaultDataSet(chartDataEntries: dataEntries)
         dataSet.isDrawValuesEnabled = false
+        let chart = setupDefaultChart(dataSets: [dataSet])
         chart.notifyDataSetChanged()
         assertChartSnapshot(matching: chart)
     }
@@ -248,7 +248,7 @@ class BarChartTests: XCTestCase {
 
     func testStackedNotDrawValues() {
         let dataEntries = setupStackedValuesDataEntries()
-        let dataSet = setupDefaultStackedDataSet(chartDataEntries: dataEntries)
+        var dataSet = setupDefaultStackedDataSet(chartDataEntries: dataEntries)
         dataSet.isDrawValuesEnabled = false
         let chart = setupDefaultChart(dataSets: [dataSet])
         chart.notifyDataSetChanged()
@@ -311,7 +311,7 @@ class BarChartTests: XCTestCase {
 
     func testInvertedRightAxis() {
         let dataEntries = setupDefaultValuesDataEntries()
-        let dataSet = setupDefaultDataSet(chartDataEntries: dataEntries)
+        var dataSet = setupDefaultDataSet(chartDataEntries: dataEntries)
         dataSet.axisDependency = .right
         let chart = setupDefaultChart(dataSets: [dataSet])
         chart.rightAxis.inverted = true
@@ -321,7 +321,7 @@ class BarChartTests: XCTestCase {
 
     func testInvertedRightAxisWithNegativeValues() {
         let dataEntries = setupNegativeValuesDataEntries()
-        let dataSet = setupDefaultDataSet(chartDataEntries: dataEntries)
+        var dataSet = setupDefaultDataSet(chartDataEntries: dataEntries)
         dataSet.axisDependency = .right
         let chart = setupDefaultChart(dataSets: [dataSet])
         chart.rightAxis.inverted = true
@@ -331,7 +331,7 @@ class BarChartTests: XCTestCase {
 
     func testInvertedRightAxisWithPositiveValues() {
         let dataEntries = setupPositiveValuesDataEntries()
-        let dataSet = setupDefaultDataSet(chartDataEntries: dataEntries)
+        var dataSet = setupDefaultDataSet(chartDataEntries: dataEntries)
         dataSet.axisDependency = .right
         let chart = setupDefaultChart(dataSets: [dataSet])
         chart.rightAxis.inverted = true
@@ -360,9 +360,9 @@ class BarChartTests: XCTestCase {
 
     func testDrawIcons() {
         let dataEntries = setupDefaultValuesDataEntries()
-        let dataSet = setupDefaultDataSet(chartDataEntries: dataEntries)
-        let chart = setupDefaultChart(dataSets: [dataSet])
+        var dataSet = setupDefaultDataSet(chartDataEntries: dataEntries)
         dataSet.isDrawIconsEnabled = true
+        let chart = setupDefaultChart(dataSets: [dataSet])
         chart.notifyDataSetChanged()
         assertChartSnapshot(matching: chart)
     }

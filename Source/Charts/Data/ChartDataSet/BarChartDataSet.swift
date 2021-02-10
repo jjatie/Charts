@@ -1,12 +1,6 @@
 public typealias BarChartDataSet = ChartDataSet<BarChartDataEntry>
 
 extension BarChartDataSet {
-    private func initialize() {
-        // TODO:
-        style.highlightColor = NSUIColor.black
-    }
-
-
     /// The maximum number of bars that can be stacked upon another in this DataSet.
     /// This value is calculated from the Entries that are added to the DataSet
     /// - Complexity: O(n) where `n` is the number of entries in this data set
@@ -21,7 +15,7 @@ extension BarChartDataSet {
         stackSize > 1
     }
 
-    func calcMinMax(entry e: Element) {
+    mutating func calcMinMax(entry e: Element) {
         guard !e.y.isNaN else { return }
 
         if e.yValues == nil {

@@ -72,7 +72,7 @@ open class ChartData<EntryType: ChartDataEntry>: ExpressibleByArrayLiteral {
     }
 
     func calcMinMaxY(fromX: Double, toX: Double) {
-        forEach { $0.calcMinMaxY(fromX: fromX, toX: toX) }
+        indices.forEach { self[$0].calcMinMaxY(fromX: fromX, toX: toX) }
 
         // apply the new data
         calcMinMax()
@@ -160,9 +160,8 @@ open class ChartData<EntryType: ChartDataEntry>: ExpressibleByArrayLiteral {
             return print("ChartData.addEntry() - Cannot add Entry because dataSetIndex too high or too low.", terminator: "\n")
         }
 
-        let set = self[dataSetIndex]
-        set.append(e)
-        calcMinMax(entry: e, axis: set.axisDependency)
+        self[dataSetIndex].append(e)
+        calcMinMax(entry: e, axis: self[dataSetIndex].axisDependency)
     }
 
     /// Removes the given Entry object from the DataSet at the specified index.
@@ -186,29 +185,29 @@ open class ChartData<EntryType: ChartDataEntry>: ExpressibleByArrayLiteral {
 
     /// Sets a custom ValueFormatter for all DataSets this data object contains.
     open func setValueFormatter(_ formatter: ValueFormatter) {
-        forEach { $0.valueFormatter = formatter }
+        indices.forEach { self[$0].valueFormatter = formatter }
     }
 
     /// Sets the color of the value-text (color in which the value-labels are drawn) for all DataSets this data object contains.
     open func setValueTextColor(_ color: NSUIColor) {
-        forEach { $0.valueTextColor = color }
+        indices.forEach { self[$0].valueTextColor = color }
     }
 
     /// Sets the font for all value-labels for all DataSets this data object contains.
     open func setValueFont(_ font: NSUIFont) {
-        forEach { $0.valueFont = font }
+        indices.forEach { self[$0].valueFont = font }
     }
 
     /// Enables / disables drawing values (value-text) for all DataSets this data object contains.
     open func setDrawValues(_ enabled: Bool) {
-        forEach { $0.isDrawValuesEnabled = enabled }
+        indices.forEach { self[$0].isDrawValuesEnabled = enabled }
     }
 
     /// Enables / disables highlighting values for all DataSets this data object contains.
     /// If set to true, this means that values can be highlighted programmatically or by touch gesture.
     open var isHighlightEnabled: Bool {
         get { allSatisfy { $0.isHighlightingEnabled } }
-        set { forEach { $0.isHighlightingEnabled = newValue } }
+        set { indices.forEach { self[$0].isHighlightingEnabled = newValue } }
     }
 
     /// Clears this data object from all DataSets and removes all Entries.

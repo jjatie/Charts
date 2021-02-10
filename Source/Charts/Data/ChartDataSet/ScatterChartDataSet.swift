@@ -25,7 +25,7 @@ extension ScatterChartDataSet {
 
     /// Sets the ScatterShape this DataSet should be drawn with.
     /// This will search for an available ShapeRenderer and set this renderer for the DataSet
-    public func setScatterShape(_ shape: Shape) {
+    public mutating func setScatterShape(_ shape: Shape) {
         style.shapeRenderer = ScatterChartDataSet.renderer(forShape: shape)
     }
 }

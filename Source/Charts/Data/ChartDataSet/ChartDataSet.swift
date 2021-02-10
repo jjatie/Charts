@@ -28,7 +28,7 @@ public typealias ARange = ClosedRange<Double>
 /// The DataSet class represents one group or type of entries (Entry) in the Chart that belong together.
 /// It is designed to logically separate different groups of values inside the Chart (e.g. the values for a specific line in the LineChart, or the values of a specific group of bars in the BarChart).
 @dynamicMemberLookup
-public final class ChartDataSet<Element: ChartDataEntry>: NSCopying {
+public struct ChartDataSet<Element: ChartDataEntry> {
     /// - Note: Calls `notifyDataSetChanged()` after setting a new value.
     /// - Returns: The array of y-values that this DataSet represents.
     /// the entries that this dataset represents / holds together
@@ -50,7 +50,7 @@ public final class ChartDataSet<Element: ChartDataEntry>: NSCopying {
         set { style[keyPath: keyPath] = newValue }
     }
 
-    public required init() {
+    public init() {
         self.entries = []
     }
 
@@ -63,22 +63,12 @@ public final class ChartDataSet<Element: ChartDataEntry>: NSCopying {
     // MARK: - Data functions and accessors
 
     /// Use this method to tell the data set that the underlying data has changed
-    public func notifyDataSetChanged() {
+    public mutating func notifyDataSetChanged() {
         calcMinMax()
     }
 
-    /// Used to replace all entries of a data set while retaining styling properties.
-    /// This is a separate method from a setter on `entries` to encourage usage
-    /// of `Collection` conformances.
-    ///
-    /// - Parameter entries: new entries to replace existing entries in the dataset
-    public func replaceEntries(_ entries: [Element]) {
-        self.entries = entries
-        notifyDataSetChanged()
-    }
-
     /// Calculates the minimum and maximum x and y values (xMin, xMax, yMin, yMax).
-    public func calcMinMax() {
+    public mutating func calcMinMax() {
         yRange.min = Double.greatestFiniteMagnitude
         yRange.max = -Double.greatestFiniteMagnitude
         xRange.min = Double.greatestFiniteMagnitude
@@ -86,12 +76,12 @@ public final class ChartDataSet<Element: ChartDataEntry>: NSCopying {
 
         guard !isEmpty else { return }
 
-        forEach(calcMinMax)
+        forEach { calcMinMax(entry: $0) }
     }
 
     /// Calculates the min and max y-values from the Entry closest to the given fromX to the Entry closest to the given toX value.
     /// This is only needed for the autoScaleMinMax feature.
-    public func calcMinMaxY(fromX: Double, toX: Double) {
+    public mutating func calcMinMaxY(fromX: Double, toX: Double) {
         yRange.min = Double.greatestFiniteMagnitude
         yRange.max = -Double.greatestFiniteMagnitude
 
@@ -102,15 +92,15 @@ public final class ChartDataSet<Element: ChartDataEntry>: NSCopying {
         else { return }
 
         // only recalculate y
-        self[indexFrom...indexTo].forEach(calcMinMaxY)
+        self[indexFrom...indexTo].forEach { calcMinMaxY(entry: $0) }
     }
 
-    public func calcMinMaxX(entry e: Element) {
+    public mutating func calcMinMaxX(entry e: Element) {
         xRange.min = Swift.min(e.x, xRange.min)
         xRange.max = Swift.max(e.x, xRange.max)
     }
 
-    public func calcMinMaxY(entry e: Element) {
+    public mutating func calcMinMaxY(entry e: Element) {
         yRange = (Swift.min(e.y, yRange.min), Swift.max(e.y, yRange.max))
     }
 
@@ -118,7 +108,7 @@ public final class ChartDataSet<Element: ChartDataEntry>: NSCopying {
     ///
     /// - Parameters:
     ///   - e:
-    func calcMinMax(entry e: Element) {
+    mutating func calcMinMax(entry e: Element) {
         calcMinMaxX(entry: e)
         calcMinMaxY(entry: e)
     }
@@ -129,7 +119,7 @@ public final class ChartDataSet<Element: ChartDataEntry>: NSCopying {
     ///
     /// - Parameters:
     ///   - e: the entry to add
-    public func addEntryOrdered(_ e: Element) {
+    public mutating func addEntryOrdered(_ e: Element) {
         if let last = last, last.x > e.x,
            let startIndex = index(ofX: e.x, closestToY: e.y, rounding: .up),
            let closestIndex = self[startIndex...].lastIndex(where: { $0.x < e.x }) {
@@ -145,23 +135,10 @@ public final class ChartDataSet<Element: ChartDataEntry>: NSCopying {
     /// - Parameters:
     ///   - entry: the entry to remove
     /// - Returns: `true` if the entry was removed successfully, else if the entry does not exist
-    public func remove(_ entry: Element) -> Bool {
+    public mutating func remove(_ entry: Element) -> Bool {
         guard let index = firstIndex(of: entry) else { return false }
         _ = remove(at: index)
         return true
-    }
-
-    // MARK: - NSCopying
-
-    public func copy(with zone: NSZone? = nil) -> Any {
-        let copy = type(of: self).init()
-        copy.entries = entries
-        copy.label = label
-        copy.axisDependency = axisDependency
-        copy.xRange = yRange
-        copy.yRange = xRange
-
-        return copy
     }
 }
 
@@ -179,24 +156,24 @@ extension ChartDataSet {
         style.valueColors[index % style.valueColors.count]
     }
 
-    public func addColor(_ color: NSUIColor) {
+    public mutating func addColor(_ color: NSUIColor) {
         style.colors.append(color)
     }
 
-    public func setColor(_ color: NSUIColor) {
+    public mutating func setColor(_ color: NSUIColor) {
         style.colors.removeAll(keepingCapacity: false)
         style.colors.append(color)
     }
 
-    public func setColor(_ color: NSUIColor, alpha: CGFloat) {
+    public mutating func setColor(_ color: NSUIColor, alpha: CGFloat) {
         setColor(color.withAlphaComponent(alpha))
     }
 
-    public func setColors(_ colors: [NSUIColor], alpha: CGFloat) {
+    public mutating func setColors(_ colors: [NSUIColor], alpha: CGFloat) {
         self.style.colors = colors.map { $0.withAlphaComponent(alpha) }
     }
 
-    public func setColors(_ colors: NSUIColor...) {
+    public mutating func setColors(_ colors: NSUIColor...) {
         self.style.colors = colors
     }
 }
@@ -243,51 +220,51 @@ extension ChartDataSet: RandomAccessCollection {
 // MARK: RangeReplaceableCollection
 
 extension ChartDataSet: RangeReplaceableCollection {
-    public func append(_ newElement: Element) {
+    public mutating func append(_ newElement: Element) {
         calcMinMax(entry: newElement)
         entries.append(newElement)
     }
 
-    public func insert(_ newElement: Element, at i: Int) {
+    public mutating func insert(_ newElement: Element, at i: Int) {
         calcMinMax(entry: newElement)
         entries.insert(newElement, at: i)
     }
 
     // TODO: Optimize when to calculate min/max
-    public func remove(at position: Index) -> Element {
+    public mutating func remove(at position: Index) -> Element {
         let element = entries.remove(at: position)
         notifyDataSetChanged()
         return element
     }
 
-    public func removeFirst() -> Element {
+    public mutating func removeFirst() -> Element {
         let element = entries.removeFirst()
         notifyDataSetChanged()
         return element
     }
 
-    public func removeFirst(_ n: Int) {
+    public mutating func removeFirst(_ n: Int) {
         entries.removeFirst(n)
         notifyDataSetChanged()
     }
 
-    public func removeLast() -> Element {
+    public mutating func removeLast() -> Element {
         let element = entries.removeLast()
         notifyDataSetChanged()
         return element
     }
 
-    public func removeLast(_ n: Int) {
+    public mutating func removeLast(_ n: Int) {
         entries.removeLast(n)
         notifyDataSetChanged()
     }
 
-    public func removeSubrange<R>(_ bounds: R) where R: RangeExpression, Index == R.Bound {
+    public mutating func removeSubrange<R>(_ bounds: R) where R: RangeExpression, Index == R.Bound {
         entries.removeSubrange(bounds)
         notifyDataSetChanged()
     }
 
-    public func removeAll(keepingCapacity keepCapacity: Bool) {
+    public mutating func removeAll(keepingCapacity keepCapacity: Bool) {
         entries.removeAll(keepingCapacity: keepCapacity)
         notifyDataSetChanged()
     }
@@ -296,7 +273,7 @@ extension ChartDataSet: RangeReplaceableCollection {
 // MARK: - CustomStringConvertible
 extension ChartDataSet: CustomStringConvertible {
     public var description: String {
-        String(format: "%@, label: %@, %i entries", arguments: [NSStringFromClass(type(of: self)), self.label ?? "", self.count])
+        String(format: "%@, label: %@, %i entries", arguments: [String(describing: Self.self), self.label ?? "", self.count])
     }
 }
 

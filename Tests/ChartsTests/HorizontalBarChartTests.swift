@@ -49,14 +49,14 @@ class HorizontalBarChartTests: XCTestCase {
     }
 
     func setupDefaultDataSet(chartDataEntries: [BarChartDataEntry]) -> BarChartDataSet {
-        let dataSet = BarChartDataSet(entries: chartDataEntries, label: "Bar chart unit test data")
+        var dataSet = BarChartDataSet(entries: chartDataEntries, label: "Bar chart unit test data")
         dataSet.isDrawIconsEnabled = false
         dataSet.iconsOffset = CGPoint(x: 0, y: -10.0)
         return dataSet
     }
 
     func setupDefaultStackedDataSet(chartDataEntries: [BarChartDataEntry]) -> BarChartDataSet {
-        let dataSet = BarChartDataSet(entries: chartDataEntries, label: "Stacked bar chart unit test data")
+        var dataSet = BarChartDataSet(entries: chartDataEntries, label: "Stacked bar chart unit test data")
         dataSet.isDrawIconsEnabled = false
         dataSet.iconsOffset = CGPoint(x: 0, y: -10.0)
         dataSet.colors = Array(arrayLiteral: NSUIColor(red: 46 / 255.0, green: 204 / 255.0, blue: 113 / 255.0, alpha: 1.0),
@@ -85,9 +85,9 @@ class HorizontalBarChartTests: XCTestCase {
 
     func testHidesValues() {
         let dataEntries = setupDefaultValuesDataEntries()
-        let dataSet = setupDefaultDataSet(chartDataEntries: dataEntries)
-        let chart = setupDefaultChart(dataSets: [dataSet])
+        var dataSet = setupDefaultDataSet(chartDataEntries: dataEntries)
         dataSet.isDrawValuesEnabled = false
+        let chart = setupDefaultChart(dataSets: [dataSet])
         chart.notifyDataSetChanged()
         assertChartSnapshot(matching: chart)
     }
@@ -111,7 +111,7 @@ class HorizontalBarChartTests: XCTestCase {
 
     func testStackedNotDrawValues() {
         let dataEntries = setupStackedvaluesDataEntries()
-        let dataSet = setupDefaultStackedDataSet(chartDataEntries: dataEntries)
+        var dataSet = setupDefaultStackedDataSet(chartDataEntries: dataEntries)
         dataSet.isDrawValuesEnabled = false
         let chart = setupDefaultChart(dataSets: [dataSet])
         chart.notifyDataSetChanged()

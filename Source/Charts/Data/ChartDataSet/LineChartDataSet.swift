@@ -17,7 +17,7 @@ extension LineChartDataSet {
 
     /// Sets the one and ONLY color that should be used for this DataSet.
     /// Internally, this recreates the colors array and adds the specified color.
-    public func setCircleColor(_ color: NSUIColor) {
+    public mutating func setCircleColor(_ color: NSUIColor) {
         style.circleColors.removeAll(keepingCapacity: false)
         style.circleColors.append(color)
     }

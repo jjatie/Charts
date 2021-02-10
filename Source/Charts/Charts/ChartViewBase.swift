@@ -60,8 +60,8 @@ open class ChartViewBase<Entry: ChartDataEntry>: NSUIView {
                 formatter.configure(for: data)
             }
 
-            for set in data where set.valueFormatter is DefaultValueFormatter {
-                set.valueFormatter = defaultValueFormatter
+            for i in data.indices where data[i].valueFormatter is DefaultValueFormatter {
+                data[i].valueFormatter = defaultValueFormatter
             }
 
             // let the chart know there is new data

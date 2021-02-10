@@ -48,27 +48,27 @@ class LineChartTests: XCTestCase {
     }
 
     func testHidesValues() {
-        dataSet.isDrawValuesEnabled = false
+        chart.data[0].isDrawValuesEnabled = false
         assertChartSnapshot(matching: chart)
     }
 
     func testDoesntDrawCircles() {
-        dataSet.isDrawCirclesEnabled = false
+        chart.data[0].isDrawCirclesEnabled = false
         assertChartSnapshot(matching: chart)
     }
 
     func testIsCubic() {
-        dataSet.mode = .cubicBezier
+        chart.data[0].mode = .cubicBezier
         assertChartSnapshot(matching: chart)
     }
 
     func testDoesntDrawCircleHole() {
-        dataSet.isDrawCircleHoleEnabled = false
+        chart.data[0].isDrawCircleHoleEnabled = false
         assertChartSnapshot(matching: chart)
     }
 
     func testDrawIcons() {
-        dataSet.isDrawIconsEnabled = true
+        chart.data[0].isDrawIconsEnabled = true
         assertChartSnapshot(matching: chart)
     }
 }
