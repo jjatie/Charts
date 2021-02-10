@@ -136,7 +136,7 @@ open class CombinedChartData: BarLineScatterCandleBubbleChartData {
         return false
     }
 
-    public func notifyDataChanged() {
+    public override func notifyDataChanged() {
         calcMinMax() // recalculate everything
     }
 

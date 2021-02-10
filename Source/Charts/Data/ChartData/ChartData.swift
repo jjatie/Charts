@@ -67,6 +67,10 @@ open class ChartData: ExpressibleByArrayLiteral {
         calcMinMax()
     }
 
+    public func notifyDataChanged() {
+        calcMinMax()
+    }
+
     func calcMinMaxY(fromX: Double, toX: Double) {
         forEach { $0.calcMinMaxY(fromX: fromX, toX: toX) }
 
