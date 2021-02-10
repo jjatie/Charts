@@ -25,7 +25,7 @@ open class AnimatedZoomViewJob: AnimatedViewPortJob {
     public init(
         viewPortHandler: ViewPortHandler,
         transformer: Transformer,
-        view: ChartViewBase,
+        view: NSUIView,
         yAxis: YAxis,
         xAxisRange: Double,
         scaleX: CGFloat,

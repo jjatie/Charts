@@ -68,8 +68,6 @@ class HorizontalBarChartTests: XCTestCase {
 
     func setupDefaultChart(dataSets: [BarChartDataSet]) -> BarChartView {
         let data = BarChartData(dataSets: dataSets)
-        data.barWidth = 0.85
-
         let chart = HorizontalBarChartView(frame: CGRect(x: 0, y: 0, width: 480, height: 350))
         chart.backgroundColor = NSUIColor.clear
         chart.data = data

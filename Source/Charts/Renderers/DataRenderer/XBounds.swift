@@ -12,7 +12,7 @@ public class XBounds {
     public init() {}
 
     public init<Entry: ChartDataEntry>(
-        chart: BarLineScatterCandleBubbleChartDataProvider,
+        chart: BarLineChartViewBase<Entry>,
         dataSet: ChartDataSet<Entry>,
         animator: Animator?
     ) {
@@ -21,7 +21,7 @@ public class XBounds {
 
     /// Calculates the minimum and maximum x values as well as the range between them.
     public func set<Entry: ChartDataEntry>(
-        chart: BarLineScatterCandleBubbleChartDataProvider,
+        chart: BarLineChartViewBase<Entry>,
         dataSet: ChartDataSet<Entry>,
         animator: Animator?
     ) {

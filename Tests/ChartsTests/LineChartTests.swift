@@ -27,6 +27,8 @@ class LineChartTests: XCTestCase {
 
         dataSet = LineChartDataSet(entries: entries, label: "First unit test data")
         dataSet.isDrawIconsEnabled = false
+        dataSet.isDrawFilledEnabled = false
+        dataSet.circleHoleColor = .white
         dataSet.iconsOffset = CGPoint(x: 0, y: 20.0)
 
         chart = LineChartView(frame: CGRect(x: 0, y: 0, width: 480, height: 350))

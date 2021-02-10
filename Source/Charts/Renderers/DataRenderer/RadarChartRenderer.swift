@@ -41,21 +41,21 @@ public class RadarChartRenderer: DataRenderer {
     }
 
     public func drawData(context: CGContext) {
-        guard let chart = chart,
-              let radarData = chart.data as? RadarChartData
-        else {
+        guard let chart = chart else {
             return
         }
-
+        let radarData = chart.data
         let mostEntries = radarData.maxEntryCountSet?.count ?? 0
 
         // If we redraw the data, remove and repopulate accessible elements to update label values and frames
         accessibleChartElements.removeAll()
 
         // Make the chart header the first element in the accessible elements array
-        let element = createAccessibleHeader(usingChart: chart,
-                                             andData: radarData,
-                                             withDefaultDescription: "Radar Chart")
+        let element = createAccessibleHeader(
+            usingChart: chart,
+            andData: radarData,
+            withDefaultDescription: "Radar Chart"
+        )
         accessibleChartElements.append(element)
 
         for set in radarData where set.isVisible {
@@ -191,12 +191,7 @@ public class RadarChartRenderer: DataRenderer {
 
         let yoffset = CGFloat(5.0)
 
-        for i in data.indices {
-            guard let
-                dataSet = data[i] as? RadarChartDataSet,
-                shouldDrawValues(forDataSet: dataSet)
-            else { continue }
-
+        for (i, dataSet) in data.indexed() where shouldDrawValues(forDataSet: dataSet) {
             let angleRadians = dataSet.valueLabelAngle.DEG2RAD
 
             let iconsOffset = dataSet.iconsOffset
@@ -303,10 +298,7 @@ public class RadarChartRenderer: DataRenderer {
     private var _highlightPointBuffer = CGPoint()
 
     public func drawHighlighted(context: CGContext, indices: [Highlight]) {
-        guard
-            let chart = chart,
-            let radarData = chart.data as? RadarChartData
-        else { return }
+        guard let chart = chart else { return }
 
         context.saveGState()
 
@@ -318,10 +310,8 @@ public class RadarChartRenderer: DataRenderer {
         let center = chart.centerOffsets
 
         for high in indices {
-            guard
-                let set = chart.data[high.dataSetIndex] as? RadarChartDataSet,
-                set.isHighlightingEnabled
-            else { continue }
+            let set = chart.data[high.dataSetIndex]
+            guard set.isHighlightingEnabled else { continue }
 
             let e = set[Int(high.x)]
 
@@ -329,9 +319,9 @@ public class RadarChartRenderer: DataRenderer {
                 continue
             }
 
-            context.setLineWidth(radarData.highlightLineWidth)
-            if radarData.highlightLineDashLengths != nil {
-                context.setLineDash(phase: radarData.highlightLineDashPhase, lengths: radarData.highlightLineDashLengths!)
+            context.setLineWidth(chart.highlightLineWidth)
+            if chart.highlightLineDashLengths != nil {
+                context.setLineDash(phase: chart.highlightLineDashPhase, lengths: chart.highlightLineDashLengths!)
             } else {
                 context.setLineDash(phase: 0.0, lengths: [])
             }

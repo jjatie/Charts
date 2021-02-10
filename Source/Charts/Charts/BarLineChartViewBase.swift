@@ -19,11 +19,11 @@ import AppKit
 #endif
 
 /// Base-class of LineChart, BarChart, ScatterChart and CandleStickChart.
-open class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChartDataProvider, NSUIGestureRecognizerDelegate
+open class BarLineChartViewBase<Entry: ChartDataEntry>: ChartViewBase<Entry>, NSUIGestureRecognizerDelegate
 {
     /// the number of maximum visible drawn values on the chart only active when `drawValuesEnabled` is enabled
     /// - Note: entry numbers greater than this value will cause value-labels to disappear
-    public final var maxVisibleCount: Int {
+    public final override var maxVisibleCount: Int {
         get { _maxVisibleCount }
         set { _maxVisibleCount = newValue }
     }
@@ -1407,9 +1407,9 @@ open class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChartD
     }
 
     /// - Returns: The Entry object displayed at the touched position of the chart
-    public final func getEntryByTouchPoint(point pt: CGPoint) -> ChartDataEntry! {
+    public final func getEntryByTouchPoint(point pt: CGPoint) -> Entry! {
         if let h = getHighlightByTouchPoint(pt) {
-            return data.entry(for: h)
+            return entry(for: h)
         }
         return nil
     }
@@ -1496,8 +1496,6 @@ open class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChartD
     public final func getYAxisWidth(_ axis: YAxis.AxisDependency) -> CGFloat {
         getAxis(axis).requiredSize().width
     }
-
-    // MARK: - BarLineScatterCandleBubbleChartDataProvider
 
     /// - Returns: The Transformer class that contains all matrices and is
     /// responsible for transforming values into pixels on the screen and

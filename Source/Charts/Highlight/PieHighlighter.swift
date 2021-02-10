@@ -12,7 +12,7 @@
 import CoreGraphics
 import Foundation
 
-open class PieHighlighter: PieRadarHighlighter {
+open class PieHighlighter: PieRadarHighlighter<PieChartDataEntry> {
     override open func closestHighlight(index: Int, x: CGFloat, y: CGFloat) -> Highlight? {
         guard let set = chart?.data[0] else { return nil }
         let entry = set[index]

@@ -12,7 +12,7 @@
 import CoreGraphics
 import Foundation
 
-open class PieRadarHighlighter: ChartHighlighter {
+open class PieRadarHighlighter<Entry: ChartDataEntry>: ChartHighlighter<Entry> {
     override open func getHighlight(x: CGFloat, y: CGFloat) -> Highlight? {
         guard let chart = self.chart as? PieRadarChartViewBase else { return nil }
 

@@ -154,16 +154,6 @@ open class ChartData<EntryType: ChartDataEntry>: ExpressibleByArrayLiteral {
         }
     }
 
-    /// Get the Entry for a corresponding highlight object
-    ///
-    /// - Parameters:
-    ///   - highlight:
-    /// - Returns: The entry that is highlighted
-    open func entry(for highlight: Highlight) -> EntryType? {
-        guard highlight.dataSetIndex < endIndex else { return nil }
-        return self[highlight.dataSetIndex].element(withX: highlight.x, closestToY: highlight.y)
-    }
-
     /// Adds an Entry to the DataSet at the specified index. Entries are added to the end of the list.
     open func appendEntry(_ e: EntryType, toDataSet dataSetIndex: Index) {
         guard indices.contains(dataSetIndex) else {

@@ -14,7 +14,7 @@ import Foundation
 
 open class HorizontalBarHighlighter: BarHighlighter {
     override open func getHighlight(x: CGFloat, y: CGFloat) -> Highlight? {
-        guard let barData = chart?.data as? BarChartData else { return nil }
+        guard let barData = chart?.data else { return nil }
 
         let pos = getValsForTouch(x: y, y: x)
         guard let high = getHighlight(xValue: Double(pos.y), x: y, y: x) else { return nil }
@@ -38,7 +38,7 @@ open class HorizontalBarHighlighter: BarHighlighter {
         xValue: Double,
         rounding: ChartDataSetRounding
     ) -> [Highlight] {
-        guard let chart = self.chart as? BarLineScatterCandleBubbleChartDataProvider else { return [] }
+        guard let chart = self.chart as? BarLineChartViewBase else { return [] }
 
         var entries = Array(set.elements(withX: xValue))
         if entries.isEmpty, let closest = set.element(withX: xValue, closestToY: .nan, rounding: rounding)

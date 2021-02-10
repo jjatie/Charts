@@ -14,7 +14,14 @@ import Foundation
 
 /// Implementation of the RadarChart, a "spidernet"-like chart. It works best
 /// when displaying 5-10 entries per DataSet.
-open class RadarChartView: PieRadarChartViewBase, ChartDataProvider {
+open class RadarChartView: PieRadarChartViewBase<RadarChartDataEntry> {
+    open var highlightColor = NSUIColor(red: 255.0 / 255.0, green: 187.0 / 255.0, blue: 115.0 / 255.0, alpha: 1.0)
+    open var highlightLineWidth = CGFloat(1.0)
+    open var highlightLineDashPhase = CGFloat(0.0)
+    open var highlightLineDashLengths: [CGFloat]?
+
+    /// Sets labels that should be drawn around the RadarChart at the end of each web line.
+    open var labels = [String]()
     /// width of the web lines that come from the center.
     open var webLineWidth = CGFloat(1.5)
 
@@ -89,10 +96,9 @@ open class RadarChartView: PieRadarChartViewBase, ChartDataProvider {
     override open func draw(_ rect: CGRect) {
         super.draw(rect)
 
-        guard data != nil, let renderer = renderer else { return }
-
-        let optionalContext = NSUIGraphicsGetCurrentContext()
-        guard let context = optionalContext else { return }
+        guard let renderer = renderer,
+              let context = NSUIGraphicsGetCurrentContext()
+        else { return }
 
         if xAxis.isEnabled {
             _xAxisRenderer.computeAxis(min: xAxis._axisMinimum, max: xAxis._axisMaximum, inverted: false)
@@ -190,4 +196,8 @@ open class RadarChartView: PieRadarChartViewBase, ChartDataProvider {
 
     /// The range of y-values this chart can display.
     public var yRange: Double { _yAxis.axisRange }
+
+    public override func entry(for highlight: Highlight) -> RadarChartDataEntry? {
+        data[highlight.dataSetIndex][Int(highlight.x)]
+    }
 }

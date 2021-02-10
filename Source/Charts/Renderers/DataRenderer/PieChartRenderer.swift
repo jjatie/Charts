@@ -39,9 +39,7 @@ public class PieChartRenderer: DataRenderer {
         // If we redraw the data, remove and repopulate accessible elements to update label values and frames
         accessibleChartElements.removeAll()
 
-        for case let set as PieChartDataSet in pieData where
-            set.isVisible && set.count > 0
-        {
+        for set in pieData where set.isVisible && !set.isEmpty {
             drawDataSet(context: context, dataSet: set)
         }
     }
@@ -89,9 +87,8 @@ public class PieChartRenderer: DataRenderer {
 
     /// Calculates the sliceSpace to use based on visible values and their size compared to the set sliceSpace.
     public func getSliceSpace(dataSet: PieChartDataSet) -> CGFloat {
-        guard
-            dataSet.automaticallyDisableSliceSpacing,
-            let data = chart?.data as? PieChartData
+        guard dataSet.automaticallyDisableSliceSpacing,
+              let data = chart?.data
         else { return dataSet.sliceSpace }
 
         let spaceSizeRatio = dataSet.sliceSpace / min(viewPortHandler.contentWidth, viewPortHandler.contentHeight)
@@ -297,7 +294,7 @@ public class PieChartRenderer: DataRenderer {
 
         let labelRadius = radius - labelRadiusOffset
 
-        let yValueSum = (data as! PieChartData).yValueSum
+        let yValueSum = data.yValueSum
 
         let drawEntryLabels = chart.isDrawEntryLabelsEnabled
         let usePercentValuesEnabled = chart.usePercentValuesEnabled
@@ -309,9 +306,7 @@ public class PieChartRenderer: DataRenderer {
         context.saveGState()
         defer { context.restoreGState() }
 
-        for i in data.indices {
-            guard let dataSet = data[i] as? PieChartDataSet else { continue }
-
+        for (i, dataSet) in data.indexed() {
             let drawValues = dataSet.isDrawValuesEnabled
 
             if !drawValues, !drawEntryLabels, !dataSet.isDrawIconsEnabled {
@@ -650,8 +645,8 @@ public class PieChartRenderer: DataRenderer {
         for hightlight in highlights {
             // get the index to highlight
             let index = Int(hightlight.x)
+            let set = data[hightlight.dataSetIndex]
             guard index < drawAngles.count,
-                  let set = data[hightlight.dataSetIndex] as? PieChartDataSet,
                   set.isHighlightingEnabled
             else {
                 continue
@@ -678,7 +673,7 @@ public class PieChartRenderer: DataRenderer {
 
             let accountForSliceSpacing = sliceSpace > 0.0 && sliceAngle <= 180.0
 
-            context.setFillColor(set.isHighlightingEnabled ? set.highlightColor.cgColor : set.color(at: index).cgColor)
+            context.setFillColor(set.highlightColor == .clear ?  set.color(at: index).cgColor : set.highlightColor.cgColor)
 
             let sliceSpaceAngleOuter = visibleAngleCount == 1 ?
                 0.0 :
@@ -804,8 +799,7 @@ public class PieChartRenderer: DataRenderer {
         let element = NSUIAccessibilityElement(accessibilityContainer: container)
 
         let e = dataSet[idx]
-        guard let data = container.data as? PieChartData else { return element }
-
+        let data = container.data
         let formatter = dataSet.valueFormatter
 
         var elementValueText = formatter.stringForValue(

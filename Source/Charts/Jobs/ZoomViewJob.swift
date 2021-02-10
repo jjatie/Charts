@@ -25,7 +25,7 @@ open class ZoomViewJob: ViewPortJob {
         yValue: Double,
         transformer: Transformer,
         axis: YAxis.AxisDependency,
-        view: ChartViewBase
+        view: NSUIView
     ) {
         self.scaleX = scaleX
         self.scaleY = scaleY

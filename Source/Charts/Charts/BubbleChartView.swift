@@ -12,14 +12,10 @@
 import CoreGraphics
 import Foundation
 
-open class BubbleChartView: BarLineChartViewBase, BubbleChartDataProvider {
-    override open func initialize() {
+public final class BubbleChartView: BarLineChartViewBase<BubbleChartDataEntry> {
+    override public final func initialize() {
         super.initialize()
 
-        renderer = BubbleChartRenderer(dataProvider: self, animator: chartAnimator, viewPortHandler: viewPortHandler)
+        renderer = BubbleChartRenderer(chart: self, animator: chartAnimator, viewPortHandler: viewPortHandler)
     }
-
-    // MARK: - BubbleChartDataProvider
-
-    open var bubbleData: BubbleChartData? { return data as? BubbleChartData }
 }

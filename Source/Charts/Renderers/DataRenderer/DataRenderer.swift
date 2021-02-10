@@ -40,7 +40,7 @@ public protocol DataRenderer: Renderer {
     /// Since this might do memory allocations, it should only be called if necessary.
     func initBuffers()
 
-    func isDrawingValuesAllowed(dataProvider: ChartDataProvider) -> Bool
+    func isDrawingValuesAllowed<Entry: ChartDataEntry>(chart: ChartViewBase<Entry>) -> Bool
 }
 
 extension DataRenderer {
@@ -59,9 +59,9 @@ extension DataRenderer {
         set.isVisible && (set.isDrawValuesEnabled || set.isDrawIconsEnabled)
     }
 
-    public func isDrawingValuesAllowed(dataProvider: ChartDataProvider) -> Bool {
-        let data = dataProvider.data
-        return data.entryCount < Int(CGFloat(dataProvider.maxVisibleCount) * viewPortHandler.scaleX)
+    public func isDrawingValuesAllowed<Entry: ChartDataEntry>(chart: ChartViewBase<Entry>) -> Bool {
+        let data = chart.data
+        return data.entryCount < Int(CGFloat(chart.maxVisibleCount) * viewPortHandler.scaleX)
     }
 
     /// Creates an ```NSUIAccessibilityElement``` that acts as the first and primary header describing a chart view.
@@ -71,7 +71,7 @@ extension DataRenderer {
     ///   - data: A non optional data source about the chart
     ///   - defaultDescription: A simple string describing the type/design of Chart.
     /// - Returns: A header ```NSUIAccessibilityElement``` that can be added to accessibleChartElements.
-    func createAccessibleHeader<Entry: ChartDataEntry>(usingChart chart: ChartViewBase, andData data: ChartData<Entry>, withDefaultDescription defaultDescription: String) -> NSUIAccessibilityElement {
+    func createAccessibleHeader<Entry: ChartDataEntry>(usingChart chart: ChartViewBase<Entry>, andData data: ChartData<Entry>, withDefaultDescription defaultDescription: String) -> NSUIAccessibilityElement {
         let chartDescriptionText = chart.chartDescription.text ?? defaultDescription
         let dataSetDescriptions = data.map { $0.label ?? "" }
         let dataSetDescriptionText = dataSetDescriptions.joined(separator: ", ")

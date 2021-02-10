@@ -18,7 +18,7 @@ import QuartzCore
 #endif
 
 /// Base class of PieChartView and RadarChartView.
-open class PieRadarChartViewBase: ChartViewBase {
+open class PieRadarChartViewBase<Entry: ChartDataEntry>: ChartViewBase<Entry> {
     /// holds the normalized version of the current rotation angle of the chart
     private var _rotationAngle = CGFloat(270.0)
 
@@ -70,7 +70,7 @@ open class PieRadarChartViewBase: ChartViewBase {
     }
 
     /// the number of maximum visible drawn values on the chart only active when `drawValuesEnabled` is enabled
-    public final var maxVisibleCount: Int {
+    public final override var maxVisibleCount: Int {
         data.entryCount
     }
 

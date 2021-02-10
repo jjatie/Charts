@@ -30,7 +30,7 @@ open class AnimatedViewPortJob: ViewPortJob {
         xValue: Double,
         yValue: Double,
         transformer: Transformer,
-        view: ChartViewBase,
+        view: NSUIView,
         xOrigin: CGFloat,
         yOrigin: CGFloat,
         duration: TimeInterval,

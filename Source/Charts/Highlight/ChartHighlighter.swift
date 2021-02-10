@@ -13,11 +13,11 @@ import Algorithms
 import CoreGraphics
 import Foundation
 
-open class ChartHighlighter: Highlighter {
+open class ChartHighlighter<Entry: ChartDataEntry>: Highlighter {
     /// instance of the data-provider
-    open weak var chart: ChartDataProvider?
+    open weak var chart: ChartViewBase<Entry>?
 
-    public init(chart: ChartDataProvider) {
+    public init(chart: ChartViewBase<Entry>) {
         self.chart = chart
     }
 
@@ -30,7 +30,7 @@ open class ChartHighlighter: Highlighter {
     ///   - x:
     /// - Returns: The corresponding x-pos for a given touch-position in pixels.
     open func getValsForTouch(x: CGFloat, y: CGFloat) -> CGPoint {
-        guard let chart = self.chart as? BarLineScatterCandleBubbleChartDataProvider else { return .zero }
+        guard let chart = self.chart as? BarLineChartViewBase else { return .zero }
 
         // take any transformer to determine the values
         return chart.getTransformer(forAxis: .left).valueForTouchPoint(x: x, y: y)
@@ -66,7 +66,7 @@ open class ChartHighlighter: Highlighter {
     open func getHighlights(xValue: Double, x _: CGFloat, y _: CGFloat) -> [Highlight] {
         var vals = [Highlight]()
 
-        guard let data = self.data else { return vals }
+        guard let data = chart?.data else { return vals }
 
         for (i, set) in data.indexed() where set.isHighlightingEnabled {
             // extract all y-values from all DataSets at the given x-value.
@@ -84,7 +84,7 @@ open class ChartHighlighter: Highlighter {
         xValue: Double,
         rounding: ChartDataSetRounding
     ) -> [Highlight] {
-        guard let chart = self.chart as? BarLineScatterCandleBubbleChartDataProvider else { return [] }
+        guard let chart = self.chart as? BarLineChartViewBase else { return [] }
 
         var entries = Array(set.elements(withX: xValue))
         if entries.isEmpty, let closest = set.element(withX: xValue, closestToY: .nan, rounding: rounding)
@@ -152,9 +152,5 @@ open class ChartHighlighter: Highlighter {
 
     internal func getDistance(x1: CGFloat, y1: CGFloat, x2: CGFloat, y2: CGFloat) -> CGFloat {
         return hypot(x1 - x2, y1 - y2)
-    }
-
-    internal var data: ChartData<ChartDataEntry>? {
-        return chart?.data
     }
 }

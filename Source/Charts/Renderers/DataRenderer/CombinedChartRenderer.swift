@@ -49,27 +49,27 @@
 //            switch order {
 //            case .bar:
 //                if chart.barData !== nil {
-//                    _renderers.append(BarChartRenderer(dataProvider: chart, animator: animator, viewPortHandler: viewPortHandler))
+//                    _renderers.append(BarChartRenderer(chart: chart, animator: animator, viewPortHandler: viewPortHandler))
 //                }
 //
 //            case .line:
 //                if chart.lineData !== nil {
-//                    _renderers.append(LineChartRenderer(dataProvider: chart, animator: animator, viewPortHandler: viewPortHandler))
+//                    _renderers.append(LineChartRenderer(chart: chart, animator: animator, viewPortHandler: viewPortHandler))
 //                }
 //
 //            case .candle:
 //                if chart.candleData !== nil {
-//                    _renderers.append(CandleStickChartRenderer(dataProvider: chart, animator: animator, viewPortHandler: viewPortHandler))
+//                    _renderers.append(CandleStickChartRenderer(chart: chart, animator: animator, viewPortHandler: viewPortHandler))
 //                }
 //
 //            case .scatter:
 //                if chart.scatterData !== nil {
-//                    _renderers.append(ScatterChartRenderer(dataProvider: chart, animator: animator, viewPortHandler: viewPortHandler))
+//                    _renderers.append(ScatterChartRenderer(chart: chart, animator: animator, viewPortHandler: viewPortHandler))
 //                }
 //
 //            case .bubble:
 //                if chart.bubbleData !== nil {
-//                    _renderers.append(BubbleChartRenderer(dataProvider: chart, animator: animator, viewPortHandler: viewPortHandler))
+//                    _renderers.append(BubbleChartRenderer(chart: chart, animator: animator, viewPortHandler: viewPortHandler))
 //                }
 //            }
 //        }
@@ -113,15 +113,15 @@
 //            var data: ChartData?
 //
 //            if renderer is BarChartRenderer {
-//                data = (renderer as! BarChartRenderer).dataProvider?.barData
+//                data = (renderer as! BarChartRenderer).chart?.barData
 //            } else if renderer is LineChartRenderer {
-//                data = (renderer as! LineChartRenderer).dataProvider?.lineData
+//                data = (renderer as! LineChartRenderer).chart?.lineData
 //            } else if renderer is CandleStickChartRenderer {
-//                data = (renderer as! CandleStickChartRenderer).dataProvider?.candleData
+//                data = (renderer as! CandleStickChartRenderer).chart?.candleData
 //            } else if renderer is ScatterChartRenderer {
-//                data = (renderer as! ScatterChartRenderer).dataProvider?.scatterData
+//                data = (renderer as! ScatterChartRenderer).chart?.scatterData
 //            } else if renderer is BubbleChartRenderer {
-//                data = (renderer as! BubbleChartRenderer).dataProvider?.bubbleData
+//                data = (renderer as! BubbleChartRenderer).chart?.bubbleData
 //            }
 //
 //            let dataIndex = data.map { data in

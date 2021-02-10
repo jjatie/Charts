@@ -23,32 +23,35 @@ public protocol ChartViewDelegate: AnyObject {
     /// - Parameters:
     ///   - entry: The selected Entry.
     ///   - highlight: The corresponding highlight object that contains information about the highlighted position such as dataSetIndex etc.
-    func chartValueSelected(_ chartView: ChartViewBase, entry: ChartDataEntry, highlight: Highlight)
+    func chartValueSelected<Entry: ChartDataEntry>(_ chartView: ChartViewBase<Entry>, entry: Entry, highlight: Highlight)
 
     /// Called when a user stops panning between values on the chart
-    func chartViewDidEndPanning(_ chartView: ChartViewBase)
+    func chartViewDidEndPanning<Entry: ChartDataEntry>(_ chartView: ChartViewBase<Entry>)
 
     // Called when nothing has been selected or an "un-select" has been made.
-    func chartValueNothingSelected(_ chartView: ChartViewBase)
+    func chartValueNothingSelected<Entry: ChartDataEntry>(_ chartView: ChartViewBase<Entry>)
 
     // Callbacks when the chart is scaled / zoomed via pinch zoom gesture.
-    func chartScaled(_ chartView: ChartViewBase, scaleX: CGFloat, scaleY: CGFloat)
+    func chartScaled<Entry: ChartDataEntry>(_ chartView: ChartViewBase<Entry>, scaleX: CGFloat, scaleY: CGFloat)
 
     // Callbacks when the chart is moved / translated via drag gesture.
-    func chartTranslated(_ chartView: ChartViewBase, dX: CGFloat, dY: CGFloat)
+    func chartTranslated<Entry: ChartDataEntry>(_ chartView: ChartViewBase<Entry>, dX: CGFloat, dY: CGFloat)
 
     // Callbacks when Animator stops animating
-    func chartView(_ chartView: ChartViewBase, animatorDidStop animator: Animator)
+    func chartView<Entry: ChartDataEntry>(_ chartView: ChartViewBase<Entry>, animatorDidStop animator: Animator)
 }
 
-open class ChartViewBase: NSUIView {
+open class ChartViewBase<Entry: ChartDataEntry>: NSUIView {
     // MARK: - Properties
+    public var maxVisibleCount: Int {
+        data.entryCount
+    }
 
     /// The default IValueFormatter that has been determined by the chart considering the provided minimum and maximum values.
     internal lazy var defaultValueFormatter: ValueFormatter = DefaultValueFormatter(decimals: 0)
 
     /// object that holds all data that was originally set for the chart, before it was modified or any filtering algorithms had been applied
-    open var data: ChartData<ChartDataEntry> = [] {
+    open var data: ChartData<Entry> = [] {
         didSet {
             offsetsCalculated = false
 
@@ -262,6 +265,11 @@ open class ChartViewBase: NSUIView {
         !highlighted.isEmpty
     }
 
+    public func entry(for highlight: Highlight) -> Entry? {
+        guard highlight.dataSetIndex < data.endIndex else { return nil }
+        return data[highlight.dataSetIndex].element(withX: highlight.x, closestToY: highlight.y)
+    }
+
     /// Highlights the values at the given indices in the given DataSets. Provide
     /// null or an empty array to undo all highlighting.
     /// This should be used to programmatically highlight values.
@@ -298,7 +306,7 @@ open class ChartViewBase: NSUIView {
     public final func highlightValue(_ highlight: Highlight?, callDelegate: Bool = false) {
         var high = highlight
         guard let h = high,
-              let entry = data.entry(for: h)
+              let entry = entry(for: h)
         else {
             high = nil
             highlighted.removeAll(keepingCapacity: false)
@@ -347,7 +355,7 @@ open class ChartViewBase: NSUIView {
 
         for highlight in highlighted {
             let set = data[highlight.dataSetIndex]
-            guard let e = data.entry(for: highlight),
+            guard let e = entry(for: highlight),
                 let entryIndex = set.firstIndex(of: e),
                 entryIndex <= Int(Double(set.count) * chartAnimator.phaseX)
             else { continue }

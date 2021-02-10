@@ -50,13 +50,14 @@ class BarChartTests: XCTestCase {
         return setupCustomValuesDataEntries(values: values)
     }
 
-    func setupStackedValuesDataEntries() -> [ChartDataEntry] {
-        var entries: [ChartDataEntry] = Array()
-        entries.append(BarChartDataEntry(x: 0, yValues: [28, 50, 60, 30, 42], icon: icon))
-        entries.append(BarChartDataEntry(x: 1, yValues: [-20, -36, -52, -40, -15], icon: icon))
-        entries.append(BarChartDataEntry(x: 2, yValues: [10, 30, 40, 90, 72], icon: icon))
-        entries.append(BarChartDataEntry(x: 3, yValues: [-40, -50, -30, -60, -20], icon: icon))
-        entries.append(BarChartDataEntry(x: 4, yValues: [10, 40, 60, 45, 62], icon: icon))
+    func setupStackedValuesDataEntries() -> [BarChartDataEntry] {
+        let entries = [
+            BarChartDataEntry(x: 0, yValues: [28, 50, 60, 30, 42], icon: icon),
+            BarChartDataEntry(x: 1, yValues: [-20, -36, -52, -40, -15], icon: icon),
+            BarChartDataEntry(x: 2, yValues: [10, 30, 40, 90, 72], icon: icon),
+            BarChartDataEntry(x: 3, yValues: [-40, -50, -30, -60, -20], icon: icon),
+            BarChartDataEntry(x: 4, yValues: [10, 40, 60, 45, 62], icon: icon),
+        ]
         return entries
     }
 
@@ -80,8 +81,6 @@ class BarChartTests: XCTestCase {
 
     func setupDefaultChart(dataSets: [BarChartDataSet]) -> BarChartView {
         let data = BarChartData(dataSets: dataSets)
-        data.barWidth = 0.85
-
         let chart = BarChartView(frame: CGRect(x: 0, y: 0, width: 480, height: 350))
         chart.backgroundColor = NSUIColor.clear
         chart.data = data

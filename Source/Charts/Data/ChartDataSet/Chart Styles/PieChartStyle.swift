@@ -150,3 +150,7 @@ private enum EntryLabelFontChartStyleKey: ChartStyleKey {
 private enum EntryLabelColorChartStyleKey: ChartStyleKey {
     static let defaultValue: NSUIColor? = nil
 }
+
+private enum HighlightColorChartStyleKey: ChartStyleKey {
+    static let defaultValue: NSUIColor = NSUIColor(red: 255.0 / 255.0, green: 187.0 / 255.0, blue: 115.0 / 255.0, alpha: 1.0)
+}

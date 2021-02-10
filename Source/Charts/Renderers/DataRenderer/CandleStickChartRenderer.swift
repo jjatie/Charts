@@ -22,28 +22,29 @@ public class CandleStickChartRenderer: DataRenderer {
 
     let xBounds = XBounds()
 
-    open weak var dataProvider: CandleChartDataProvider?
+    open weak var chart: CandleStickChartView?
 
-    public init(dataProvider: CandleChartDataProvider, animator: Animator, viewPortHandler: ViewPortHandler)
+    public init(chart: CandleStickChartView, animator: Animator, viewPortHandler: ViewPortHandler)
     {
         self.viewPortHandler = viewPortHandler
         self.animator = animator
-        self.dataProvider = dataProvider
+        self.chart = chart
     }
 
     public func drawData(context: CGContext) {
-        guard let dataProvider = dataProvider, let candleData = dataProvider.candleData else { return }
+        guard let chart = chart else { return }
+        let candleData = chart.data
 
         // If we redraw the data, remove and repopulate accessible elements to update label values and frames
         accessibleChartElements.removeAll()
 
         // Make the chart header the first element in the accessible elements array
-        if let chart = dataProvider as? CandleStickChartView {
-            let element = createAccessibleHeader(usingChart: chart,
-                                                 andData: candleData,
-                                                 withDefaultDescription: "CandleStick Chart")
-            accessibleChartElements.append(element)
-        }
+        let element = createAccessibleHeader(
+            usingChart: chart,
+            andData: candleData,
+            withDefaultDescription: "CandleStick Chart"
+        )
+        accessibleChartElements.append(element)
 
         for set in candleData where set.isVisible {
             drawDataSet(context: context, dataSet: set)
@@ -58,16 +59,16 @@ public class CandleStickChartRenderer: DataRenderer {
 
     open func drawDataSet(context: CGContext, dataSet: CandleChartDataSet) {
         guard
-            let dataProvider = dataProvider
+            let chart = chart
         else { return }
 
-        let trans = dataProvider.getTransformer(forAxis: dataSet.axisDependency)
+        let trans = chart.getTransformer(forAxis: dataSet.axisDependency)
 
         let phaseY = animator.phaseY
         let barSpace = dataSet.barSpace
         let showCandleBar = dataSet.showCandleBar
 
-        xBounds.set(chart: dataProvider, dataSet: dataSet, animator: animator)
+        xBounds.set(chart: chart, dataSet: dataSet, animator: animator)
 
         context.saveGState()
 
@@ -81,7 +82,7 @@ public class CandleStickChartRenderer: DataRenderer {
             let high = e.high
             let low = e.low
 
-            let doesContainMultipleDataSets = (dataProvider.candleData?.count ?? 1) > 1
+            let doesContainMultipleDataSets = chart.data.count > 1
             var accessibilityMovementDescription = "neutral"
             var accessibilityRect = CGRect(x: CGFloat(xPos) + 0.5 - barSpace,
                                            y: CGFloat(low * phaseY),
@@ -217,7 +218,7 @@ public class CandleStickChartRenderer: DataRenderer {
             }
 
             let axElement = createAccessibleElement(withIndex: j,
-                                                    container: dataProvider,
+                                                    container: chart,
                                                     dataSet: dataSet) { element in
                 element.accessibilityLabel = "\(doesContainMultipleDataSets ? "\(dataSet.label ?? "Dataset")" : "") " + "\(xPos) - \(accessibilityMovementDescription). low: \(low), high: \(high), opening: \(open), closing: \(close)"
                 element.accessibilityFrame = accessibilityRect
@@ -233,13 +234,11 @@ public class CandleStickChartRenderer: DataRenderer {
     }
 
     public func drawValues(context: CGContext) {
-        guard
-            let dataProvider = dataProvider,
-            let candleData = dataProvider.candleData
-        else { return }
+        guard let chart = chart else { return }
+        let candleData = chart.data
 
         // if values are drawn
-        if isDrawingValuesAllowed(dataProvider: dataProvider) {
+        if isDrawingValuesAllowed(chart: chart) {
             let phaseY = animator.phaseY
 
             var pt = CGPoint()
@@ -250,14 +249,14 @@ public class CandleStickChartRenderer: DataRenderer {
 
                 let formatter = dataSet.valueFormatter
 
-                let trans = dataProvider.getTransformer(forAxis: dataSet.axisDependency)
+                let trans = chart.getTransformer(forAxis: dataSet.axisDependency)
                 let valueToPixelMatrix = trans.valueToPixelMatrix
 
                 let iconsOffset = dataSet.iconsOffset
 
                 let angleRadians = dataSet.valueLabelAngle.DEG2RAD
 
-                xBounds.set(chart: dataProvider, dataSet: dataSet, animator: animator)
+                xBounds.set(chart: chart, dataSet: dataSet, animator: animator)
 
                 let lineHeight = valueFont.lineHeight
                 let yOffset: CGFloat = lineHeight + 5.0
@@ -302,10 +301,8 @@ public class CandleStickChartRenderer: DataRenderer {
     public func drawExtras(context _: CGContext) {}
 
     public func drawHighlighted(context: CGContext, indices: [Highlight]) {
-        guard
-            let dataProvider = dataProvider,
-            let candleData = dataProvider.candleData
-        else { return }
+        guard let chart = chart else { return }
+        let candleData = chart.data
 
         context.saveGState()
 
@@ -316,7 +313,7 @@ public class CandleStickChartRenderer: DataRenderer {
                   isInBoundsX(entry: e, dataSet: set)
             else { continue }
 
-            let trans = dataProvider.getTransformer(forAxis: set.axisDependency)
+            let trans = chart.getTransformer(forAxis: set.axisDependency)
 
             context.setStrokeColor(set.highlightColor.cgColor)
             context.setLineWidth(set.highlightLineWidth)
@@ -343,7 +340,7 @@ public class CandleStickChartRenderer: DataRenderer {
     }
 
     private func createAccessibleElement(withIndex _: Int,
-                                         container: CandleChartDataProvider,
+                                         container: CandleStickChartView,
                                          dataSet _: CandleChartDataSet,
                                          modifier: (NSUIAccessibilityElement) -> Void) -> NSUIAccessibilityElement
     {

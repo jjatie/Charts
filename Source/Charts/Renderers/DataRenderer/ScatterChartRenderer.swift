@@ -22,22 +22,22 @@ public class ScatterChartRenderer: DataRenderer {
 
     let xBounds = XBounds()
 
-    open weak var dataProvider: ScatterChartDataProvider?
+    open weak var chart: ScatterChartView?
 
-    public init(dataProvider: ScatterChartDataProvider, animator: Animator, viewPortHandler: ViewPortHandler)
+    public init(chart: ScatterChartView, animator: Animator, viewPortHandler: ViewPortHandler)
     {
         self.viewPortHandler = viewPortHandler
         self.animator = animator
-        self.dataProvider = dataProvider
+        self.chart = chart
     }
 
     public func drawData(context: CGContext) {
-        guard let scatterData = dataProvider?.scatterData else { return }
+        guard let scatterData = chart?.data else { return }
 
         // If we redraw the data, remove and repopulate accessible elements to update label values and frames
         accessibleChartElements.removeAll()
 
-        if let chart = dataProvider as? ScatterChartView {
+        if let chart = chart {
             // Make the chart header the first element in the accessible elements array
             let element = createAccessibleHeader(usingChart: chart,
                                                  andData: scatterData,
@@ -57,9 +57,9 @@ public class ScatterChartRenderer: DataRenderer {
     }
 
     public func drawDataSet(context: CGContext, dataSet: ScatterChartDataSet) {
-        guard let dataProvider = dataProvider else { return }
+        guard let chart = chart else { return }
 
-        let trans = dataProvider.getTransformer(forAxis: dataSet.axisDependency)
+        let trans = chart.getTransformer(forAxis: dataSet.axisDependency)
 
         let phaseY = animator.phaseY
 
@@ -100,11 +100,10 @@ public class ScatterChartRenderer: DataRenderer {
     }
 
     public func drawValues(context: CGContext) {
-        guard
-            let dataProvider = dataProvider,
-            isDrawingValuesAllowed(dataProvider: dataProvider),
-            let scatterData = dataProvider.scatterData
+        guard let chart = chart,
+              isDrawingValuesAllowed(chart: chart)
         else { return }
+        let scatterData = chart.data
 
         // if values are drawn
         let phaseY = animator.phaseY
@@ -116,7 +115,7 @@ public class ScatterChartRenderer: DataRenderer {
 
             let formatter = dataSet.valueFormatter
 
-            let trans = dataProvider.getTransformer(forAxis: dataSet.axisDependency)
+            let trans = chart.getTransformer(forAxis: dataSet.axisDependency)
             let valueToPixelMatrix = trans.valueToPixelMatrix
 
             let iconsOffset = dataSet.iconsOffset
@@ -126,7 +125,7 @@ public class ScatterChartRenderer: DataRenderer {
             let shapeSize = dataSet.scatterShapeSize
             let lineHeight = valueFont.lineHeight
 
-            xBounds.set(chart: dataProvider, dataSet: dataSet, animator: animator)
+            xBounds.set(chart: chart, dataSet: dataSet, animator: animator)
 
             for (j, e) in dataSet[xBounds].indexed() {
                 pt.x = CGFloat(e.x)
@@ -174,10 +173,8 @@ public class ScatterChartRenderer: DataRenderer {
     public func drawExtras(context _: CGContext) {}
 
     public func drawHighlighted(context: CGContext, indices: [Highlight]) {
-        guard
-            let dataProvider = dataProvider,
-            let scatterData = dataProvider.scatterData
-        else { return }
+        guard let chart = chart else { return }
+        let scatterData = chart.data
 
         context.saveGState()
 
@@ -201,7 +198,7 @@ public class ScatterChartRenderer: DataRenderer {
             let x = entry.x // get the x-position
             let y = entry.y * Double(animator.phaseY)
 
-            let trans = dataProvider.getTransformer(forAxis: set.axisDependency)
+            let trans = chart.getTransformer(forAxis: set.axisDependency)
 
             let pt = trans.pixelForValues(x: x, y: y)
 

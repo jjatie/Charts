@@ -17,7 +17,7 @@ import Foundation
 #endif
 
 /// View that represents a pie chart. Draws cake like slices.
-open class PieChartView: PieRadarChartViewBase, ChartDataProvider {
+open class PieChartView: PieRadarChartViewBase<PieChartDataEntry> {
     /// rect object that represents the bounds of the piechart, needed for drawing the circle
     private var _circleBox = CGRect()
 
@@ -94,12 +94,10 @@ open class PieChartView: PieRadarChartViewBase, ChartDataProvider {
     override open func draw(_ rect: CGRect) {
         super.draw(rect)
 
-        if data === nil {
-            return
-        }
-
-        let optionalContext = NSUIGraphicsGetCurrentContext()
-        guard let context = optionalContext, let renderer = renderer else {
+        guard !data.isEmpty,
+              let context = NSUIGraphicsGetCurrentContext(),
+              let renderer = renderer
+        else {
             return
         }
 
@@ -140,16 +138,11 @@ open class PieChartView: PieRadarChartViewBase, ChartDataProvider {
     override internal func calculateOffsets() {
         super.calculateOffsets()
 
-        // prevent nullpointer when no data set
-        if data === nil {
-            return
-        }
-
         let radius = adjustedRadius
 
         let c = adjustedCenterOffsets()
 
-        let shift = (data as? PieChartData)?.dataSet?.selectionShift ?? 0.0
+        let shift = data.dataSet?.selectionShift ?? 0.0
 
         // create the circle box that will contain the pie-chart (the bounds of the pie-chart)
         _circleBox.origin.x = (c.x - radius) + shift
@@ -237,7 +230,7 @@ open class PieChartView: PieRadarChartViewBase, ChartDataProvider {
         _drawAngles.reserveCapacity(entryCount)
         _absoluteAngles.reserveCapacity(entryCount)
 
-        let yValueSum = (data as! PieChartData).yValueSum
+        let yValueSum = data.yValueSum
 
         var cnt = 0
 
@@ -259,6 +252,10 @@ open class PieChartView: PieRadarChartViewBase, ChartDataProvider {
     /// Checks if the given index is set to be highlighted.
     open func needsHighlight(index: Int) -> Bool {
         return highlighted.contains { Int($0.x) == index }
+    }
+
+    public override func entry(for highlight: Highlight) -> PieChartDataEntry? {
+        data.dataSet?[Int(highlight.x)]
     }
 
     /// calculates the needed angle for a given value

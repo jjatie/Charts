@@ -12,10 +12,10 @@
 import CoreGraphics
 import Foundation
 
-open class BarHighlighter: ChartHighlighter {
+open class BarHighlighter: ChartHighlighter<BarChartDataEntry> {
     override open func getHighlight(x: CGFloat, y: CGFloat) -> Highlight? {
         guard
-            let barData = (chart as? BarChartDataProvider)?.barData,
+            let barData = chart?.data,
             let high = super.getHighlight(x: x, y: y)
         else { return nil }
 
@@ -39,10 +39,6 @@ open class BarHighlighter: ChartHighlighter {
         return abs(x1 - x2)
     }
 
-    var barData: ChartData<BarChartDataEntry>? {
-        (chart as? BarChartDataProvider)?.barData
-    }
-
     /// This method creates the Highlight object that also indicates which value of a stacked BarEntry has been selected.
     ///
     /// - Parameters:
@@ -51,14 +47,14 @@ open class BarHighlighter: ChartHighlighter {
     ///   - xIndex:
     ///   - yValue:
     /// - Returns:
-    open func getStackedHighlight(high: Highlight,
-                                  set: BarChartDataSet,
-                                  xValue: Double,
-                                  yValue: Double) -> Highlight?
-    {
-        guard
-            let chart = self.chart as? BarLineScatterCandleBubbleChartDataProvider,
-            let entry = set.element(withX: xValue, closestToY: yValue)
+    open func getStackedHighlight(
+        high: Highlight,
+        set: BarChartDataSet,
+        xValue: Double,
+        yValue: Double
+    ) -> Highlight? {
+        guard let chart = self.chart as? BarLineChartViewBase,
+              let entry = set.element(withX: xValue, closestToY: yValue)
         else { return nil }
 
         // Not stacked
