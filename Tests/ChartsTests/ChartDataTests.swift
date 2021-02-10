@@ -44,24 +44,24 @@ class ChartDataTests: XCTestCase {
     }
 
     func testGetDataSetByLabelCaseSensitive() {
-        XCTAssertTrue(data.dataSet(forLabel: SetLabels.one, ignorecase: false)?.label == SetLabels.one)
-        XCTAssertTrue(data.dataSet(forLabel: SetLabels.two, ignorecase: false)?.label == SetLabels.two)
-        XCTAssertTrue(data.dataSet(forLabel: SetLabels.three, ignorecase: false)?.label == SetLabels.three)
-        XCTAssertTrue(data.dataSet(forLabel: SetLabels.one.uppercased(), ignorecase: false) == nil)
+        XCTAssertEqual(data.index(ofLabel: SetLabels.one, ignoreCase: false), 0)
+        XCTAssertEqual(data.index(ofLabel: SetLabels.two, ignoreCase: false), 1)
+        XCTAssertEqual(data.index(ofLabel: SetLabels.three, ignoreCase: false), 2)
+        XCTAssertNil(data.index(ofLabel: SetLabels.one.uppercased(), ignoreCase: false))
     }
 
     func testGetDataSetByLabelIgnoreCase() {
-        XCTAssertTrue(data.dataSet(forLabel: SetLabels.one, ignorecase: true)?.label == SetLabels.one)
-        XCTAssertTrue(data.dataSet(forLabel: SetLabels.two, ignorecase: true)?.label == SetLabels.two)
-        XCTAssertTrue(data.dataSet(forLabel: SetLabels.three, ignorecase: true)?.label == SetLabels.three)
+        XCTAssertEqual(data.index(ofLabel: SetLabels.one, ignoreCase: true), 0)
+        XCTAssertEqual(data.index(ofLabel: SetLabels.two, ignoreCase: true), 1)
+        XCTAssertEqual(data.index(ofLabel: SetLabels.three, ignoreCase: true), 2)
 
-        XCTAssertTrue(data.dataSet(forLabel: SetLabels.one.uppercased(), ignorecase: true)?.label == SetLabels.one)
-        XCTAssertTrue(data.dataSet(forLabel: SetLabels.two.uppercased(), ignorecase: true)?.label == SetLabels.two)
-        XCTAssertTrue(data.dataSet(forLabel: SetLabels.three.uppercased(), ignorecase: true)?.label == SetLabels.three)
+        XCTAssertEqual(data.index(ofLabel: SetLabels.one.uppercased(), ignoreCase: true), 0)
+        XCTAssertEqual(data.index(ofLabel: SetLabels.two.uppercased(), ignoreCase: true), 1)
+        XCTAssertEqual(data.index(ofLabel: SetLabels.three.uppercased(), ignoreCase: true), 2)
     }
 
     func testGetDataSetByLabelNilWithBadLabel() {
-        XCTAssertTrue(data.dataSet(forLabel: SetLabels.badLabel, ignorecase: true) == nil)
-        XCTAssertTrue(data.dataSet(forLabel: SetLabels.badLabel, ignorecase: false) == nil)
+        XCTAssertNil(data.index(ofLabel: SetLabels.badLabel, ignoreCase: true))
+        XCTAssertNil(data.index(ofLabel: SetLabels.badLabel, ignoreCase: false))
     }
 }

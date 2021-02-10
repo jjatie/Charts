@@ -191,7 +191,7 @@ class LineChart1ViewController: DemoBaseViewController {
             }
             chartView.setNeedsDisplay()
         case .toggleGradientLine:
-            for set in chartView.data!.dataSets as! [LineChartDataSet] {
+            for case let set as LineChartDataSet in chartView.data! {
                 set.isDrawLineWithGradientEnabled = !set.isDrawLineWithGradientEnabled
                 setup(set)
             }

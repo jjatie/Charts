@@ -43,9 +43,10 @@ public class LineChartRenderer: DataRenderer {
     public func drawData(context: CGContext) {
         guard let lineData = dataProvider?.lineData else { return }
 
-        let sets = lineData.dataSets as? [LineChartDataSet]
+        let sets = lineData._dataSets as? [LineChartDataSet]
         assert(sets != nil, "Datasets for LineChartRenderer must conform to ILineChartDataSet")
 
+        // TODO:
         let drawDataSet = { self.drawDataSet(context: context, dataSet: $0) }
         sets!.lazy
             .filter(\.isVisible)

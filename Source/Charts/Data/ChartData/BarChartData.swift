@@ -39,7 +39,7 @@ open class BarChartData: BarLineScatterCandleBubbleChartData {
     ///   - groupSpace: The space between groups of bars in values (not pixels) e.g. 0.8f for bar width 1f
     ///   - barSpace: The space between individual bars in values (not pixels) e.g. 0.1f for bar width 1f
     open func groupBars(fromX: Double, groupSpace: Double, barSpace: Double) {
-        guard !isEmpty, let max = maxEntryCountSet else {
+        guard let max = maxEntryCountSet else {
             print("BarData needs to hold at least 2 BarDataSets to allow grouping.", terminator: "\n")
             return
         }
@@ -56,7 +56,7 @@ open class BarChartData: BarLineScatterCandleBubbleChartData {
             let start = fromX
             fromX += groupSpaceWidthHalf
 
-            (dataSets as! [BarChartDataSet]).forEach { set in
+            (_dataSets as! [BarChartDataSet]).forEach { set in
                 fromX += barSpaceHalf
                 fromX += barWidthHalf
 
@@ -79,7 +79,7 @@ open class BarChartData: BarLineScatterCandleBubbleChartData {
             }
         }
 
-        notifyDataChanged()
+        calcMinMax()
     }
 
     /// In case of grouped bars, this method returns the space an individual group of bar needs on the x-axis.

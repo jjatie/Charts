@@ -54,8 +54,7 @@ public class BubbleChartRenderer: DataRenderer {
             accessibleChartElements.append(element)
         }
 
-        let sets = bubbleData.dataSets as! [BubbleChartDataSet]
-        for case let (i, set) in zip(sets.indices, sets) where set.isVisible {
+        for case let (i, set as BubbleChartDataSet) in bubbleData.indexed() where set.isVisible {
             drawDataSet(context: context, dataSet: set, dataSetIndex: i)
         }
 

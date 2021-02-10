@@ -19,12 +19,16 @@ func merge(_ lhs: AxisRange, _ rhs: Double) -> AxisRange {
     (min(lhs.min, rhs), max(lhs.max, rhs))
 }
 
+func axisRangeBounds(_ axisRange: AxisRange, contains range: AxisRange) -> Bool {
+    axisRange.min == range.min ||
+        axisRange.min == range.max ||
+        axisRange.max == range.min ||
+        axisRange.max == range.max
+}
+
 open class ChartData: ExpressibleByArrayLiteral {
     public internal(set) var xRange: AxisRange = (0, 0)
-    public var yRange: AxisRange {
-        merge(leftAxisRange, rightAxisRange)
-    }
-
+    public var yRange: AxisRange { merge(leftAxisRange, rightAxisRange) }
     final var leftAxisRange: AxisRange = (.greatestFiniteMagnitude, -.greatestFiniteMagnitude)
     final var rightAxisRange: AxisRange = (.greatestFiniteMagnitude, -.greatestFiniteMagnitude)
 
@@ -49,24 +53,21 @@ open class ChartData: ExpressibleByArrayLiteral {
     public required init() {}
 
     public required init(arrayLiteral elements: Element...) {
-        dataSets = elements
+        self._dataSets = elements
+        calcMinMax()
     }
 
     public init(dataSets: [Element]) {
-        self.dataSets = dataSets
+        self._dataSets = dataSets
+        calcMinMax()
     }
 
     public convenience init(dataSet: Element) {
         self.init(dataSets: [dataSet])
-    }
-
-    /// Call this method to let the ChartData know that the underlying data has changed.
-    /// Calling this performs all necessary recalculations needed when the contained data has changed.
-    open func notifyDataChanged() {
         calcMinMax()
     }
 
-    open func calcMinMaxY(fromX: Double, toX: Double) {
+    func calcMinMaxY(fromX: Double, toX: Double) {
         forEach { $0.calcMinMaxY(fromX: fromX, toX: toX) }
 
         // apply the new data
@@ -74,8 +75,8 @@ open class ChartData: ExpressibleByArrayLiteral {
     }
 
     /// calc minimum and maximum y value over all datasets
-    open func calcMinMax() {
-        forEach { calcMinMax(dataSet: $0) }
+    func calcMinMax() {
+        forEach(calcMinMax(dataSet:))
         leftAxisRange = calcAxisRange(.left)
         rightAxisRange = calcAxisRange(.right)
     }
@@ -87,7 +88,7 @@ open class ChartData: ExpressibleByArrayLiteral {
     }
 
     /// Adjusts the current minimum and maximum values based on the provided Entry object.
-    open func calcMinMax(entry e: ChartDataEntry, axis: YAxis.AxisDependency) {
+    private func calcMinMax(entry e: ChartDataEntry, axis: YAxis.AxisDependency) {
         xRange = merge(xRange, e.x)
 
         switch axis {
@@ -100,7 +101,7 @@ open class ChartData: ExpressibleByArrayLiteral {
     }
 
     /// Adjusts the minimum and maximum values based on the given DataSet.
-    open func calcMinMax(dataSet d: Element) {
+    private func calcMinMax(dataSet d: Element) {
         xRange = merge(xRange, d.xRange)
 
         switch d.axisDependency {
@@ -149,53 +150,19 @@ open class ChartData: ExpressibleByArrayLiteral {
         }
     }
 
-    /// All DataSet objects this ChartData object holds.
-    open var dataSets: [Element] {
-        get { _dataSets }
-        set {
-            _dataSets = newValue
-            notifyDataChanged()
-        }
-    }
-
     /// Get the Entry for a corresponding highlight object
     ///
     /// - Parameters:
     ///   - highlight:
     /// - Returns: The entry that is highlighted
     open func entry(for highlight: Highlight) -> ChartDataEntry? {
-        guard highlight.dataSetIndex < dataSets.endIndex else { return nil }
+        guard highlight.dataSetIndex < endIndex else { return nil }
         return self[highlight.dataSetIndex].element(withX: highlight.x, closestToY: highlight.y)
-    }
-
-    /// **IMPORTANT: This method does calculations at runtime. Use with care in performance critical situations.**
-    ///
-    /// - Parameters:
-    ///   - label:
-    ///   - ignorecase:
-    /// - Returns: The DataSet Object with the given label. Sensitive or not.
-    open func dataSet(forLabel label: String, ignorecase: Bool) -> Element? {
-        guard let index = index(forLabel: label, ignoreCase: ignorecase) else { return nil }
-        return self[index]
-    }
-
-    open func dataSet(at index: Index) -> Element? {
-        guard dataSets.indices.contains(index) else { return nil }
-        return self[index]
-    }
-
-    /// Removes the given DataSet from this data object.
-    /// Also recalculates all minimum and maximum values.
-    ///
-    /// - Returns: `true` if a DataSet was removed, `false` ifno DataSet could be removed.
-    @discardableResult open func removeDataSet(_ dataSet: Element) -> Element? {
-        guard let index = firstIndex(where: { $0 === dataSet }) else { return nil }
-        return remove(at: index)
     }
 
     /// Adds an Entry to the DataSet at the specified index. Entries are added to the end of the list.
     open func appendEntry(_ e: ChartDataEntry, toDataSet dataSetIndex: Index) {
-        guard dataSets.indices.contains(dataSetIndex) else {
+        guard indices.contains(dataSetIndex) else {
             return print("ChartData.addEntry() - Cannot add Entry because dataSetIndex too high or too low.", terminator: "\n")
         }
 
@@ -206,7 +173,7 @@ open class ChartData: ExpressibleByArrayLiteral {
 
     /// Removes the given Entry object from the DataSet at the specified index.
     @discardableResult open func removeEntry(_ entry: ChartDataEntry, dataSetIndex: Index) -> Bool {
-        guard dataSets.indices.contains(dataSetIndex) else { return false }
+        guard indices.contains(dataSetIndex) else { return false }
 
         // remove the entry from the dataset
         let removed = self[dataSetIndex].remove(entry)
@@ -218,42 +185,9 @@ open class ChartData: ExpressibleByArrayLiteral {
         return removed
     }
 
-    /// Removes the Entry object closest to the given xIndex from the ChartDataSet at the
-    /// specified index.
-    ///
-    /// - Returns: `true` if an entry was removed, `false` ifno Entry was found that meets the specified requirements.
-    @discardableResult open func removeEntry(xValue: Double, dataSetIndex: Index) -> Bool {
-        guard
-            dataSets.indices.contains(dataSetIndex),
-            let entry = self[dataSetIndex].element(withX: xValue, closestToY: .nan)
-        else { return false }
-
-        return removeEntry(entry, dataSetIndex: dataSetIndex)
-    }
-
     /// - Returns: The DataSet that contains the provided Entry, or null, if no DataSet contains this entry.
     open func getDataSetForEntry(_ e: ChartDataEntry) -> Element? {
-        first { $0.element(withX: e.x, closestToY: e.y) === e }
-    }
-
-    /// - Returns: The index of the provided DataSet in the DataSet array of this data object, or -1 if it does not exist.
-    open func index(of dataSet: Element) -> Index? {
-        firstIndex { $0 === dataSet }
-    }
-
-    /// - Returns: The first DataSet from the datasets-array that has it's dependency on the left axis. Returns null if no DataSet with left dependency could be found.
-    open func getFirstLeft(dataSets _: [Element]) -> Element? {
-        first { $0.axisDependency == .left }
-    }
-
-    /// - Returns: The first DataSet from the datasets-array that has it's dependency on the right axis. Returns null if no DataSet with right dependency could be found.
-    open func getFirstRight(dataSets _: [Element]) -> Element? {
-        first { $0.axisDependency == .right }
-    }
-
-    /// - Returns: All colors used across all DataSet objects this object represents.
-    open var colors: [NSUIColor] {
-        reduce(into: []) { $0 += $1.colors }
+        first { $0.contains(e) }
     }
 
     /// Sets a custom ValueFormatter for all DataSets this data object contains.
@@ -289,13 +223,6 @@ open class ChartData: ExpressibleByArrayLiteral {
         removeAll(keepingCapacity: false)
     }
 
-    /// Checks if this data object contains the specified DataSet.
-    ///
-    /// - Returns: `true` if so, `false` ifnot.
-    open func contains(dataSet: Element) -> Bool {
-        contains { $0 === dataSet }
-    }
-
     /// The total entry count across all DataSet objects this data object contains.
     open var entryCount: Int {
         reduce(0) { return $0 + $1.count }
@@ -314,20 +241,23 @@ extension ChartData: MutableCollection {
     public typealias Element = ChartDataSet
 
     public var startIndex: Index {
-        dataSets.startIndex
+        _dataSets.startIndex
     }
 
     public var endIndex: Index {
-        dataSets.endIndex
+        _dataSets.endIndex
     }
 
     public func index(after: Index) -> Index {
-        dataSets.index(after: after)
+        _dataSets.index(after: after)
     }
 
     public subscript(position: Index) -> Element {
-        get { dataSets[position] }
-        set { _dataSets[position] = newValue }
+        get { _dataSets[position] }
+        set {
+            calcMinMax(dataSet: newValue)
+            _dataSets[position] = newValue
+        }
     }
 }
 
@@ -335,10 +265,9 @@ extension ChartData: MutableCollection {
 
 extension ChartData: RandomAccessCollection {
     public func index(before: Index) -> Index {
-        dataSets.index(before: before)
+        _dataSets.index(before: before)
     }
 }
-
 
 // MARK: RangeReplaceableCollection
 
@@ -349,17 +278,19 @@ extension ChartData: RangeReplaceableCollection
         calcMinMax(dataSet: newElement)
     }
 
+    @discardableResult
     public func remove(at position: Index) -> Element {
         let element = _dataSets.remove(at: position)
         calcMinMax()
         return element
     }
 
+    @discardableResult
     public func removeFirst() -> Element {
         assert(!(self is CombinedChartData), "\(#function) not supported for CombinedData")
 
         let element = _dataSets.removeFirst()
-        notifyDataChanged()
+        calcMinMax()
         return element
     }
 
@@ -367,14 +298,15 @@ extension ChartData: RangeReplaceableCollection
         assert(!(self is CombinedChartData), "\(#function) not supported for CombinedData")
 
         _dataSets.removeFirst(n)
-        notifyDataChanged()
+        calcMinMax()
     }
 
+    @discardableResult
     public func removeLast() -> Element {
         assert(!(self is CombinedChartData), "\(#function) not supported for CombinedData")
 
         let element = _dataSets.removeLast()
-        notifyDataChanged()
+        calcMinMax()
         return element
     }
 
@@ -382,21 +314,21 @@ extension ChartData: RangeReplaceableCollection
         assert(!(self is CombinedChartData), "\(#function) not supported for CombinedData")
 
         _dataSets.removeLast(n)
-        notifyDataChanged()
+        calcMinMax()
     }
 
     public func removeSubrange<R>(_ bounds: R) where R: RangeExpression, Index == R.Bound {
         assert(!(self is CombinedChartData), "\(#function) not supported for CombinedData")
 
         _dataSets.removeSubrange(bounds)
-        notifyDataChanged()
+        calcMinMax()
     }
 
     public func removeAll(keepingCapacity keepCapacity: Bool) {
         assert(!(self is CombinedChartData), "\(#function) not supported for CombinedData")
 
         _dataSets.removeAll(keepingCapacity: keepCapacity)
-        notifyDataChanged()
+        calcMinMax()
     }
 
     public func replaceSubrange<C>(_ subrange: Swift.Range<Index>, with newElements: C) where C: Collection, Element == C.Element
@@ -418,21 +350,9 @@ public extension ChartData {
     ///   - label: The label to search for
     ///   - ignoreCase: if true, the search is not case-sensitive
     /// - Returns: The index of the DataSet Object with the given label. `nil` if not found
-    func index(forLabel label: String, ignoreCase: Bool) -> Index? {
+    func index(ofLabel label: String, ignoreCase: Bool) -> Index? {
         return ignoreCase
             ? firstIndex { $0.label?.caseInsensitiveCompare(label) == .orderedSame }
             : firstIndex { $0.label == label }
-    }
-
-    subscript(label label: String, ignoreCase ignoreCase: Bool) -> Element? {
-        guard let index = index(forLabel: label, ignoreCase: ignoreCase) else { return nil }
-        return self[index]
-    }
-
-    subscript(entry entry: ChartDataEntry) -> Element? {
-        assert(!(self is CombinedChartData), "\(#function) not supported for CombinedData")
-
-        guard let index = firstIndex(where: { $0.element(withX: entry.x, closestToY: entry.y) === entry }) else { return nil }
-        return self[index]
     }
 }

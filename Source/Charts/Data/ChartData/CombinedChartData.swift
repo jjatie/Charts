@@ -83,17 +83,6 @@ open class CombinedChartData: BarLineScatterCandleBubbleChartData {
     override open func calcMinMax() {
         _dataSets.removeAll()
 
-
-//        yMax = -Double.greatestFiniteMagnitude
-//        yMin = Double.greatestFiniteMagnitude
-//        xMax = -Double.greatestFiniteMagnitude
-//        xMin = Double.greatestFiniteMagnitude
-//
-//        leftAxisMax = -Double.greatestFiniteMagnitude
-//        leftAxisMin = Double.greatestFiniteMagnitude
-//        rightAxisMax = -Double.greatestFiniteMagnitude
-//        rightAxisMin = Double.greatestFiniteMagnitude
-
         for data in allData {
             data.calcMinMax()
 
@@ -142,34 +131,13 @@ open class CombinedChartData: BarLineScatterCandleBubbleChartData {
         return allData.firstIndex { $0 === data }
     }
 
-    override open func removeDataSet(_ dataSet: ChartDataSet) -> Element? {
-        for data in allData {
-            if let e = data.removeDataSet(dataSet) {
-                return e
-            }
-        }
-
-        return nil
-    }
-
     override open func removeEntry(_: ChartDataEntry, dataSetIndex _: Int) -> Bool {
         print("removeEntry(entry, dataSetIndex) not supported for CombinedData", terminator: "\n")
         return false
     }
 
-    override open func removeEntry(xValue _: Double, dataSetIndex _: Int) -> Bool {
-        print("removeEntry(xValue, dataSetIndex) not supported for CombinedData", terminator: "\n")
-        return false
-    }
-
-    override open func notifyDataChanged() {
-        _lineData?.notifyDataChanged()
-        _barData?.notifyDataChanged()
-        _scatterData?.notifyDataChanged()
-        _candleData?.notifyDataChanged()
-        _bubbleData?.notifyDataChanged()
-
-        super.notifyDataChanged() // recalculate everything
+    public func notifyDataChanged() {
+        calcMinMax() // recalculate everything
     }
 
     /// Get the Entry for a corresponding highlight object

@@ -66,7 +66,7 @@ class PieChartTests: XCTestCase {
     }
 
     func testHighlightDisabled() {
-        chart.data?.dataSets[0].isHighlightEnabled = false
+        chart.data?[0].isHighlightEnabled = false
         chart.highlightValue(x: 1.0, dataSetIndex: 0, callDelegate: false)
         assertChartSnapshot(matching: chart)
     }

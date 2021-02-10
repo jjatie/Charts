@@ -52,7 +52,7 @@ open class LegendRenderer: Renderer {
                             label = nil
                         }
 
-                        let entry = LegendEntry(label: label)
+                        var entry = LegendEntry(label: label)
                         entry.form = dataSet.form
                         entry.formSize = dataSet.formSize
                         entry.formLineWidth = dataSet.formLineWidth
@@ -65,7 +65,7 @@ open class LegendRenderer: Renderer {
 
                     if dataSet.label != nil {
                         // add the legend description label
-                        let entry = LegendEntry(label: dataSet.label)
+                        var entry = LegendEntry(label: dataSet.label)
                         entry.form = .none
 
                         entries.append(entry)
@@ -74,7 +74,7 @@ open class LegendRenderer: Renderer {
                     let pds = dataSet as! PieChartDataSet
 
                     for j in 0 ..< min(clrs.count, entryCount) {
-                        let entry = LegendEntry(label: (pds[j] as? PieChartDataEntry)?.label)
+                        var entry = LegendEntry(label: (pds[j] as? PieChartDataEntry)?.label)
                         entry.form = dataSet.form
                         entry.formSize = dataSet.formSize
                         entry.formLineWidth = dataSet.formLineWidth
@@ -87,7 +87,7 @@ open class LegendRenderer: Renderer {
 
                     if dataSet.label != nil {
                         // add the legend description label
-                        let entry = LegendEntry(label: dataSet.label)
+                        var entry = LegendEntry(label: dataSet.label)
                         entry.form = .none
 
                         entries.append(entry)
@@ -97,7 +97,7 @@ open class LegendRenderer: Renderer {
                 {
                     let candleDataSet = dataSet as! CandleChartDataSet
 
-                    let decreasingEntry = LegendEntry(label: nil)
+                    var decreasingEntry = LegendEntry(label: nil)
                     decreasingEntry.form = dataSet.form
                     decreasingEntry.formSize = dataSet.formSize
                     decreasingEntry.formLineWidth = dataSet.formLineWidth
@@ -107,7 +107,7 @@ open class LegendRenderer: Renderer {
 
                     entries.append(decreasingEntry)
 
-                    let increasingEntry = LegendEntry(label: dataSet.label)
+                    var increasingEntry = LegendEntry(label: dataSet.label)
                     increasingEntry.form = dataSet.form
                     increasingEntry.formSize = dataSet.formSize
                     increasingEntry.formLineWidth = dataSet.formLineWidth
@@ -127,7 +127,7 @@ open class LegendRenderer: Renderer {
                             label = dataSet.label
                         }
 
-                        let entry = LegendEntry(label: label)
+                        var entry = LegendEntry(label: label)
                         entry.form = dataSet.form
                         entry.formSize = dataSet.formSize
                         entry.formLineWidth = dataSet.formLineWidth
