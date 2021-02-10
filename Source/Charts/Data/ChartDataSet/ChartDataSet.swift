@@ -20,11 +20,6 @@ public enum ChartDataSetRounding {
     case closest
 }
 
-public typealias AxisRange = (min: Double, max: Double)
-
-public typealias ARange = ClosedRange<Double>
-
-
 /// The DataSet class represents one group or type of entries (Entry) in the Chart that belong together.
 /// It is designed to logically separate different groups of values inside the Chart (e.g. the values for a specific line in the LineChart, or the values of a specific group of bars in the BarChart).
 @dynamicMemberLookup
@@ -178,6 +173,15 @@ extension ChartDataSet {
     }
 }
 
+// MARK: - ExpressibleByArrayLiteral
+
+extension ChartDataSet: ExpressibleByArrayLiteral {
+    public init(arrayLiteral elements: Element...) {
+        self.entries = elements
+        calcMinMax()
+    }
+}
+
 // MARK: - MutableCollection
 
 extension ChartDataSet: MutableCollection {
@@ -271,6 +275,7 @@ extension ChartDataSet: RangeReplaceableCollection {
 }
 
 // MARK: - CustomStringConvertible
+
 extension ChartDataSet: CustomStringConvertible {
     public var description: String {
         String(format: "%@, label: %@, %i entries", arguments: [String(describing: Self.self), self.label ?? "", self.count])
@@ -278,6 +283,7 @@ extension ChartDataSet: CustomStringConvertible {
 }
 
 // MARK: - CustomDebugStringConvertible
+
 extension ChartDataSet: CustomDebugStringConvertible {
     public var debugDescription: String {
         reduce(into: description + ":") {

@@ -11,7 +11,7 @@ extension BarChartData {
     ///   - fromX: the starting point on the x-axis where the grouping should begin
     ///   - groupSpace: The space between groups of bars in values (not pixels) e.g. 0.8f for bar width 1f
     ///   - barSpace: The space between individual bars in values (not pixels) e.g. 0.1f for bar width 1f
-    public final func groupBars(fromX: Double, groupSpace: Double, barWidth: Double, barSpace: Double) {
+    public mutating func groupBars(fromX: Double, groupSpace: Double, barWidth: Double, barSpace: Double) {
         guard let max = maxEntryCountSet else {
             print("BarData needs to hold at least 2 BarDataSets to allow grouping.", terminator: "\n")
             return
@@ -60,7 +60,7 @@ extension BarChartData {
     /// - Parameters:
     ///   - groupSpace:
     ///   - barSpace:
-    public final func groupWidth(groupSpace: Double, barWidth: Double, barSpace: Double) -> Double {
+    public func groupWidth(groupSpace: Double, barWidth: Double, barSpace: Double) -> Double {
         Double(count) * (barWidth + barSpace) + groupSpace
     }
 }

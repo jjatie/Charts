@@ -1,60 +1,31 @@
-//
-//  ChartData.swift
-//  Charts
-//
-//  Copyright 2015 Daniel Cohen Gindi & Philipp Jahoda
-//  A port of MPAndroidChart for iOS
-//  Licensed under Apache License 2.0
-//
-//  https://github.com/danielgindi/Charts
-//
-
 import Foundation
 
-func merge(_ lhs: AxisRange, _ rhs: AxisRange) -> AxisRange {
-    (min(lhs.min, rhs.min), max(lhs.max, rhs.max))
-}
-
-func merge(_ lhs: AxisRange, _ rhs: Double) -> AxisRange {
-    (min(lhs.min, rhs), max(lhs.max, rhs))
-}
-
-func axisRangeBounds(_ axisRange: AxisRange, contains range: AxisRange) -> Bool {
-    axisRange.min == range.min ||
-        axisRange.min == range.max ||
-        axisRange.max == range.min ||
-        axisRange.max == range.max
-}
-
-open class ChartData<EntryType: ChartDataEntry>: ExpressibleByArrayLiteral {
+public struct ChartData<EntryType: ChartDataEntry> {
     public internal(set) var xRange: AxisRange = (0, 0)
     public var yRange: AxisRange { merge(leftAxisRange, rightAxisRange) }
-    final var leftAxisRange: AxisRange = (.greatestFiniteMagnitude, -.greatestFiniteMagnitude)
-    final var rightAxisRange: AxisRange = (.greatestFiniteMagnitude, -.greatestFiniteMagnitude)
+    var leftAxisRange: AxisRange = (.greatestFiniteMagnitude, -.greatestFiniteMagnitude)
+    var rightAxisRange: AxisRange = (.greatestFiniteMagnitude, -.greatestFiniteMagnitude)
 
     // MARK: - Accessibility
 
     /// When the data entry labels are generated identifiers, set this property to prepend a string before each identifier
     ///
     /// For example, if a label is "#3", settings this property to "Item" allows it to be spoken as "Item #3"
-    open var accessibilityEntryLabelPrefix: String?
+    public var accessibilityEntryLabelPrefix: String?
 
     /// When the data entry value requires a unit, use this property to append the string representation of the unit to the value
     ///
     /// For example, if a value is "44.1", setting this property to "m" allows it to be spoken as "44.1 m"
-    open var accessibilityEntryLabelSuffix: String?
+    public var accessibilityEntryLabelSuffix: String?
 
     /// If the data entry value is a count, set this to true to allow plurals and other grammatical changes
     /// **default**: false
-    open var accessibilityEntryLabelSuffixIsCount: Bool = false
+    public var accessibilityEntryLabelSuffixIsCount: Bool = false
 
-    var _dataSets = [Element]()
+    var _dataSets: [Element]
 
-    public required init() {}
-
-    public required init(arrayLiteral elements: Element...) {
-        self._dataSets = elements
-        calcMinMax()
+    public init() {
+        _dataSets = []
     }
 
     public init(dataSets: [Element]) {
@@ -62,16 +33,16 @@ open class ChartData<EntryType: ChartDataEntry>: ExpressibleByArrayLiteral {
         calcMinMax()
     }
 
-    public convenience init(dataSet: Element) {
+    public init(dataSet: Element) {
         self.init(dataSets: [dataSet])
         calcMinMax()
     }
 
-    public func notifyDataChanged() {
+    public mutating func notifyDataChanged() {
         calcMinMax()
     }
 
-    func calcMinMaxY(fromX: Double, toX: Double) {
+    mutating func calcMinMaxY(fromX: Double, toX: Double) {
         indices.forEach { self[$0].calcMinMaxY(fromX: fromX, toX: toX) }
 
         // apply the new data
@@ -79,8 +50,8 @@ open class ChartData<EntryType: ChartDataEntry>: ExpressibleByArrayLiteral {
     }
 
     /// calc minimum and maximum y value over all datasets
-    func calcMinMax() {
-        forEach(calcMinMax(dataSet:))
+    mutating func calcMinMax() {
+        forEach { calcMinMax(dataSet:$0) }
         leftAxisRange = calcAxisRange(.left)
         rightAxisRange = calcAxisRange(.right)
     }
@@ -92,7 +63,7 @@ open class ChartData<EntryType: ChartDataEntry>: ExpressibleByArrayLiteral {
     }
 
     /// Adjusts the current minimum and maximum values based on the provided Entry object.
-    private func calcMinMax(entry e: EntryType, axis: YAxis.AxisDependency) {
+    private mutating func calcMinMax(entry e: EntryType, axis: YAxis.AxisDependency) {
         xRange = merge(xRange, e.x)
 
         switch axis {
@@ -105,7 +76,7 @@ open class ChartData<EntryType: ChartDataEntry>: ExpressibleByArrayLiteral {
     }
 
     /// Adjusts the minimum and maximum values based on the given DataSet.
-    private func calcMinMax(dataSet d: Element) {
+    private mutating func calcMinMax(dataSet d: Element) {
         xRange = merge(xRange, d.xRange)
 
         switch d.axisDependency {
@@ -117,7 +88,7 @@ open class ChartData<EntryType: ChartDataEntry>: ExpressibleByArrayLiteral {
         }
     }
 
-    open func getYMin(axis: YAxis.AxisDependency) -> Double {
+    public func getYMin(axis: YAxis.AxisDependency) -> Double {
         // TODO: Why does it make sense to return the other axisMin if there is none for the one requested?
         switch axis {
         case .left:
@@ -136,7 +107,7 @@ open class ChartData<EntryType: ChartDataEntry>: ExpressibleByArrayLiteral {
         }
     }
 
-    open func getYMax(axis: YAxis.AxisDependency) -> Double {
+    public func getYMax(axis: YAxis.AxisDependency) -> Double {
         switch axis {
         case .left:
             if leftAxisRange.max == -.greatestFiniteMagnitude {
@@ -155,7 +126,7 @@ open class ChartData<EntryType: ChartDataEntry>: ExpressibleByArrayLiteral {
     }
 
     /// Adds an Entry to the DataSet at the specified index. Entries are added to the end of the list.
-    open func appendEntry(_ e: EntryType, toDataSet dataSetIndex: Index) {
+    public mutating func appendEntry(_ e: EntryType, toDataSet dataSetIndex: Index) {
         guard indices.contains(dataSetIndex) else {
             return print("ChartData.addEntry() - Cannot add Entry because dataSetIndex too high or too low.", terminator: "\n")
         }
@@ -165,7 +136,7 @@ open class ChartData<EntryType: ChartDataEntry>: ExpressibleByArrayLiteral {
     }
 
     /// Removes the given Entry object from the DataSet at the specified index.
-    @discardableResult open func removeEntry(_ entry: EntryType, dataSetIndex: Index) -> Bool {
+    @discardableResult public mutating func removeEntry(_ entry: EntryType, dataSetIndex: Index) -> Bool {
         guard indices.contains(dataSetIndex) else { return false }
 
         // remove the entry from the dataset
@@ -179,55 +150,51 @@ open class ChartData<EntryType: ChartDataEntry>: ExpressibleByArrayLiteral {
     }
 
     /// - Returns: The DataSet that contains the provided Entry, or null, if no DataSet contains this entry.
-    open func getDataSetForEntry(_ e: EntryType) -> Element? {
+    public func getDataSetForEntry(_ e: EntryType) -> Element? {
         first { $0.contains(e) }
     }
 
     /// Sets a custom ValueFormatter for all DataSets this data object contains.
-    open func setValueFormatter(_ formatter: ValueFormatter) {
+    public mutating func setValueFormatter(_ formatter: ValueFormatter) {
         indices.forEach { self[$0].valueFormatter = formatter }
     }
 
     /// Sets the color of the value-text (color in which the value-labels are drawn) for all DataSets this data object contains.
-    open func setValueTextColor(_ color: NSUIColor) {
+    public mutating func setValueTextColor(_ color: NSUIColor) {
         indices.forEach { self[$0].valueTextColor = color }
     }
 
     /// Sets the font for all value-labels for all DataSets this data object contains.
-    open func setValueFont(_ font: NSUIFont) {
+    public mutating func setValueFont(_ font: NSUIFont) {
         indices.forEach { self[$0].valueFont = font }
     }
 
     /// Enables / disables drawing values (value-text) for all DataSets this data object contains.
-    open func setDrawValues(_ enabled: Bool) {
+    public mutating func setDrawValues(_ enabled: Bool) {
         indices.forEach { self[$0].isDrawValuesEnabled = enabled }
     }
 
-    /// Enables / disables highlighting values for all DataSets this data object contains.
-    /// If set to true, this means that values can be highlighted programmatically or by touch gesture.
-    open var isHighlightEnabled: Bool {
-        get { allSatisfy { $0.isHighlightingEnabled } }
-        set { indices.forEach { self[$0].isHighlightingEnabled = newValue } }
-    }
-
-    /// Clears this data object from all DataSets and removes all Entries.
-    /// Don't forget to invalidate the chart after this.
-    open func clearValues() {
-        removeAll(keepingCapacity: false)
-    }
-
     /// The total entry count across all DataSet objects this data object contains.
-    open var entryCount: Int {
+    public var entryCount: Int {
         reduce(0) { return $0 + $1.count }
     }
 
     /// The DataSet object with the maximum number of entries or null if there are no DataSets.
-    open var maxEntryCountSet: Element? {
+    public var maxEntryCountSet: Element? {
         self.max { $0.count > $1.count }
     }
 }
 
-// MARK: MutableCollection
+// MARK: - ExpressibleByArrayLiteral
+
+extension ChartData: ExpressibleByArrayLiteral {
+    public init(arrayLiteral elements: Element...) {
+        self._dataSets = elements
+        calcMinMax()
+    }
+}
+
+// MARK: - MutableCollection
 
 extension ChartData: MutableCollection {
     public typealias Index = Int
@@ -254,7 +221,7 @@ extension ChartData: MutableCollection {
     }
 }
 
-// MARK: RandomAccessCollection
+// MARK: - RandomAccessCollection
 
 extension ChartData: RandomAccessCollection {
     public func index(before: Index) -> Index {
@@ -262,64 +229,64 @@ extension ChartData: RandomAccessCollection {
     }
 }
 
-// MARK: RangeReplaceableCollection
+// MARK: - RangeReplaceableCollection
 
 extension ChartData: RangeReplaceableCollection
 {
-    public func append(_ newElement: Element) {
+    public mutating func append(_ newElement: Element) {
         _dataSets.append(newElement)
         calcMinMax(dataSet: newElement)
     }
 
     @discardableResult
-    public func remove(at position: Index) -> Element {
+    public mutating func remove(at position: Index) -> Element {
         let element = _dataSets.remove(at: position)
         calcMinMax()
         return element
     }
 
     @discardableResult
-    public func removeFirst() -> Element {
+    public mutating func removeFirst() -> Element {
         let element = _dataSets.removeFirst()
         calcMinMax()
         return element
     }
 
-    public func removeFirst(_ n: Int) {
+    public mutating func removeFirst(_ n: Int) {
         _dataSets.removeFirst(n)
         calcMinMax()
     }
 
     @discardableResult
-    public func removeLast() -> Element {
+    public mutating func removeLast() -> Element {
         let element = _dataSets.removeLast()
         calcMinMax()
         return element
     }
 
-    public func removeLast(_ n: Int) {
+    public mutating func removeLast(_ n: Int) {
         _dataSets.removeLast(n)
         calcMinMax()
     }
 
-    public func removeSubrange<R>(_ bounds: R) where R: RangeExpression, Index == R.Bound {
+    public mutating func removeSubrange<R>(_ bounds: R) where R: RangeExpression, Index == R.Bound {
         _dataSets.removeSubrange(bounds)
         calcMinMax()
     }
 
-    public func removeAll(keepingCapacity keepCapacity: Bool) {
+    public mutating func removeAll(keepingCapacity keepCapacity: Bool) {
         _dataSets.removeAll(keepingCapacity: keepCapacity)
         calcMinMax()
     }
 
-    public func replaceSubrange<C>(_ subrange: Swift.Range<Index>, with newElements: C) where C: Collection, Element == C.Element
+    public mutating func replaceSubrange<C>(_ subrange: Swift.Range<Index>, with newElements: C) where C: Collection, Element == C.Element
     {
         _dataSets.replaceSubrange(subrange, with: newElements)
         newElements.forEach { self.calcMinMax(dataSet: $0) }
     }
 }
 
-// MARK: Swift Accessors
+// MARK: - Swift Accessors
 
 public extension ChartData {
     /// Retrieve the index of a ChartDataSet with a specific label from the ChartData. Search can be case sensitive or not.

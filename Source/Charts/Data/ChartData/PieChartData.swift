@@ -1,10 +1,6 @@
 public typealias PieChartData = ChartData<PieChartDataEntry>
 
 extension PieChartData {
-    public convenience init(dataSet: Element) {
-        self.init(dataSets: [dataSet])
-    }
-
     public var dataSet: PieChartDataSet? {
         get { first }
         set {
