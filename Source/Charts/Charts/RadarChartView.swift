@@ -14,7 +14,14 @@ import Foundation
 
 /// Implementation of the RadarChart, a "spidernet"-like chart. It works best
 /// when displaying 5-10 entries per DataSet.
-open class RadarChartView: PieRadarChartViewBase, ChartDataProvider {
+open class RadarChartView: PieRadarChartViewBase<RadarChartDataEntry> {
+    open var highlightColor = NSUIColor(red: 255.0 / 255.0, green: 187.0 / 255.0, blue: 115.0 / 255.0, alpha: 1.0)
+    open var highlightLineWidth = CGFloat(1.0)
+    open var highlightLineDashPhase = CGFloat(0.0)
+    open var highlightLineDashLengths: [CGFloat]?
+
+    /// Sets labels that should be drawn around the RadarChart at the end of each web line.
+    open var labels = [String]()
     /// width of the web lines that come from the center.
     open var webLineWidth = CGFloat(1.5)
 
@@ -67,8 +74,6 @@ open class RadarChartView: PieRadarChartViewBase, ChartDataProvider {
     override internal func calcMinMax() {
         super.calcMinMax()
 
-        guard let data = data else { return }
-
         _yAxis.calculate(min: data.getYMin(axis: .left), max: data.getYMax(axis: .left))
         xAxis.calculate(min: 0.0, max: Double(data.maxEntryCountSet?.count ?? 0))
     }
@@ -79,9 +84,7 @@ open class RadarChartView: PieRadarChartViewBase, ChartDataProvider {
         _yAxisRenderer?.computeAxis(min: _yAxis._axisMinimum, max: _yAxis._axisMaximum, inverted: _yAxis.isInverted)
         _xAxisRenderer?.computeAxis(min: xAxis._axisMinimum, max: xAxis._axisMaximum, inverted: false)
 
-        if let data = data,
-           !legend.isLegendCustom
-        {
+        if !legend.isLegendCustom {
             legendRenderer.computeLegend(data: data)
         }
 
@@ -93,10 +96,9 @@ open class RadarChartView: PieRadarChartViewBase, ChartDataProvider {
     override open func draw(_ rect: CGRect) {
         super.draw(rect)
 
-        guard data != nil, let renderer = renderer else { return }
-
-        let optionalContext = NSUIGraphicsGetCurrentContext()
-        guard let context = optionalContext else { return }
+        guard let renderer = renderer,
+              let context = NSUIGraphicsGetCurrentContext()
+        else { return }
 
         if xAxis.isEnabled {
             _xAxisRenderer.computeAxis(min: xAxis._axisMinimum, max: xAxis._axisMaximum, inverted: false)
@@ -142,7 +144,7 @@ open class RadarChartView: PieRadarChartViewBase, ChartDataProvider {
 
     /// The angle that each slice in the radar chart occupies.
     open var sliceAngle: CGFloat {
-        return 360.0 / CGFloat(data?.maxEntryCountSet?.count ?? 0)
+        360.0 / CGFloat(data.maxEntryCountSet?.count ?? 0)
     }
 
     override open func indexForAngle(_ angle: CGFloat) -> Int? {
@@ -151,7 +153,7 @@ open class RadarChartView: PieRadarChartViewBase, ChartDataProvider {
 
         let sliceAngle = self.sliceAngle
 
-        let max = data?.maxEntryCountSet?.count ?? 0
+        let max = data.maxEntryCountSet?.count ?? 0
         return (0..<max).firstIndex {
             sliceAngle * CGFloat($0 + 1) - sliceAngle / 2.0 > a
         } ?? 0
@@ -194,4 +196,8 @@ open class RadarChartView: PieRadarChartViewBase, ChartDataProvider {
 
     /// The range of y-values this chart can display.
     public var yRange: Double { _yAxis.axisRange }
+
+    public override func entry(for highlight: Highlight) -> RadarChartDataEntry? {
+        data[highlight.dataSetIndex][Int(highlight.x)]
+    }
 }

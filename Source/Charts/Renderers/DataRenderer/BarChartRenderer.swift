@@ -50,23 +50,23 @@ public class BarChartRenderer: DataRenderer {
 
     private typealias Buffer = [CGRect]
 
-    public weak var dataProvider: BarChartDataProvider?
+    public weak var chart: BarChartView?
 
     // [CGRect] per dataset
     private var _buffers = [Buffer]()
 
     public init(
-        dataProvider: BarChartDataProvider,
+        chart: BarChartView,
         animator: Animator,
         viewPortHandler: ViewPortHandler
     ) {
         self.viewPortHandler = viewPortHandler
         self.animator = animator
-        self.dataProvider = dataProvider
+        self.chart = chart
     }
 
     public func initBuffers() {
-        guard let barData = dataProvider?.barData else { return _buffers.removeAll() }
+        guard let barData = chart?.data else { return _buffers.removeAll() }
 
         // Match buffers count to dataset count
         if _buffers.count != barData.count {
@@ -79,7 +79,7 @@ public class BarChartRenderer: DataRenderer {
         }
 
         _buffers = zip(_buffers, barData).map { buffer, set -> Buffer in
-            let set = set as! BarChartDataSet
+            let set = set
             let size = set.count * (set.isStacked ? set.stackSize : 1)
             return buffer.count == size
                 ? buffer
@@ -88,23 +88,19 @@ public class BarChartRenderer: DataRenderer {
     }
 
     private func prepareBuffer(dataSet: BarChartDataSet, index: Int) {
-        guard
-            let dataProvider = dataProvider,
-            let barData = dataProvider.barData
-        else { return }
+        guard let chart = chart else { return }
 
-        let barWidthHalf = CGFloat(barData.barWidth / 2.0)
+        let barWidthHalf = CGFloat(chart.barWidth / 2.0)
 
         var bufferIndex = 0
         let containsStacks = dataSet.isStacked
 
-        let isInverted = dataProvider.isInverted(axis: dataSet.axisDependency)
+        let isInverted = chart.isInverted(axis: dataSet.axisDependency)
         let phaseY = CGFloat(animator.phaseY)
 
-        for i in (0 ..< dataSet.count).clamped(to: 0 ..< Int(ceil(Double(dataSet.count) * animator.phaseX)))
+        for i in dataSet.indices.clamped(to: 0 ..< Int(ceil(Double(dataSet.count) * animator.phaseX)))
         {
-            guard let e = dataSet[i] as? BarChartDataEntry else { continue }
-
+            let e = dataSet[i]
             let x = CGFloat(e.x)
             let left = x - barWidthHalf
             let right = x + barWidthHalf
@@ -192,34 +188,34 @@ public class BarChartRenderer: DataRenderer {
                  */
                 var topOffset: CGFloat = 0.0
                 var bottomOffset: CGFloat = 0.0
-                if let offsetView = dataProvider as? BarChartView {
-                    let offsetAxis = offsetView.getAxis(dataSet.axisDependency)
-                    if y >= 0 {
-                        // situation 1
-                        if offsetAxis.axisMaximum < y {
-                            topOffset = CGFloat(y - offsetAxis.axisMaximum)
-                        }
-                        if offsetAxis.axisMinimum > 0 {
-                            bottomOffset = CGFloat(offsetAxis.axisMinimum)
-                        }
+                let offsetView = chart
+                let offsetAxis = offsetView.getAxis(dataSet.axisDependency)
+                if y >= 0 {
+                    // situation 1
+                    if offsetAxis.axisMaximum < y {
+                        topOffset = CGFloat(y - offsetAxis.axisMaximum)
                     }
-                    else // y < 0
-                    {
-                        // situation 2
-                        if offsetAxis.axisMaximum < 0 {
-                            topOffset = CGFloat(offsetAxis.axisMaximum * -1)
-                        }
-                        if offsetAxis.axisMinimum > y {
-                            bottomOffset = CGFloat(offsetAxis.axisMinimum - y)
-                        }
-                    }
-                    if isInverted {
-                        // situation 3 and 4
-                        // exchange topOffset/bottomOffset based on 1 and 2
-                        // see diagram above
-                        (topOffset, bottomOffset) = (bottomOffset, topOffset)
+                    if offsetAxis.axisMinimum > 0 {
+                        bottomOffset = CGFloat(offsetAxis.axisMinimum)
                     }
                 }
+                else // y < 0
+                {
+                    // situation 2
+                    if offsetAxis.axisMaximum < 0 {
+                        topOffset = CGFloat(offsetAxis.axisMaximum * -1)
+                    }
+                    if offsetAxis.axisMinimum > y {
+                        bottomOffset = CGFloat(offsetAxis.axisMinimum - y)
+                    }
+                }
+                if isInverted {
+                    // situation 3 and 4
+                    // exchange topOffset/bottomOffset based on 1 and 2
+                    // see diagram above
+                    (topOffset, bottomOffset) = (bottomOffset, topOffset)
+                }
+
                 // apply offset
                 top = isInverted ? top + topOffset : top - topOffset
                 bottom = isInverted ? bottom - bottomOffset : bottom + bottomOffset
@@ -242,31 +238,23 @@ public class BarChartRenderer: DataRenderer {
     }
 
     public func drawData(context: CGContext) {
-        guard
-            let dataProvider = dataProvider,
-            let barData = dataProvider.barData
-        else { return }
+        guard let chart = chart else { return }
+        let barData = chart.data
 
         // If we redraw the data, remove and repopulate accessible elements to update label values and frames
         accessibleChartElements.removeAll()
         accessibilityOrderedElements = accessibilityCreateEmptyOrderedElements()
 
         // Make the chart header the first element in the accessible elements array
-        if let chart = dataProvider as? BarChartView {
-            let element = createAccessibleHeader(usingChart: chart,
-                                                 andData: barData,
-                                                 withDefaultDescription: "Bar Chart")
-            accessibleChartElements.append(element)
-        }
+        let element = createAccessibleHeader(
+            usingChart: chart,
+            andData: barData,
+            withDefaultDescription: "Bar Chart"
+        )
+        accessibleChartElements.append(element)
 
         // Populate logically ordered nested elements into accessibilityOrderedElements in drawDataSet()
-        for i in barData.indices {
-            guard let set = barData[i] as? BarChartDataSet else {
-                fatalError("Datasets for BarChartRenderer must conform to IBarChartDataset")
-            }
-
-            guard set.isVisible else { continue }
-
+        for (i, set) in barData.indexed() where set.isVisible {
             drawDataSet(context: context, dataSet: set, index: i)
         }
 
@@ -278,9 +266,9 @@ public class BarChartRenderer: DataRenderer {
     private var _barShadowRectBuffer = CGRect()
 
     public func drawDataSet(context: CGContext, dataSet: BarChartDataSet, index: Int) {
-        guard let dataProvider = dataProvider else { return }
+        guard let chart = chart else { return }
 
-        let trans = dataProvider.getTransformer(forAxis: dataSet.axisDependency)
+        let trans = chart.getTransformer(forAxis: dataSet.axisDependency)
 
         prepareBuffer(dataSet: dataSet, index: index)
         trans.rectValuesToPixel(&_buffers[index])
@@ -293,17 +281,13 @@ public class BarChartRenderer: DataRenderer {
         defer { context.restoreGState() }
 
         // draw the bar shadow before the values
-        if dataProvider.isDrawBarShadowEnabled {
-            guard let barData = dataProvider.barData else { return }
-
-            let barWidth = barData.barWidth
+        if chart.isDrawBarShadowEnabled {
+            let barWidth = chart.barWidth
             let barWidthHalf = barWidth / 2.0
             var x: Double = 0.0
 
             let range = (0 ..< dataSet.count).clamped(to: 0 ..< Int(ceil(Double(dataSet.count) * animator.phaseX)))
-            for i in range {
-                guard let e = dataSet[i] as? BarChartDataEntry else { continue }
-
+            for e in dataSet[range] {
                 x = e.x
 
                 _barShadowRectBuffer.origin.x = CGFloat(x - barWidthHalf)
@@ -326,7 +310,7 @@ public class BarChartRenderer: DataRenderer {
         let buffer = _buffers[index]
 
         // draw the bar shadow before the values
-        if dataProvider.isDrawBarShadowEnabled {
+        if chart.isDrawBarShadowEnabled {
             for barRect in buffer where viewPortHandler.isInBoundsLeft(barRect.origin.x + barRect.size.width)
             {
                 guard viewPortHandler.isInBoundsRight(barRect.origin.x) else { break }
@@ -364,19 +348,17 @@ public class BarChartRenderer: DataRenderer {
             }
 
             // Create and append the corresponding accessibility element to accessibilityOrderedElements
-            if let chart = dataProvider as? BarChartView {
-                let element = createAccessibleElement(
-                    withIndex: j,
-                    container: chart,
-                    dataSet: dataSet,
-                    dataSetIndex: index,
-                    stackSize: stackSize
-                ) { element in
-                    element.accessibilityFrame = barRect
-                }
-
-                accessibilityOrderedElements[j / stackSize].append(element)
+            let element = createAccessibleElement(
+                withIndex: j,
+                container: chart,
+                dataSet: dataSet,
+                dataSetIndex: index,
+                stackSize: stackSize
+            ) { element in
+                element.accessibilityFrame = barRect
             }
+
+            accessibilityOrderedElements[j / stackSize].append(element)
         }
     }
 
@@ -402,26 +384,21 @@ public class BarChartRenderer: DataRenderer {
     }
 
     public func drawValues(context: CGContext) {
-        guard let dataProvider = dataProvider,
-              isDrawingValuesAllowed(dataProvider: dataProvider),
-              let barData = dataProvider.barData
+        guard let chart = chart,
+              isDrawingValuesAllowed(chart: chart)
         else {
             return
         }
+        let barData = chart.data
+
         let valueOffsetPlus: CGFloat = 4.5
         var posOffset: CGFloat
         var negOffset: CGFloat
-        let drawValueAboveBar = dataProvider.isDrawValueAboveBarEnabled
+        let drawValueAboveBar = chart.isDrawValueAboveBarEnabled
 
-        for dataSetIndex in barData.indices {
-            guard
-                let dataSet = barData[dataSetIndex] as? BarChartDataSet,
-                shouldDrawValues(forDataSet: dataSet)
-            else { continue }
-
+        for (i, dataSet) in barData.indexed() where shouldDrawValues(forDataSet: dataSet) {
             let angleRadians = dataSet.valueLabelAngle.DEG2RAD
-
-            let isInverted = dataProvider.isInverted(axis: dataSet.axisDependency)
+            let isInverted = chart.isInverted(axis: dataSet.axisDependency)
 
             // calculate the correct offset depending on the draw position of the value
             let valueFont = dataSet.valueFont
@@ -434,11 +411,11 @@ public class BarChartRenderer: DataRenderer {
                 negOffset = -negOffset - valueTextHeight
             }
 
-            let buffer = _buffers[dataSetIndex]
+            let buffer = _buffers[i]
 
             let formatter = dataSet.valueFormatter
 
-            let trans = dataProvider.getTransformer(forAxis: dataSet.axisDependency)
+            let trans = chart.getTransformer(forAxis: dataSet.axisDependency)
 
             let phaseY = animator.phaseY
 
@@ -447,9 +424,7 @@ public class BarChartRenderer: DataRenderer {
             // if only single values are drawn (sum)
             if !dataSet.isStacked {
                 let range = 0 ..< Int(ceil(Double(dataSet.count) * animator.phaseX))
-                for j in range {
-                    guard let e = dataSet[j] as? BarChartDataEntry else { continue }
-
+                for (j, e) in dataSet[range].indexed() {
                     let rect = buffer[j]
 
                     let x = rect.origin.x + rect.size.width / 2.0
@@ -468,7 +443,7 @@ public class BarChartRenderer: DataRenderer {
                             value: formatter.stringForValue(
                                 val,
                                 entry: e,
-                                dataSetIndex: dataSetIndex,
+                                dataSetIndex: i,
                                 viewPortHandler: viewPortHandler
                             ),
                             xPos: x,
@@ -503,9 +478,7 @@ public class BarChartRenderer: DataRenderer {
                 var bufferIndex = 0
                 let lastIndex = ceil(Double(dataSet.count) * animator.phaseX)
 
-                for index in 0 ..< Int(lastIndex) {
-                    guard let e = dataSet[index] as? BarChartDataEntry else { continue }
-
+                for (i, e) in dataSet[0 ..< Int(lastIndex)].indexed() {
                     let vals = e.yValues
 
                     let rect = buffer[bufferIndex]
@@ -554,14 +527,14 @@ public class BarChartRenderer: DataRenderer {
                                     value: formatter.stringForValue(
                                         value,
                                         entry: e,
-                                        dataSetIndex: dataSetIndex,
+                                        dataSetIndex: i,
                                         viewPortHandler: viewPortHandler
                                     ),
                                     xPos: x,
                                     yPos: y,
                                     font: valueFont,
                                     align: .center,
-                                    color: dataSet.valueTextColorAt(index),
+                                    color: dataSet.valueTextColorAt(i),
                                     anchor: CGPoint(x: 0.5, y: 0.5),
                                     angleRadians: angleRadians
                                 )
@@ -585,7 +558,7 @@ public class BarChartRenderer: DataRenderer {
                                 value: formatter.stringForValue(
                                     e.y,
                                     entry: e,
-                                    dataSetIndex: dataSetIndex,
+                                    dataSetIndex: i,
                                     viewPortHandler: viewPortHandler
                                 ),
                                 xPos: x,
@@ -593,7 +566,7 @@ public class BarChartRenderer: DataRenderer {
                                     (e.y >= 0 ? posOffset : negOffset),
                                 font: valueFont,
                                 align: .center,
-                                color: dataSet.valueTextColorAt(index),
+                                color: dataSet.valueTextColorAt(i),
                                 anchor: CGPoint(x: 0.5, y: 0.5),
                                 angleRadians: angleRadians
                             )
@@ -631,55 +604,50 @@ public class BarChartRenderer: DataRenderer {
     }
 
     public func drawHighlighted(context: CGContext, indices: [Highlight]) {
-        guard
-            let dataProvider = dataProvider,
-            let barData = dataProvider.barData
-        else { return }
+        guard let chart = chart else { return }
+        let barData = chart.data
 
         context.saveGState()
         defer { context.restoreGState() }
         var barRect = CGRect()
 
         for high in indices {
-            guard
-                let set = barData[high.dataSetIndex] as? BarChartDataSet,
-                set.isHighlightEnabled
+            let set = barData[high.dataSetIndex]
+            guard set.isHighlightingEnabled,
+                  let e = set.element(withX: high.x, closestToY: high.y),
+                  isInBoundsX(entry: e, dataSet: set)
             else { continue }
 
-            if let e = set.element(withX: high.x, closestToY: high.y) as? BarChartDataEntry {
-                guard isInBoundsX(entry: e, dataSet: set) else { continue }
+            let trans = chart.getTransformer(forAxis: set.axisDependency)
 
-                let trans = dataProvider.getTransformer(forAxis: set.axisDependency)
+            context.setFillColor(set.highlightColor.cgColor)
+            context.setAlpha(set.highlightAlpha)
 
-                context.setFillColor(set.highlightColor.cgColor)
-                context.setAlpha(set.highlightAlpha)
+            let isStack = high.stackIndex >= 0 && e.isStacked
 
-                let isStack = high.stackIndex >= 0 && e.isStacked
+            let y1: Double
+            let y2: Double
 
-                let y1: Double
-                let y2: Double
-
-                if isStack {
-                    if dataProvider.isHighlightFullBarEnabled {
-                        y1 = e.positiveSum
-                        y2 = -e.negativeSum
-                    } else {
-                        let range = e.ranges?[high.stackIndex]
-
-                        y1 = range?.lowerBound ?? 0.0
-                        y2 = range?.upperBound ?? 0.0
-                    }
+            if isStack {
+                if chart.isHighlightFullBarEnabled {
+                    y1 = e.positiveSum
+                    y2 = -e.negativeSum
                 } else {
-                    y1 = e.y
-                    y2 = 0.0
+                    let range = e.ranges?[high.stackIndex]
+
+                    y1 = range?.lowerBound ?? 0.0
+                    y2 = range?.upperBound ?? 0.0
                 }
-
-                prepareBarHighlight(x: e.x, y1: y1, y2: y2, barWidthHalf: barData.barWidth / 2.0, trans: trans, rect: &barRect)
-
-                setHighlightDrawPos(highlight: high, barRect: barRect)
-
-                context.fill(barRect)
+            } else {
+                y1 = e.y
+                y2 = 0.0
             }
+
+            prepareBarHighlight(x: e.x, y1: y1, y2: y2, barWidthHalf: chart.barWidth / 2.0, trans: trans, rect: &barRect)
+
+            setHighlightDrawPos(highlight: high, barRect: barRect)
+
+            context.fill(barRect)
         }
     }
 
@@ -691,10 +659,10 @@ public class BarChartRenderer: DataRenderer {
     /// Creates a nested array of empty subarrays each of which will be populated with NSUIAccessibilityElements.
     /// This is marked internal to support HorizontalBarChartRenderer as well.
     private func accessibilityCreateEmptyOrderedElements() -> [[NSUIAccessibilityElement]] {
-        guard let chart = dataProvider as? BarChartView else { return [] }
+        guard let chart = chart else { return [] }
 
         // Unlike Bubble & Line charts, here we use the maximum entry count to account for stacked bars
-        let maxEntryCount = chart.data?.maxEntryCountSet?.count ?? 0
+        let maxEntryCount = chart.data.maxEntryCountSet?.count ?? 0
 
         return Array(repeating: [NSUIAccessibilityElement](),
                      count: maxEntryCount)
@@ -713,8 +681,8 @@ public class BarChartRenderer: DataRenderer {
         let element = NSUIAccessibilityElement(accessibilityContainer: container)
         let xAxis = container.xAxis
 
-        guard let e = dataSet[idx / stackSize] as? BarChartDataEntry else { return element }
-        guard let dataProvider = dataProvider else { return element }
+        let e = dataSet[idx / stackSize]
+        guard let chart = chart else { return element }
 
         // NOTE: The formatter can cause issues when the x-axis labels are consecutive ints.
         // i.e. due to the Double conversion, if there are more than one data set that are grouped,
@@ -756,7 +724,7 @@ public class BarChartRenderer: DataRenderer {
             }
         }
 
-        let dataSetCount = dataProvider.barData?.count ?? -1
+        let dataSetCount = chart.data.count
         let doesContainMultipleDataSets = dataSetCount > 1
 
         element.accessibilityLabel = "\(doesContainMultipleDataSets ? (dataSet.label ?? "") + ", " : "") \(label): \(elementValueText)"

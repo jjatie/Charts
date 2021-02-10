@@ -28,34 +28,33 @@ public typealias ARange = ClosedRange<Double>
 /// The DataSet class represents one group or type of entries (Entry) in the Chart that belong together.
 /// It is designed to logically separate different groups of values inside the Chart (e.g. the values for a specific line in the LineChart, or the values of a specific group of bars in the BarChart).
 @dynamicMemberLookup
-open class ChartDataSet: ChartDataSetProtocol, NSCopying {
+public struct ChartDataSet<Element: ChartDataEntry> {
     /// - Note: Calls `notifyDataSetChanged()` after setting a new value.
     /// - Returns: The array of y-values that this DataSet represents.
     /// the entries that this dataset represents / holds together
-    private(set) var entries: [ChartDataEntry]
+    private(set) var entries: [Element]
 
     /// The label string that describes the DataSet.
-    open var label: String? = "DataSet"
-
-    open var style = ChartStyle<Element>()
+    public var label: String? = "DataSet"
 
     /// The axis this DataSet should be plotted against.
-    open var axisDependency = YAxis.AxisDependency.left
-
+    public var axisDependency = YAxis.AxisDependency.left
 
     public internal(set) var xRange: AxisRange = (.greatestFiniteMagnitude, -.greatestFiniteMagnitude)
     public internal(set) var yRange: AxisRange = (.greatestFiniteMagnitude, -.greatestFiniteMagnitude)
+
+    public var style = ChartStyle<Element>()
 
     public subscript<T>(dynamicMember keyPath: WritableKeyPath<ChartStyle<Element>, T>) -> T {
         get { style[keyPath: keyPath] }
         set { style[keyPath: keyPath] = newValue }
     }
 
-    public required init() {
+    public init() {
         self.entries = []
     }
 
-    public init(entries: [ChartDataEntry] = [], label: String = "DataSet") {
+    public init(entries: [Element] = [], label: String = "DataSet") {
         self.entries = entries
         self.label = label
         calcMinMax()
@@ -63,17 +62,13 @@ open class ChartDataSet: ChartDataSetProtocol, NSCopying {
 
     // MARK: - Data functions and accessors
 
-    /// Used to replace all entries of a data set while retaining styling properties.
-    /// This is a separate method from a setter on `entries` to encourage usage
-    /// of `Collection` conformances.
-    ///
-    /// - Parameter entries: new entries to replace existing entries in the dataset
-    public func replaceEntries(_ entries: [ChartDataEntry]) {
-        self.entries = entries
-        notifyDataSetChanged()
+    /// Use this method to tell the data set that the underlying data has changed
+    public mutating func notifyDataSetChanged() {
+        calcMinMax()
     }
 
-    public func calcMinMax() {
+    /// Calculates the minimum and maximum x and y values (xMin, xMax, yMin, yMax).
+    public mutating func calcMinMax() {
         yRange.min = Double.greatestFiniteMagnitude
         yRange.max = -Double.greatestFiniteMagnitude
         xRange.min = Double.greatestFiniteMagnitude
@@ -81,10 +76,12 @@ open class ChartDataSet: ChartDataSetProtocol, NSCopying {
 
         guard !isEmpty else { return }
 
-        forEach(calcMinMax)
+        forEach { calcMinMax(entry: $0) }
     }
 
-    public func calcMinMaxY(fromX: Double, toX: Double) {
+    /// Calculates the min and max y-values from the Entry closest to the given fromX to the Entry closest to the given toX value.
+    /// This is only needed for the autoScaleMinMax feature.
+    public mutating func calcMinMaxY(fromX: Double, toX: Double) {
         yRange.min = Double.greatestFiniteMagnitude
         yRange.max = -Double.greatestFiniteMagnitude
 
@@ -95,15 +92,15 @@ open class ChartDataSet: ChartDataSetProtocol, NSCopying {
         else { return }
 
         // only recalculate y
-        self[indexFrom...indexTo].forEach(calcMinMaxY)
+        self[indexFrom...indexTo].forEach { calcMinMaxY(entry: $0) }
     }
 
-    public func calcMinMaxX(entry e: Element) {
+    public mutating func calcMinMaxX(entry e: Element) {
         xRange.min = Swift.min(e.x, xRange.min)
         xRange.max = Swift.max(e.x, xRange.max)
     }
 
-    public func calcMinMaxY(entry e: Element) {
+    public mutating func calcMinMaxY(entry e: Element) {
         yRange = (Swift.min(e.y, yRange.min), Swift.max(e.y, yRange.max))
     }
 
@@ -111,7 +108,7 @@ open class ChartDataSet: ChartDataSetProtocol, NSCopying {
     ///
     /// - Parameters:
     ///   - e:
-    public func calcMinMax(entry e: ChartDataEntry) {
+    mutating func calcMinMax(entry e: Element) {
         calcMinMaxX(entry: e)
         calcMinMaxY(entry: e)
     }
@@ -122,7 +119,7 @@ open class ChartDataSet: ChartDataSetProtocol, NSCopying {
     ///
     /// - Parameters:
     ///   - e: the entry to add
-    public func addEntryOrdered(_ e: ChartDataEntry) {
+    public mutating func addEntryOrdered(_ e: Element) {
         if let last = last, last.x > e.x,
            let startIndex = index(ofX: e.x, closestToY: e.y, rounding: .up),
            let closestIndex = self[startIndex...].lastIndex(where: { $0.x < e.x }) {
@@ -138,142 +135,54 @@ open class ChartDataSet: ChartDataSetProtocol, NSCopying {
     /// - Parameters:
     ///   - entry: the entry to remove
     /// - Returns: `true` if the entry was removed successfully, else if the entry does not exist
-    open func remove(_ entry: ChartDataEntry) -> Bool {
+    public mutating func remove(_ entry: Element) -> Bool {
         guard let index = firstIndex(of: entry) else { return false }
         _ = remove(at: index)
         return true
-    }
-
-    // MARK: - NSCopying
-
-    open func copy(with zone: NSZone? = nil) -> Any {
-        let copy = type(of: self).init()
-
-        copy.entries = entries
-        copy.label = label
-        copy.axisDependency = axisDependency
-        copy.xRange = yRange
-        copy.yRange = xRange
-
-        return copy
     }
 }
 
 // MARK: - Styling functions and accessors
 
 extension ChartDataSet {
-    open func color(at index: Int) -> NSUIColor {
+    /// - Returns: The color at the given index of the DataSet's color array.
+    /// This prevents out-of-bounds by performing a modulus on the color index, so colours will repeat themselves.
+    public func color(at index: Int) -> NSUIColor {
         style.colors[index % style.colors.count]
     }
 
-    open func valueTextColorAt(_ index: Int) -> NSUIColor {
+    /// - Returns: The color at the specified index that is used for drawing the values inside the chart. Uses modulus internally.
+    public func valueTextColorAt(_ index: Int) -> NSUIColor {
         style.valueColors[index % style.valueColors.count]
     }
 
-    open func addColor(_ color: NSUIColor) {
+    public mutating func addColor(_ color: NSUIColor) {
         style.colors.append(color)
     }
 
-    open func setColor(_ color: NSUIColor) {
+    public mutating func setColor(_ color: NSUIColor) {
         style.colors.removeAll(keepingCapacity: false)
         style.colors.append(color)
     }
 
-    open func setColor(_ color: NSUIColor, alpha: CGFloat) {
+    public mutating func setColor(_ color: NSUIColor, alpha: CGFloat) {
         setColor(color.withAlphaComponent(alpha))
     }
 
-    open func setColors(_ colors: [NSUIColor], alpha: CGFloat) {
+    public mutating func setColors(_ colors: [NSUIColor], alpha: CGFloat) {
         self.style.colors = colors.map { $0.withAlphaComponent(alpha) }
     }
 
-    open func setColors(_ colors: NSUIColor...) {
+    public mutating func setColors(_ colors: NSUIColor...) {
         self.style.colors = colors
     }
-}
-
-extension NSUIColor {
-    static var defaultDataSet: Self {
-        Self(red: 140.0 / 255.0, green: 234.0 / 255.0, blue: 255.0 / 255.0, alpha: 1.0)
-    }
-}
-public struct ChartStyle<EntryType: ChartDataEntry> {
-    public init() { }
-
-    /// All the colors that are used for this DataSet.
-    /// Colors are reused as soon as the number of Entries the DataSet represents is higher than the size of the colors array.
-    public var colors: [NSUIColor] = [.defaultDataSet]
-
-    /// List representing all colors that are used for drawing the actual values for this DataSet
-    public var valueColors: [NSUIColor] = [.labelOrBlack]
-
-    /// `true` if value highlighting is enabled for this dataset
-    public var isHighlightEnabled: Bool = true
-
-    /// Custom formatter that is used instead of the auto-formatter if set
-    public var valueFormatter: ValueFormatter = DefaultValueFormatter()
-
-    /// Sets/get a single color for value text.
-    /// Setting the color clears the colors array and adds a single color.
-    /// Getting will return the first color in the array.
-    public var valueTextColor: NSUIColor {
-        get { valueColors[0] }
-        set {
-            valueColors.removeAll(keepingCapacity: false)
-            valueColors.append(newValue)
-        }
-    }
-
-    /// the font for the value-text labels
-    public var valueFont = NSUIFont.systemFont(ofSize: 7.0)
-
-    /// The rotation angle (in degrees) for value-text labels
-    public var valueLabelAngle = CGFloat(0.0)
-
-    /// The form to draw for this dataset in the legend.
-    public var form = Legend.Form.default
-
-    /// The form size to draw for this dataset in the legend.
-    ///
-    /// Return `NaN` to use the default legend form size.
-    public var formSize = CGFloat.nan
-
-    /// The line width for drawing the form of this dataset in the legend
-    ///
-    /// Return `NaN` to use the default legend form line width.
-    public var formLineWidth = CGFloat.nan
-
-    /// Line dash configuration for legend shapes that consist of lines.
-    ///
-    /// This is how much (in pixels) into the dash pattern are we starting from.
-    public var formLineDashPhase: CGFloat = 0.0
-
-    /// Line dash configuration for legend shapes that consist of lines.
-    ///
-    /// This is the actual dash pattern.
-    /// I.e. [2, 3] will paint [--   --   ]
-    /// [1, 3, 4, 2] will paint [-   ----  -   ----  ]
-    public var formLineDashLengths: [CGFloat]?
-
-    public var isDrawValuesEnabled: Bool = true
-
-    public var isDrawIconsEnabled: Bool = true
-
-    /// Offset of icons drawn on the chart.
-    ///
-    /// For all charts except Pie and Radar it will be ordinary (x offset, y offset).
-    ///
-    /// For Pie and Radar chart it will be (y offset, distance from center offset); so if you want icon to be rendered under value, you should increase X component of CGPoint, and if you want icon to be rendered closet to center, you should decrease height component of CGPoint.
-    public var iconsOffset = CGPoint(x: 0, y: 0)
-
-    public var isVisible: Bool = true
 }
 
 // MARK: - MutableCollection
 
 extension ChartDataSet: MutableCollection {
     public typealias Index = Int
-    public typealias Element = ChartDataEntry
+//    public typealias Element = ChartDataEntry
 
     public var startIndex: Index {
         entries.startIndex
@@ -287,16 +196,12 @@ extension ChartDataSet: MutableCollection {
         entries.index(after: after)
     }
 
-    open var count: Int {
+    public var count: Int {
         entries.count
     }
 
     public subscript(position: Index) -> Element {
-        get {
-            // This is intentionally not a safe subscript to mirror
-            // the behaviour of the built in Swift Collection Types
-            entries[position]
-        }
+        get { entries[position] }
         set {
             calcMinMax(entry: newValue)
             entries[position] = newValue
@@ -315,51 +220,51 @@ extension ChartDataSet: RandomAccessCollection {
 // MARK: RangeReplaceableCollection
 
 extension ChartDataSet: RangeReplaceableCollection {
-    public func append(_ newElement: Element) {
+    public mutating func append(_ newElement: Element) {
         calcMinMax(entry: newElement)
         entries.append(newElement)
     }
 
-    public func insert(_ newElement: ChartDataEntry, at i: Int) {
+    public mutating func insert(_ newElement: Element, at i: Int) {
         calcMinMax(entry: newElement)
         entries.insert(newElement, at: i)
     }
 
     // TODO: Optimize when to calculate min/max
-    public func remove(at position: Index) -> Element {
+    public mutating func remove(at position: Index) -> Element {
         let element = entries.remove(at: position)
         notifyDataSetChanged()
         return element
     }
 
-    public func removeFirst() -> Element {
+    public mutating func removeFirst() -> Element {
         let element = entries.removeFirst()
         notifyDataSetChanged()
         return element
     }
 
-    public func removeFirst(_ n: Int) {
+    public mutating func removeFirst(_ n: Int) {
         entries.removeFirst(n)
         notifyDataSetChanged()
     }
 
-    public func removeLast() -> Element {
+    public mutating func removeLast() -> Element {
         let element = entries.removeLast()
         notifyDataSetChanged()
         return element
     }
 
-    public func removeLast(_ n: Int) {
+    public mutating func removeLast(_ n: Int) {
         entries.removeLast(n)
         notifyDataSetChanged()
     }
 
-    public func removeSubrange<R>(_ bounds: R) where R: RangeExpression, Index == R.Bound {
+    public mutating func removeSubrange<R>(_ bounds: R) where R: RangeExpression, Index == R.Bound {
         entries.removeSubrange(bounds)
         notifyDataSetChanged()
     }
 
-    public func removeAll(keepingCapacity keepCapacity: Bool) {
+    public mutating func removeAll(keepingCapacity keepCapacity: Bool) {
         entries.removeAll(keepingCapacity: keepCapacity)
         notifyDataSetChanged()
     }
@@ -367,24 +272,17 @@ extension ChartDataSet: RangeReplaceableCollection {
 
 // MARK: - CustomStringConvertible
 extension ChartDataSet: CustomStringConvertible {
-    open var description: String {
-        String(format: "%@, label: %@, %i entries", arguments: [NSStringFromClass(type(of: self)), self.label ?? "", self.count])
+    public var description: String {
+        String(format: "%@, label: %@, %i entries", arguments: [String(describing: Self.self), self.label ?? "", self.count])
     }
 }
 
 // MARK: - CustomDebugStringConvertible
 extension ChartDataSet: CustomDebugStringConvertible {
-    open var debugDescription: String {
+    public var debugDescription: String {
         reduce(into: description + ":") {
             $0 += "\n\($1.description)"
         }
-    }
-}
-
-extension ChartDataSet {
-    /// Use this method to tell the data set that the underlying data has changed
-    public func notifyDataSetChanged() {
-        calcMinMax()
     }
 }
 

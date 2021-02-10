@@ -28,27 +28,23 @@ public class LineChartRenderer: DataRenderer {
     /// A nested array of elements ordered logically (i.e not in visual/drawing order) for use with VoiceOver.
     private lazy var accessibilityOrderedElements: [[NSUIAccessibilityElement]] = accessibilityCreateEmptyOrderedElements()
 
-    public weak var dataProvider: LineChartDataProvider?
+    public weak var chart: LineChartView?
 
     public init(
-        dataProvider: LineChartDataProvider,
+        chart: LineChartView,
         animator: Animator,
         viewPortHandler: ViewPortHandler
     ) {
         self.viewPortHandler = viewPortHandler
         self.animator = animator
-        self.dataProvider = dataProvider
+        self.chart = chart
     }
 
     public func drawData(context: CGContext) {
-        guard let lineData = dataProvider?.lineData else { return }
+        guard let lineData = chart?.data else { return }
 
-        let sets = lineData._dataSets as? [LineChartDataSet]
-        assert(sets != nil, "Datasets for LineChartRenderer must conform to ILineChartDataSet")
-
-        // TODO:
         let drawDataSet = { self.drawDataSet(context: context, dataSet: $0) }
-        sets!.lazy
+        lineData.lazy
             .filter(\.isVisible)
             .forEach(drawDataSet)
     }
@@ -97,13 +93,13 @@ public class LineChartRenderer: DataRenderer {
     }
 
     public func drawCubicBezier(context: CGContext, dataSet: LineChartDataSet) {
-        guard let dataProvider = dataProvider else { return }
+        guard let chart = chart else { return }
 
-        let trans = dataProvider.getTransformer(forAxis: dataSet.axisDependency)
+        let trans = chart.getTransformer(forAxis: dataSet.axisDependency)
 
         let phaseY = animator.phaseY
 
-        xBounds.set(chart: dataProvider, dataSet: dataSet, animator: animator)
+        xBounds.set(chart: chart, dataSet: dataSet, animator: animator)
 
         // get the color that is specified for this position from the DataSet
         let drawingColor = dataSet.colors.first!
@@ -190,13 +186,13 @@ public class LineChartRenderer: DataRenderer {
     }
 
     public func drawHorizontalBezier(context: CGContext, dataSet: LineChartDataSet) {
-        guard let dataProvider = dataProvider else { return }
+        guard let chart = chart else { return }
 
-        let trans = dataProvider.getTransformer(forAxis: dataSet.axisDependency)
+        let trans = chart.getTransformer(forAxis: dataSet.axisDependency)
 
         let phaseY = animator.phaseY
 
-        xBounds.set(chart: dataProvider, dataSet: dataSet, animator: animator)
+        xBounds.set(chart: chart, dataSet: dataSet, animator: animator)
 
         // get the color that is specified for this position from the DataSet
         let drawingColor = dataSet.colors.first!
@@ -264,14 +260,14 @@ public class LineChartRenderer: DataRenderer {
         bounds: XBounds
     ) {
         guard
-            let dataProvider = dataProvider
+            let chart = chart
         else { return }
 
         if bounds.range <= 0 {
             return
         }
 
-        let fillMin = dataSet.fillFormatter.getFillLinePosition(dataSet: dataSet, dataProvider: dataProvider)
+        let fillMin = dataSet.fillFormatter.getFillLinePosition(dataSet: dataSet, chart: chart)
 
         var pt1 = CGPoint(x: CGFloat(dataSet[bounds.min + bounds.range].x), y: fillMin)
         var pt2 = CGPoint(x: CGFloat(dataSet[bounds.min].x), y: fillMin)
@@ -288,9 +284,9 @@ public class LineChartRenderer: DataRenderer {
     private var _lineSegments = [CGPoint](repeating: CGPoint(), count: 2)
 
     public func drawLinear(context: CGContext, dataSet: LineChartDataSet) {
-        guard let dataProvider = dataProvider else { return }
+        guard let chart = chart else { return }
 
-        let trans = dataProvider.getTransformer(forAxis: dataSet.axisDependency)
+        let trans = chart.getTransformer(forAxis: dataSet.axisDependency)
 
         let valueToPixelMatrix = trans.valueToPixelMatrix
 
@@ -300,7 +296,7 @@ public class LineChartRenderer: DataRenderer {
 
         let phaseY = animator.phaseY
 
-        xBounds.set(chart: dataProvider, dataSet: dataSet, animator: animator)
+        xBounds.set(chart: chart, dataSet: dataSet, animator: animator)
 
         // if drawing filled is enabled
         if dataSet.isDrawFilledEnabled, entryCount > 0 {
@@ -433,11 +429,11 @@ public class LineChartRenderer: DataRenderer {
         trans: Transformer,
         bounds: XBounds
     ) {
-        guard let dataProvider = dataProvider else { return }
+        guard let chart = chart else { return }
 
         let filled = generateFilledPath(
             dataSet: dataSet,
-            fillMin: dataSet.fillFormatter.getFillLinePosition(dataSet: dataSet, dataProvider: dataProvider),
+            fillMin: dataSet.fillFormatter.getFillLinePosition(dataSet: dataSet, chart: chart),
             bounds: bounds,
             matrix: trans.valueToPixelMatrix
         )
@@ -489,29 +485,22 @@ public class LineChartRenderer: DataRenderer {
     }
 
     public func drawValues(context: CGContext) {
-        guard
-            let dataProvider = dataProvider,
-            let lineData = dataProvider.lineData
-        else { return }
+        guard let chart = chart else { return }
+        let lineData = chart.data
 
-        if isDrawingValuesAllowed(dataProvider: dataProvider) {
+        if isDrawingValuesAllowed(chart: chart) {
             let phaseY = animator.phaseY
 
             var pt = CGPoint()
 
-            for i in lineData.indices {
-                guard let
-                    dataSet = lineData[i] as? LineChartDataSet,
-                    shouldDrawValues(forDataSet: dataSet)
-                else { continue }
-
+            for (i, dataSet) in lineData.indexed() where shouldDrawValues(forDataSet: dataSet) {
                 let valueFont = dataSet.valueFont
 
                 let formatter = dataSet.valueFormatter
 
                 let angleRadians = dataSet.valueLabelAngle.DEG2RAD
 
-                let trans = dataProvider.getTransformer(forAxis: dataSet.axisDependency)
+                let trans = chart.getTransformer(forAxis: dataSet.axisDependency)
                 let valueToPixelMatrix = trans.valueToPixelMatrix
 
                 let iconsOffset = dataSet.iconsOffset
@@ -523,7 +512,7 @@ public class LineChartRenderer: DataRenderer {
                     valOffset = valOffset / 2
                 }
 
-                xBounds.set(chart: dataProvider, dataSet: dataSet, animator: animator)
+                xBounds.set(chart: chart, dataSet: dataSet, animator: animator)
 
                 for j in xBounds {
                     let e = dataSet[j]
@@ -569,10 +558,8 @@ public class LineChartRenderer: DataRenderer {
     }
 
     private func drawCircles(context: CGContext) {
-        guard
-            let dataProvider = dataProvider,
-            let lineData = dataProvider.lineData
-        else { return }
+        guard let chart = chart else { return }
+        let lineData = chart.data
 
         let phaseY = animator.phaseY
 
@@ -584,28 +571,26 @@ public class LineChartRenderer: DataRenderer {
         accessibilityOrderedElements = accessibilityCreateEmptyOrderedElements()
 
         // Make the chart header the first element in the accessible elements array
-        if let chart = dataProvider as? LineChartView {
-            let element = createAccessibleHeader(usingChart: chart,
-                                                 andData: lineData,
-                                                 withDefaultDescription: "Line Chart")
-            accessibleChartElements.append(element)
-        }
+        let element = createAccessibleHeader(
+            usingChart: chart,
+            andData: lineData,
+            withDefaultDescription: "Line Chart"
+        )
+        accessibleChartElements.append(element)
 
         context.saveGState()
 
-        for i in lineData.indices {
-            guard let dataSet = lineData[i] as? LineChartDataSet else { continue }
-
-            // Skip Circles and Accessibility if not enabled,
-            // reduces CPU significantly if not needed
-            if !dataSet.isVisible || !dataSet.isDrawCirclesEnabled || dataSet.count == 0 {
-                continue
-            }
-
-            let trans = dataProvider.getTransformer(forAxis: dataSet.axisDependency)
+        for (i, dataSet) in lineData.indexed() where
+        // Skip Circles and Accessibility if not enabled,
+        // reduces CPU significantly if not needed
+            dataSet.isVisible &&
+            dataSet.isDrawCirclesEnabled &&
+            !dataSet.isEmpty
+        {
+            let trans = chart.getTransformer(forAxis: dataSet.axisDependency)
             let valueToPixelMatrix = trans.valueToPixelMatrix
 
-            xBounds.set(chart: dataProvider, dataSet: dataSet, animator: animator)
+            xBounds.set(chart: chart, dataSet: dataSet, animator: animator)
 
             let circleRadius = dataSet.circleRadius
             let circleDiameter = circleRadius * 2.0
@@ -619,9 +604,7 @@ public class LineChartRenderer: DataRenderer {
                 (dataSet.circleHoleColor == nil ||
                     dataSet.circleHoleColor == NSUIColor.clear)
 
-            for j in xBounds {
-                let e = dataSet[j]
-
+            for (j, e) in dataSet[xBounds].indexed() {
                 pt.x = CGFloat(e.x)
                 pt.y = CGFloat(e.y * phaseY)
                 pt = pt.applying(valueToPixelMatrix)
@@ -642,16 +625,14 @@ public class LineChartRenderer: DataRenderer {
                                                width: scaleFactor * circleDiameter,
                                                height: scaleFactor * circleDiameter)
                 // Create and append the corresponding accessibility element to accessibilityOrderedElements
-                if let chart = dataProvider as? LineChartView {
-                    let element = createAccessibleElement(withIndex: j,
-                                                          container: chart,
-                                                          dataSet: dataSet,
-                                                          dataSetIndex: i) { element in
-                        element.accessibilityFrame = accessibilityRect
-                    }
-
-                    accessibilityOrderedElements[i].append(element)
+                let element = createAccessibleElement(withIndex: j,
+                                                      container: chart,
+                                                      dataSet: dataSet,
+                                                      dataSetIndex: i) { element in
+                    element.accessibilityFrame = accessibilityRect
                 }
+
+                accessibilityOrderedElements[i].append(element)
 
                 context.setFillColor(dataSet.getCircleColor(at: j)!.cgColor)
 
@@ -700,19 +681,16 @@ public class LineChartRenderer: DataRenderer {
     }
 
     public func drawHighlighted(context: CGContext, indices: [Highlight]) {
-        guard
-            let dataProvider = dataProvider,
-            let lineData = dataProvider.lineData
-        else { return }
+        guard let chart = chart else { return }
+        let lineData = chart.data
 
-        let chartXMax = dataProvider.chartXMax
+        let chartXMax = chart.chartXMax
 
         context.saveGState()
 
         for high in indices {
-            guard let set = lineData[high.dataSetIndex] as? LineChartDataSet,
-                  set.isHighlightEnabled
-            else { continue }
+            let set = lineData[high.dataSetIndex]
+            guard set.isHighlightingEnabled else { continue }
 
             guard let e = set.element(withX: high.x, closestToY: high.y) else { continue }
 
@@ -735,7 +713,7 @@ public class LineChartRenderer: DataRenderer {
                 continue
             }
 
-            let trans = dataProvider.getTransformer(forAxis: set.axisDependency)
+            let trans = chart.getTransformer(forAxis: set.axisDependency)
 
             let pt = trans.pixelForValues(x: x, y: y)
 
@@ -812,12 +790,8 @@ public class LineChartRenderer: DataRenderer {
     /// Creates a nested array of empty subarrays each of which will be populated with NSUIAccessibilityElements.
     /// This is marked internal to support HorizontalBarChartRenderer as well.
     private func accessibilityCreateEmptyOrderedElements() -> [[NSUIAccessibilityElement]] {
-        guard let chart = dataProvider as? LineChartView else { return [] }
-
-        let dataSetCount = chart.lineData?.count ?? 0
-
-        return Array(repeating: [NSUIAccessibilityElement](),
-                     count: dataSetCount)
+        guard let dataSetCount = chart?.data.count else { return [] }
+        return Array(repeating: [NSUIAccessibilityElement](), count: dataSetCount)
     }
 
     /// Creates an NSUIAccessibleElement representing the smallest meaningful bar of the chart
@@ -833,7 +807,7 @@ public class LineChartRenderer: DataRenderer {
         let xAxis = container.xAxis
 
         let e = dataSet[idx]
-        guard let dataProvider = dataProvider else { return element }
+        guard let chart = chart else { return element }
 
         // NOTE: The formatter can cause issues when the x-axis labels are consecutive ints.
         // i.e. due to the Double conversion, if there are more than one data set that are grouped,
@@ -845,7 +819,7 @@ public class LineChartRenderer: DataRenderer {
                                                                      dataSetIndex: dataSetIndex,
                                                                      viewPortHandler: viewPortHandler)
 
-        let dataSetCount = dataProvider.lineData?.count ?? -1
+        let dataSetCount = chart.data.count
         let doesContainMultipleDataSets = dataSetCount > 1
 
         element.accessibilityLabel = "\(doesContainMultipleDataSets ? (dataSet.label ?? "") + ", " : "") \(label): \(elementValueText)"

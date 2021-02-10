@@ -13,10 +13,11 @@ import CoreGraphics
 import Foundation
 
 /// Chart that draws bars.
-open class BarChartView: BarLineChartViewBase, BarChartDataProvider {
-    // MARK: - BarChartDataProvider
-
-    open var barData: BarChartData? { return data as? BarChartData }
+open class BarChartView: BarLineChartViewBase<BarChartDataEntry> {
+    /// The width of the bars on the x-axis, in values (not pixels)
+    ///
+    /// **default**: 0.85
+    open var barWidth: Double = 0.85
 
     /// if set to true, all values are drawn above their bars, instead of below their top
     public var isDrawValueAboveBarEnabled = true {
@@ -43,7 +44,7 @@ open class BarChartView: BarLineChartViewBase, BarChartDataProvider {
     override internal func initialize() {
         super.initialize()
 
-        renderer = BarChartRenderer(dataProvider: self, animator: chartAnimator, viewPortHandler: viewPortHandler)
+        renderer = BarChartRenderer(chart: self, animator: chartAnimator, viewPortHandler: viewPortHandler)
 
         highlighter = BarHighlighter(chart: self)
 
@@ -52,13 +53,10 @@ open class BarChartView: BarLineChartViewBase, BarChartDataProvider {
     }
 
     override internal func calcMinMax() {
-        guard let data = self.data as? BarChartData
-        else { return }
-
         if fitBars {
             xAxis.calculate(
-                min: data.xRange.min - data.barWidth / 2.0,
-                max: data.xRange.max + data.barWidth / 2.0
+                min: data.xRange.min - barWidth / 2.0,
+                max: data.xRange.max + barWidth / 2.0
             )
         } else {
             xAxis.calculate(min: data.xRange.min, max: data.xRange.max)
@@ -77,8 +75,8 @@ open class BarChartView: BarLineChartViewBase, BarChartDataProvider {
 
     /// - Returns: The Highlight object (contains x-index and DataSet index) of the selected value at the given touch point inside the BarChart.
     override open func getHighlightByTouchPoint(_ pt: CGPoint) -> Highlight? {
-        if data === nil {
-            Swift.print("Can't select by touch. No data set.")
+        guard !data.isEmpty else {
+            debugPrint("Can't select by touch. No data set.")
             return nil
         }
 
@@ -100,15 +98,10 @@ open class BarChartView: BarLineChartViewBase, BarChartDataProvider {
 
     /// - Returns: The bounding box of the specified Entry in the specified DataSet. Returns null if the Entry could not be found in the charts data.
     open func getBarBounds(entry e: BarChartDataEntry) -> CGRect {
-        guard let
-            data = data as? BarChartData,
-            let set = data.getDataSetForEntry(e) as? BarChartDataSet
-        else { return .null }
+        guard let set = data.getDataSetForEntry(e) else { return .null }
 
         let y = e.y
         let x = e.x
-
-        let barWidth = data.barWidth
 
         let left = x - barWidth / 2.0
         let right = x + barWidth / 2.0
@@ -131,13 +124,7 @@ open class BarChartView: BarLineChartViewBase, BarChartDataProvider {
     ///   - groupSpace: the space between groups of bars in values (not pixels) e.g. 0.8f for bar width 1f
     ///   - barSpace: the space between individual bars in values (not pixels) e.g. 0.1f for bar width 1f
     open func groupBars(fromX: Double, groupSpace: Double, barSpace: Double) {
-        guard let barData = self.barData
-        else {
-            Swift.print("You need to set data for the chart before grouping bars.", terminator: "\n")
-            return
-        }
-
-        barData.groupBars(fromX: fromX, groupSpace: groupSpace, barSpace: barSpace)
+        data.groupBars(fromX: fromX, groupSpace: groupSpace, barWidth: barWidth, barSpace: barSpace)
         notifyDataSetChanged()
     }
 

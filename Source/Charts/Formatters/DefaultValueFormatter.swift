@@ -83,4 +83,18 @@ open class DefaultValueFormatter: ValueFormatter {
             return formatter?.string(from: NSNumber(floatLiteral: value)) ?? ""
         }
     }
+
+    func configure<Entry: ChartDataEntry>(for data: ChartData<Entry>) {
+        var reference = 0.0
+
+        let min = data.yRange.min, max = data.yRange.max
+        if data.entryCount >= 2 {
+            reference = abs(max - min)
+        } else {
+            reference = Swift.max(abs(min), abs(max))
+        }
+
+        // setup the formatter with a new number of digits
+        decimals = reference.decimalPlaces
+    }
 }

@@ -26,7 +26,7 @@ func axisRangeBounds(_ axisRange: AxisRange, contains range: AxisRange) -> Bool 
         axisRange.max == range.max
 }
 
-open class ChartData: ExpressibleByArrayLiteral {
+open class ChartData<EntryType: ChartDataEntry>: ExpressibleByArrayLiteral {
     public internal(set) var xRange: AxisRange = (0, 0)
     public var yRange: AxisRange { merge(leftAxisRange, rightAxisRange) }
     final var leftAxisRange: AxisRange = (.greatestFiniteMagnitude, -.greatestFiniteMagnitude)
@@ -72,7 +72,7 @@ open class ChartData: ExpressibleByArrayLiteral {
     }
 
     func calcMinMaxY(fromX: Double, toX: Double) {
-        forEach { $0.calcMinMaxY(fromX: fromX, toX: toX) }
+        indices.forEach { self[$0].calcMinMaxY(fromX: fromX, toX: toX) }
 
         // apply the new data
         calcMinMax()
@@ -92,7 +92,7 @@ open class ChartData: ExpressibleByArrayLiteral {
     }
 
     /// Adjusts the current minimum and maximum values based on the provided Entry object.
-    private func calcMinMax(entry e: ChartDataEntry, axis: YAxis.AxisDependency) {
+    private func calcMinMax(entry e: EntryType, axis: YAxis.AxisDependency) {
         xRange = merge(xRange, e.x)
 
         switch axis {
@@ -154,29 +154,18 @@ open class ChartData: ExpressibleByArrayLiteral {
         }
     }
 
-    /// Get the Entry for a corresponding highlight object
-    ///
-    /// - Parameters:
-    ///   - highlight:
-    /// - Returns: The entry that is highlighted
-    open func entry(for highlight: Highlight) -> ChartDataEntry? {
-        guard highlight.dataSetIndex < endIndex else { return nil }
-        return self[highlight.dataSetIndex].element(withX: highlight.x, closestToY: highlight.y)
-    }
-
     /// Adds an Entry to the DataSet at the specified index. Entries are added to the end of the list.
-    open func appendEntry(_ e: ChartDataEntry, toDataSet dataSetIndex: Index) {
+    open func appendEntry(_ e: EntryType, toDataSet dataSetIndex: Index) {
         guard indices.contains(dataSetIndex) else {
             return print("ChartData.addEntry() - Cannot add Entry because dataSetIndex too high or too low.", terminator: "\n")
         }
 
-        let set = self[dataSetIndex]
-        set.append(e)
-        calcMinMax(entry: e, axis: set.axisDependency)
+        self[dataSetIndex].append(e)
+        calcMinMax(entry: e, axis: self[dataSetIndex].axisDependency)
     }
 
     /// Removes the given Entry object from the DataSet at the specified index.
-    @discardableResult open func removeEntry(_ entry: ChartDataEntry, dataSetIndex: Index) -> Bool {
+    @discardableResult open func removeEntry(_ entry: EntryType, dataSetIndex: Index) -> Bool {
         guard indices.contains(dataSetIndex) else { return false }
 
         // remove the entry from the dataset
@@ -190,35 +179,35 @@ open class ChartData: ExpressibleByArrayLiteral {
     }
 
     /// - Returns: The DataSet that contains the provided Entry, or null, if no DataSet contains this entry.
-    open func getDataSetForEntry(_ e: ChartDataEntry) -> Element? {
+    open func getDataSetForEntry(_ e: EntryType) -> Element? {
         first { $0.contains(e) }
     }
 
     /// Sets a custom ValueFormatter for all DataSets this data object contains.
     open func setValueFormatter(_ formatter: ValueFormatter) {
-        forEach { $0.valueFormatter = formatter }
+        indices.forEach { self[$0].valueFormatter = formatter }
     }
 
     /// Sets the color of the value-text (color in which the value-labels are drawn) for all DataSets this data object contains.
     open func setValueTextColor(_ color: NSUIColor) {
-        forEach { $0.valueTextColor = color }
+        indices.forEach { self[$0].valueTextColor = color }
     }
 
     /// Sets the font for all value-labels for all DataSets this data object contains.
     open func setValueFont(_ font: NSUIFont) {
-        forEach { $0.valueFont = font }
+        indices.forEach { self[$0].valueFont = font }
     }
 
     /// Enables / disables drawing values (value-text) for all DataSets this data object contains.
     open func setDrawValues(_ enabled: Bool) {
-        forEach { $0.isDrawValuesEnabled = enabled }
+        indices.forEach { self[$0].isDrawValuesEnabled = enabled }
     }
 
     /// Enables / disables highlighting values for all DataSets this data object contains.
     /// If set to true, this means that values can be highlighted programmatically or by touch gesture.
     open var isHighlightEnabled: Bool {
-        get { allSatisfy { $0.isHighlightEnabled } }
-        set { forEach { $0.isHighlightEnabled = newValue } }
+        get { allSatisfy { $0.isHighlightingEnabled } }
+        set { indices.forEach { self[$0].isHighlightingEnabled = newValue } }
     }
 
     /// Clears this data object from all DataSets and removes all Entries.
@@ -242,7 +231,7 @@ open class ChartData: ExpressibleByArrayLiteral {
 
 extension ChartData: MutableCollection {
     public typealias Index = Int
-    public typealias Element = ChartDataSet
+    public typealias Element = ChartDataSet<EntryType>
 
     public var startIndex: Index {
         _dataSets.startIndex
@@ -291,54 +280,40 @@ extension ChartData: RangeReplaceableCollection
 
     @discardableResult
     public func removeFirst() -> Element {
-        assert(!(self is CombinedChartData), "\(#function) not supported for CombinedData")
-
         let element = _dataSets.removeFirst()
         calcMinMax()
         return element
     }
 
     public func removeFirst(_ n: Int) {
-        assert(!(self is CombinedChartData), "\(#function) not supported for CombinedData")
-
         _dataSets.removeFirst(n)
         calcMinMax()
     }
 
     @discardableResult
     public func removeLast() -> Element {
-        assert(!(self is CombinedChartData), "\(#function) not supported for CombinedData")
-
         let element = _dataSets.removeLast()
         calcMinMax()
         return element
     }
 
     public func removeLast(_ n: Int) {
-        assert(!(self is CombinedChartData), "\(#function) not supported for CombinedData")
-
         _dataSets.removeLast(n)
         calcMinMax()
     }
 
     public func removeSubrange<R>(_ bounds: R) where R: RangeExpression, Index == R.Bound {
-        assert(!(self is CombinedChartData), "\(#function) not supported for CombinedData")
-
         _dataSets.removeSubrange(bounds)
         calcMinMax()
     }
 
     public func removeAll(keepingCapacity keepCapacity: Bool) {
-        assert(!(self is CombinedChartData), "\(#function) not supported for CombinedData")
-
         _dataSets.removeAll(keepingCapacity: keepCapacity)
         calcMinMax()
     }
 
     public func replaceSubrange<C>(_ subrange: Swift.Range<Index>, with newElements: C) where C: Collection, Element == C.Element
     {
-        assert(!(self is CombinedChartData), "\(#function) not supported for CombinedData")
-
         _dataSets.replaceSubrange(subrange, with: newElements)
         newElements.forEach { self.calcMinMax(dataSet: $0) }
     }

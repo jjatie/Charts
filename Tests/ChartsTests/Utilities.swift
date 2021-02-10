@@ -19,8 +19,8 @@ private enum Snapshot {
     }
 }
 
-func assertChartSnapshot<Value: ChartViewBase>(
-    matching value: @autoclosure () throws -> Value,
+func assertChartSnapshot<Entry: ChartDataEntry>(
+    matching value: @autoclosure () throws -> ChartViewBase<Entry>,
     record recording: Bool = false,
     timeout: TimeInterval = 5,
     file: StaticString = #file,

@@ -34,11 +34,14 @@ class PieChartTests: XCTestCase {
             + ChartColorTemplates.pastel
             + [UIColor(red: 51 / 255, green: 181 / 255, blue: 229 / 255, alpha: 1)]
         dataSet.colors = colors
-        
+        dataSet.highlightColor = .clear
+
         chart = PieChartView(frame: CGRect(x: 0, y: 0, width: 480, height: 350))
         chart.backgroundColor = NSUIColor.clear
         chart.centerText = "PieChart Unit Test"
         chart.data = PieChartData(dataSet: dataSet)
+        chart.data.setValueFont(.systemFont(ofSize: 13))
+        chart.data.setValueTextColor(.white)
     }
 
     override func tearDown() {
@@ -51,12 +54,12 @@ class PieChartTests: XCTestCase {
     }
 
     func testHidesValues() {
-        dataSet.isDrawValuesEnabled = false
+        chart.data[0].isDrawValuesEnabled = false
         assertChartSnapshot(matching: chart)
     }
 
     func testDrawIcons() {
-        dataSet.isDrawIconsEnabled = true
+        chart.data[0].isDrawIconsEnabled = true
         assertChartSnapshot(matching: chart)
     }
 
@@ -66,7 +69,7 @@ class PieChartTests: XCTestCase {
     }
 
     func testHighlightDisabled() {
-        chart.data?[0].isHighlightEnabled = false
+        chart.data[0].isHighlightingEnabled = false
         chart.highlightValue(x: 1.0, dataSetIndex: 0, callDelegate: false)
         assertChartSnapshot(matching: chart)
     }

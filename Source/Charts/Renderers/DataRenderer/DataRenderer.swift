@@ -40,18 +40,7 @@ public protocol DataRenderer: Renderer {
     /// Since this might do memory allocations, it should only be called if necessary.
     func initBuffers()
 
-    func isDrawingValuesAllowed(dataProvider: ChartDataProvider) -> Bool
-
-    /// Creates an ```NSUIAccessibilityElement``` that acts as the first and primary header describing a chart view.
-    ///
-    /// - Parameters:
-    ///   - chart: The chartView object being described
-    ///   - data: A non optional data source about the chart
-    ///   - defaultDescription: A simple string describing the type/design of Chart.
-    /// - Returns: A header ```NSUIAccessibilityElement``` that can be added to accessibleChartElements.
-//    func createAccessibleHeader(usingChart chart: ChartViewBase,
-//                                andData data: ChartData,
-//                                withDefaultDescription defaultDescription: String) -> NSUIAccessibilityElement
+    func isDrawingValuesAllowed<Entry: ChartDataEntry>(chart: ChartViewBase<Entry>) -> Bool
 }
 
 extension DataRenderer {
@@ -60,23 +49,29 @@ extension DataRenderer {
     public func drawExtras(context: CGContext) { }
 
     /// Checks if the provided entry object is in bounds for drawing considering the current animation phase.
-    func isInBoundsX(entry e: ChartDataEntry, dataSet: BarLineScatterCandleBubbleChartDataSet) -> Bool
-    {
+    func isInBoundsX<Entry: ChartDataEntry>(entry e: Entry, dataSet: ChartDataSet<Entry>) -> Bool {
         let entryIndex = dataSet.firstIndex(of: e)!
         return Double(entryIndex) < Double(dataSet.count) * animator.phaseX
     }
 
     /// - Returns: `true` if the DataSet values should be drawn, `false` if not.
-    func shouldDrawValues(forDataSet set: ChartDataSet) -> Bool {
+    func shouldDrawValues<Entry: ChartDataEntry>(forDataSet set: ChartDataSet<Entry>) -> Bool {
         set.isVisible && (set.isDrawValuesEnabled || set.isDrawIconsEnabled)
     }
 
-    public func isDrawingValuesAllowed(dataProvider: ChartDataProvider) -> Bool {
-        guard let data = dataProvider.data else { return false }
-        return data.entryCount < Int(CGFloat(dataProvider.maxVisibleCount) * viewPortHandler.scaleX)
+    public func isDrawingValuesAllowed<Entry: ChartDataEntry>(chart: ChartViewBase<Entry>) -> Bool {
+        let data = chart.data
+        return data.entryCount < Int(CGFloat(chart.maxVisibleCount) * viewPortHandler.scaleX)
     }
 
-    func createAccessibleHeader(usingChart chart: ChartViewBase, andData data: ChartData, withDefaultDescription defaultDescription: String) -> NSUIAccessibilityElement {
+    /// Creates an ```NSUIAccessibilityElement``` that acts as the first and primary header describing a chart view.
+    ///
+    /// - Parameters:
+    ///   - chart: The chartView object being described
+    ///   - data: A non optional data source about the chart
+    ///   - defaultDescription: A simple string describing the type/design of Chart.
+    /// - Returns: A header ```NSUIAccessibilityElement``` that can be added to accessibleChartElements.
+    func createAccessibleHeader<Entry: ChartDataEntry>(usingChart chart: ChartViewBase<Entry>, andData data: ChartData<Entry>, withDefaultDescription defaultDescription: String) -> NSUIAccessibilityElement {
         let chartDescriptionText = chart.chartDescription.text ?? defaultDescription
         let dataSetDescriptions = data.map { $0.label ?? "" }
         let dataSetDescriptionText = dataSetDescriptions.joined(separator: ", ")

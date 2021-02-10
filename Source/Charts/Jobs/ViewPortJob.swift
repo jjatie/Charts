@@ -18,14 +18,14 @@ open class ViewPortJob {
     var xValue = 0.0
     var yValue = 0.0
     unowned var transformer: Transformer
-    unowned var view: ChartViewBase
+    unowned var view: NSUIView
 
     public init(
         viewPortHandler: ViewPortHandler,
         xValue: Double,
         yValue: Double,
         transformer: Transformer,
-        view: ChartViewBase
+        view: NSUIView
     ) {
         self.viewPortHandler = viewPortHandler
         self.xValue = xValue

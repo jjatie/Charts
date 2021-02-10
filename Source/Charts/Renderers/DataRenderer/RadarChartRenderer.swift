@@ -26,7 +26,7 @@ public class RadarChartRenderer: DataRenderer {
         guard let chart = chart else { return [] }
         guard let formatter = chart.xAxis.valueFormatter else { return [] }
 
-        let maxEntryCount = chart.data?.maxEntryCountSet?.count ?? 0
+        let maxEntryCount = chart.data.maxEntryCountSet?.count ?? 0
         return stride(from: 0, to: maxEntryCount, by: 1).map {
             formatter.stringForValue(Double($0), axis: chart.xAxis)
         }
@@ -41,24 +41,24 @@ public class RadarChartRenderer: DataRenderer {
     }
 
     public func drawData(context: CGContext) {
-        guard let chart = chart,
-              let radarData = chart.data as? RadarChartData
-        else {
+        guard let chart = chart else {
             return
         }
-
+        let radarData = chart.data
         let mostEntries = radarData.maxEntryCountSet?.count ?? 0
 
         // If we redraw the data, remove and repopulate accessible elements to update label values and frames
         accessibleChartElements.removeAll()
 
         // Make the chart header the first element in the accessible elements array
-        let element = createAccessibleHeader(usingChart: chart,
-                                             andData: radarData,
-                                             withDefaultDescription: "Radar Chart")
+        let element = createAccessibleHeader(
+            usingChart: chart,
+            andData: radarData,
+            withDefaultDescription: "Radar Chart"
+        )
         accessibleChartElements.append(element)
 
-        for case let set as RadarChartDataSet in radarData where set.isVisible {
+        for set in radarData where set.isVisible {
             drawDataSet(context: context, dataSet: set, mostEntries: mostEntries)
         }
     }
@@ -88,7 +88,7 @@ public class RadarChartRenderer: DataRenderer {
         let path = CGMutablePath()
         var hasMovedToPoint = false
 
-        let prefix: String = chart.data?.accessibilityEntryLabelPrefix ?? "Item"
+        let prefix: String = chart.data.accessibilityEntryLabelPrefix ?? "Item"
         let description = dataSet.label ?? ""
 
         // Make a tuple of (xLabels, value, originalIndex) then sort it
@@ -123,7 +123,7 @@ public class RadarChartRenderer: DataRenderer {
             let axp = center.moving(distance: CGFloat((accessibilityValue - chart.chartYMin) * Double(factor) * phaseY),
                                     atAngle: sliceangle * CGFloat(accessibilityValueIndex) * CGFloat(phaseX) + chart.rotationAngle)
 
-            let axDescription = description + " - " + accessibilityLabel + ": \(accessibilityValue) \(chart.data?.accessibilityEntryLabelSuffix ?? "")"
+            let axDescription = description + " - " + accessibilityLabel + ": \(accessibilityValue) \(chart.data.accessibilityEntryLabelSuffix ?? "")"
             let axElement = createAccessibleElement(withDescription: axDescription,
                                                     container: chart,
                                                     dataSet: dataSet) { element in
@@ -176,10 +176,8 @@ public class RadarChartRenderer: DataRenderer {
     }
 
     public func drawValues(context: CGContext) {
-        guard
-            let chart = chart,
-            let data = chart.data
-        else { return }
+        guard let chart = chart else { return }
+        let data = chart.data
 
         let phaseX = animator.phaseX
         let phaseY = animator.phaseY
@@ -193,12 +191,7 @@ public class RadarChartRenderer: DataRenderer {
 
         let yoffset = CGFloat(5.0)
 
-        for i in data.indices {
-            guard let
-                dataSet = data[i] as? RadarChartDataSet,
-                shouldDrawValues(forDataSet: dataSet)
-            else { continue }
-
+        for (i, dataSet) in data.indexed() where shouldDrawValues(forDataSet: dataSet) {
             let angleRadians = dataSet.valueLabelAngle.DEG2RAD
 
             let iconsOffset = dataSet.iconsOffset
@@ -243,10 +236,7 @@ public class RadarChartRenderer: DataRenderer {
     private var _webLineSegmentsBuffer = [CGPoint](repeating: CGPoint(), count: 2)
 
     open func drawWeb(context: CGContext) {
-        guard
-            let chart = chart,
-            let data = chart.data
-        else { return }
+        guard let chart = chart else { return }
 
         let sliceangle = chart.sliceAngle
 
@@ -265,7 +255,7 @@ public class RadarChartRenderer: DataRenderer {
         context.setAlpha(chart.webAlpha)
 
         let xIncrements = 1 + chart.skipWebLineCount
-        let maxEntryCount = chart.data?.maxEntryCountSet?.count ?? 0
+        let maxEntryCount = chart.data.maxEntryCountSet?.count ?? 0
 
         for i in stride(from: 0, to: maxEntryCount, by: xIncrements) {
             let p = center.moving(distance: CGFloat(chart.yRange) * factor,
@@ -287,7 +277,7 @@ public class RadarChartRenderer: DataRenderer {
         let labelCount = chart.yAxis.entryCount
 
         for j in 0 ..< labelCount {
-            for i in 0 ..< data.entryCount {
+            for i in 0 ..< chart.data.entryCount {
                 let r = CGFloat(chart.yAxis.entries[j] - chart.chartYMin) * factor
 
                 let p1 = center.moving(distance: r, atAngle: sliceangle * CGFloat(i) + rotationangle)
@@ -308,10 +298,7 @@ public class RadarChartRenderer: DataRenderer {
     private var _highlightPointBuffer = CGPoint()
 
     public func drawHighlighted(context: CGContext, indices: [Highlight]) {
-        guard
-            let chart = chart,
-            let radarData = chart.data as? RadarChartData
-        else { return }
+        guard let chart = chart else { return }
 
         context.saveGState()
 
@@ -323,21 +310,18 @@ public class RadarChartRenderer: DataRenderer {
         let center = chart.centerOffsets
 
         for high in indices {
-            guard
-                let set = chart.data?[high.dataSetIndex] as? RadarChartDataSet,
-                set.isHighlightEnabled
-            else { continue }
+            let set = chart.data[high.dataSetIndex]
+            guard set.isHighlightingEnabled else { continue }
 
-            guard let e = set[Int(high.x)] as? RadarChartDataEntry
-            else { continue }
+            let e = set[Int(high.x)]
 
             if !isInBoundsX(entry: e, dataSet: set) {
                 continue
             }
 
-            context.setLineWidth(radarData.highlightLineWidth)
-            if radarData.highlightLineDashLengths != nil {
-                context.setLineDash(phase: radarData.highlightLineDashPhase, lengths: radarData.highlightLineDashLengths!)
+            context.setLineWidth(chart.highlightLineWidth)
+            if chart.highlightLineDashLengths != nil {
+                context.setLineDash(phase: chart.highlightLineDashPhase, lengths: chart.highlightLineDashLengths!)
             } else {
                 context.setLineDash(phase: 0.0, lengths: [])
             }

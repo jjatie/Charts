@@ -12,7 +12,7 @@
 import CoreGraphics
 import Foundation
 
-open class RadarHighlighter: PieRadarHighlighter {
+open class RadarHighlighter: PieRadarHighlighter<RadarChartDataEntry> {
     override open func closestHighlight(index: Int, x: CGFloat, y: CGFloat) -> Highlight? {
         guard let chart = self.chart as? RadarChartView else { return nil }
 
@@ -35,17 +35,14 @@ open class RadarHighlighter: PieRadarHighlighter {
     internal func getHighlights(forIndex index: Int) -> [Highlight] {
         var vals = [Highlight]()
 
-        guard
-            let chart = self.chart as? RadarChartView,
-            let chartData = chart.data
-        else { return vals }
+        guard let chart = self.chart as? RadarChartView else { return vals }
 
         let phaseX = chart.chartAnimator.phaseX
         let phaseY = chart.chartAnimator.phaseY
         let sliceangle = chart.sliceAngle
         let factor = chart.factor
 
-        for (i, dataSet) in chartData.indexed() where dataSet.indices.contains(index) {
+        for (i, dataSet) in chart.data.indexed() where dataSet.indices.contains(index) {
             let entry = dataSet[index]
 
             let y = (entry.y - chart.chartYMin)

@@ -27,6 +27,8 @@ class LineChartTests: XCTestCase {
 
         dataSet = LineChartDataSet(entries: entries, label: "First unit test data")
         dataSet.isDrawIconsEnabled = false
+        dataSet.isDrawFilledEnabled = false
+        dataSet.circleHoleColor = .white
         dataSet.iconsOffset = CGPoint(x: 0, y: 20.0)
 
         chart = LineChartView(frame: CGRect(x: 0, y: 0, width: 480, height: 350))
@@ -46,27 +48,27 @@ class LineChartTests: XCTestCase {
     }
 
     func testHidesValues() {
-        dataSet.isDrawValuesEnabled = false
+        chart.data[0].isDrawValuesEnabled = false
         assertChartSnapshot(matching: chart)
     }
 
     func testDoesntDrawCircles() {
-        dataSet.isDrawCirclesEnabled = false
+        chart.data[0].isDrawCirclesEnabled = false
         assertChartSnapshot(matching: chart)
     }
 
     func testIsCubic() {
-        dataSet.mode = LineChartDataSet.Mode.cubicBezier
+        chart.data[0].mode = .cubicBezier
         assertChartSnapshot(matching: chart)
     }
 
     func testDoesntDrawCircleHole() {
-        dataSet.isDrawCircleHoleEnabled = false
+        chart.data[0].isDrawCircleHoleEnabled = false
         assertChartSnapshot(matching: chart)
     }
 
     func testDrawIcons() {
-        dataSet.isDrawIconsEnabled = true
+        chart.data[0].isDrawIconsEnabled = true
         assertChartSnapshot(matching: chart)
     }
 }

@@ -11,18 +11,18 @@ public class XBounds {
 
     public init() {}
 
-    public init(
-        chart: BarLineScatterCandleBubbleChartDataProvider,
-        dataSet: BarLineScatterCandleBubbleChartDataSet,
+    public init<Entry: ChartDataEntry>(
+        chart: BarLineChartViewBase<Entry>,
+        dataSet: ChartDataSet<Entry>,
         animator: Animator?
     ) {
         set(chart: chart, dataSet: dataSet, animator: animator)
     }
 
     /// Calculates the minimum and maximum x values as well as the range between them.
-    public func set(
-        chart: BarLineScatterCandleBubbleChartDataProvider,
-        dataSet: BarLineScatterCandleBubbleChartDataSet,
+    public func set<Entry: ChartDataEntry>(
+        chart: BarLineChartViewBase<Entry>,
+        dataSet: ChartDataSet<Entry>,
         animator: Animator?
     ) {
         let phaseX = Swift.max(0.0, Swift.min(1.0, animator?.phaseX ?? 1.0))

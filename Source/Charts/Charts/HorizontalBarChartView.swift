@@ -20,7 +20,7 @@ open class HorizontalBarChartView: BarChartView {
         _leftAxisTransformer = TransformerHorizontalBarChart(viewPortHandler: viewPortHandler)
         _rightAxisTransformer = TransformerHorizontalBarChart(viewPortHandler: viewPortHandler)
 
-        renderer = HorizontalBarChartRenderer(dataProvider: self, animator: chartAnimator, viewPortHandler: viewPortHandler)
+        renderer = HorizontalBarChartRenderer(chart: self, animator: chartAnimator, viewPortHandler: viewPortHandler)
         leftYAxisRenderer = YAxisRendererHorizontalBarChart(viewPortHandler: viewPortHandler, axis: leftAxis, transformer: _leftAxisTransformer)
         rightYAxisRenderer = YAxisRendererHorizontalBarChart(viewPortHandler: viewPortHandler, axis: rightAxis, transformer: _rightAxisTransformer)
         xAxisRenderer = XAxisRendererHorizontalBarChart(viewPortHandler: viewPortHandler, axis: xAxis, transformer: _leftAxisTransformer, chart: self)
@@ -142,15 +142,10 @@ open class HorizontalBarChartView: BarChartView {
     }
 
     override open func getBarBounds(entry e: BarChartDataEntry) -> CGRect {
-        guard
-            let data = data as? BarChartData,
-            let set = data.getDataSetForEntry(e) as? BarChartDataSet
-        else { return .null }
+        guard let set = data.getDataSetForEntry(e) else { return .null }
 
         let y = e.y
         let x = e.x
-
-        let barWidth = data.barWidth
 
         let top = x - 0.5 + barWidth / 2.0
         let bottom = x + 0.5 - barWidth / 2.0
@@ -173,8 +168,8 @@ open class HorizontalBarChartView: BarChartView {
     }
 
     override open func getHighlightByTouchPoint(_ pt: CGPoint) -> Highlight? {
-        if data === nil {
-            Swift.print("Can't select by touch. No data set.", terminator: "\n")
+        guard !data.isEmpty else {
+            Swift.debugPrint("Can't select by touch. No data set.")
             return nil
         }
 

@@ -6,10 +6,10 @@ extension DataRenderer {
     /// :param: points
     /// :param: horizontal
     /// :param: vertical
-    public func drawHighlightLines(
+    public func drawHighlightLines<EntryType: ChartDataEntry>(
         context: CGContext,
         point: CGPoint,
-        set: LineScatterCandleRadarChartDataSet
+        set: ChartDataSet<EntryType>
     ) {
         // draw vertical highlight lines
         if set.isVerticalHighlightIndicatorEnabled {

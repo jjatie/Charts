@@ -16,7 +16,7 @@ import Foundation
 open class DefaultFillFormatter: FillFormatter {
     public typealias Block = (
         _ dataSet: LineChartDataSet,
-        _ dataProvider: LineChartDataProvider
+        _ chart: LineChartView
     ) -> CGFloat
 
     open var block: Block?
@@ -33,16 +33,16 @@ open class DefaultFillFormatter: FillFormatter {
 
     open func getFillLinePosition(
         dataSet: LineChartDataSet,
-        dataProvider: LineChartDataProvider
+        chart: LineChartView
     ) -> CGFloat {
-        guard block == nil else { return block!(dataSet, dataProvider) }
+        guard block == nil else { return block!(dataSet, chart) }
         var fillMin: CGFloat = 0.0
 
         if dataSet.yRange.max > 0.0, dataSet.yRange.max < 0.0 {
             fillMin = 0.0
-        } else if let data = dataProvider.data {
-            let max = data.yRange.max > 0.0 ? 0.0 : dataProvider.chartYMax
-            let min = data.yRange.min < 0.0 ? 0.0 : dataProvider.chartYMin
+        } else {
+            let max = chart.data.yRange.max > 0.0 ? 0.0 : chart.chartYMax
+            let min = chart.data.yRange.min < 0.0 ? 0.0 : chart.chartYMin
 
             fillMin = CGFloat(dataSet.yRange.min >= 0.0 ? min : max)
         }

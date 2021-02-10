@@ -12,7 +12,7 @@
 import CoreGraphics
 import Foundation
 
-open class PieRadarHighlighter: ChartHighlighter {
+open class PieRadarHighlighter<Entry: ChartDataEntry>: ChartHighlighter<Entry> {
     override open func getHighlight(x: CGFloat, y: CGFloat) -> Highlight? {
         guard let chart = self.chart as? PieRadarChartViewBase else { return nil }
 
@@ -32,8 +32,7 @@ open class PieRadarHighlighter: ChartHighlighter {
 
         // check if the index could be found
         guard let index = chart.indexForAngle(angle),
-              index >= 0,
-              index < chart.data?.maxEntryCountSet?.count ?? 0
+              chart.data.maxEntryCountSet?.indices.contains(index) ?? false
         else {
             return nil
         }

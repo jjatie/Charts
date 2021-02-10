@@ -17,6 +17,6 @@ public protocol FillFormatter: class {
     /// - Returns: The vertical (y-axis) position where the filled-line of the LineDataSet should end.
     func getFillLinePosition(
         dataSet: LineChartDataSet,
-        dataProvider: LineChartDataProvider
+        chart: LineChartView
     ) -> CGFloat
 }

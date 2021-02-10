@@ -23,42 +23,45 @@ public protocol ChartViewDelegate: AnyObject {
     /// - Parameters:
     ///   - entry: The selected Entry.
     ///   - highlight: The corresponding highlight object that contains information about the highlighted position such as dataSetIndex etc.
-    func chartValueSelected(_ chartView: ChartViewBase, entry: ChartDataEntry, highlight: Highlight)
+    func chartValueSelected<Entry: ChartDataEntry>(_ chartView: ChartViewBase<Entry>, entry: Entry, highlight: Highlight)
 
     /// Called when a user stops panning between values on the chart
-    func chartViewDidEndPanning(_ chartView: ChartViewBase)
+    func chartViewDidEndPanning<Entry: ChartDataEntry>(_ chartView: ChartViewBase<Entry>)
 
     // Called when nothing has been selected or an "un-select" has been made.
-    func chartValueNothingSelected(_ chartView: ChartViewBase)
+    func chartValueNothingSelected<Entry: ChartDataEntry>(_ chartView: ChartViewBase<Entry>)
 
     // Callbacks when the chart is scaled / zoomed via pinch zoom gesture.
-    func chartScaled(_ chartView: ChartViewBase, scaleX: CGFloat, scaleY: CGFloat)
+    func chartScaled<Entry: ChartDataEntry>(_ chartView: ChartViewBase<Entry>, scaleX: CGFloat, scaleY: CGFloat)
 
     // Callbacks when the chart is moved / translated via drag gesture.
-    func chartTranslated(_ chartView: ChartViewBase, dX: CGFloat, dY: CGFloat)
+    func chartTranslated<Entry: ChartDataEntry>(_ chartView: ChartViewBase<Entry>, dX: CGFloat, dY: CGFloat)
 
     // Callbacks when Animator stops animating
-    func chartView(_ chartView: ChartViewBase, animatorDidStop animator: Animator)
+    func chartView<Entry: ChartDataEntry>(_ chartView: ChartViewBase<Entry>, animatorDidStop animator: Animator)
 }
 
-open class ChartViewBase: NSUIView {
+open class ChartViewBase<Entry: ChartDataEntry>: NSUIView {
     // MARK: - Properties
+    public var maxVisibleCount: Int {
+        data.entryCount
+    }
 
     /// The default IValueFormatter that has been determined by the chart considering the provided minimum and maximum values.
     internal lazy var defaultValueFormatter: ValueFormatter = DefaultValueFormatter(decimals: 0)
 
     /// object that holds all data that was originally set for the chart, before it was modified or any filtering algorithms had been applied
-    open var data: ChartData? {
+    open var data: ChartData<Entry> = [] {
         didSet {
             offsetsCalculated = false
 
-            guard let data = data else { return }
-
             // calculate how many digits are needed
-            setupDefaultFormatter(min: data.yRange.min, max: data.yRange.max)
+            if let formatter = defaultValueFormatter as? DefaultValueFormatter {
+                formatter.configure(for: data)
+            }
 
-            for set in data where set.valueFormatter is DefaultValueFormatter {
-                set.valueFormatter = defaultValueFormatter
+            for i in data.indices where data[i].valueFormatter is DefaultValueFormatter {
+                data[i].valueFormatter = defaultValueFormatter
             }
 
             // let the chart know there is new data
@@ -187,28 +190,10 @@ open class ChartViewBase: NSUIView {
         fatalError("calculateOffsets() cannot be called on ChartViewBase")
     }
 
-    /// calculates the required number of digits for the values that might be drawn in the chart (if enabled), and creates the default value formatter
-    internal func setupDefaultFormatter(min: Double, max: Double) {
-        // check if a custom formatter is set or not
-        var reference = 0.0
-
-        if let data = data, data.entryCount >= 2 {
-            reference = abs(max - min)
-        } else {
-            reference = Swift.max(abs(min), abs(max))
-        }
-
-        if let formatter = defaultValueFormatter as? DefaultValueFormatter {
-            // setup the formatter with a new number of digits
-            let digits = reference.decimalPlaces
-            formatter.decimals = digits
-        }
-    }
-
     override open func draw(_: CGRect) {
         guard let context = NSUIGraphicsGetCurrentContext() else { return }
 
-        if data === nil, !noDataText.isEmpty {
+        if data.isEmpty, !noDataText.isEmpty {
             context.saveGState()
             defer { context.restoreGState() }
 
@@ -280,6 +265,11 @@ open class ChartViewBase: NSUIView {
         !highlighted.isEmpty
     }
 
+    public func entry(for highlight: Highlight) -> Entry? {
+        guard highlight.dataSetIndex < data.endIndex else { return nil }
+        return data[highlight.dataSetIndex].element(withX: highlight.x, closestToY: highlight.y)
+    }
+
     /// Highlights the values at the given indices in the given DataSets. Provide
     /// null or an empty array to undo all highlighting.
     /// This should be used to programmatically highlight values.
@@ -305,11 +295,6 @@ open class ChartViewBase: NSUIView {
     ///   - callDelegate: Should the delegate be called for this change
     public final func highlightValue(x: Double, y: Double = .nan, dataSetIndex: Int, dataIndex: Int = -1, callDelegate: Bool = true)
     {
-        guard let data = data else {
-            Swift.print("Value not highlighted because data is nil")
-            return
-        }
-
         if data.indices.contains(dataSetIndex) {
             highlightValue(Highlight(x: x, y: y, dataSetIndex: dataSetIndex, dataIndex: dataIndex), callDelegate: callDelegate)
         } else {
@@ -320,9 +305,8 @@ open class ChartViewBase: NSUIView {
     /// Highlights the value selected by touch gesture.
     public final func highlightValue(_ highlight: Highlight?, callDelegate: Bool = false) {
         var high = highlight
-        guard
-            let h = high,
-            let entry = data?.entry(for: h)
+        guard let h = high,
+              let entry = entry(for: h)
         else {
             high = nil
             highlighted.removeAll(keepingCapacity: false)
@@ -348,7 +332,7 @@ open class ChartViewBase: NSUIView {
     /// selected value at the given touch point inside the Line-, Scatter-, or
     /// CandleStick-Chart.
     open func getHighlightByTouchPoint(_ pt: CGPoint) -> Highlight? {
-        guard data != nil else {
+        guard !data.isEmpty else {
             Swift.print("Can't select by touch. No data set.")
             return nil
         }
@@ -370,8 +354,8 @@ open class ChartViewBase: NSUIView {
         else { return }
 
         for highlight in highlighted {
-            guard let set = data?[highlight.dataSetIndex],
-                let e = data?.entry(for: highlight),
+            let set = data[highlight.dataSetIndex]
+            guard let e = entry(for: highlight),
                 let entryIndex = set.firstIndex(of: e),
                 entryIndex <= Int(Double(set.count) * chartAnimator.phaseX)
             else { continue }
