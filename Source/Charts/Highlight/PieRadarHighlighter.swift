@@ -32,8 +32,7 @@ open class PieRadarHighlighter: ChartHighlighter {
 
         // check if the index could be found
         guard let index = chart.indexForAngle(angle),
-              index >= 0,
-              index < chart.data?.maxEntryCountSet?.count ?? 0
+              chart.data.maxEntryCountSet?.indices.contains(index) ?? false
         else {
             return nil
         }

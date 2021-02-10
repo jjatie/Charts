@@ -48,14 +48,14 @@ open class ChartViewBase: NSUIView {
     internal lazy var defaultValueFormatter: ValueFormatter = DefaultValueFormatter(decimals: 0)
 
     /// object that holds all data that was originally set for the chart, before it was modified or any filtering algorithms had been applied
-    open var data: ChartData<ChartDataEntry>? {
+    open var data: ChartData<ChartDataEntry> = [] {
         didSet {
             offsetsCalculated = false
 
-            guard let data = data else { return }
-
             // calculate how many digits are needed
-            setupDefaultFormatter(min: data.yRange.min, max: data.yRange.max)
+            if let formatter = defaultValueFormatter as? DefaultValueFormatter {
+                formatter.configure(for: data)
+            }
 
             for set in data where set.valueFormatter is DefaultValueFormatter {
                 set.valueFormatter = defaultValueFormatter
@@ -187,28 +187,10 @@ open class ChartViewBase: NSUIView {
         fatalError("calculateOffsets() cannot be called on ChartViewBase")
     }
 
-    /// calculates the required number of digits for the values that might be drawn in the chart (if enabled), and creates the default value formatter
-    internal func setupDefaultFormatter(min: Double, max: Double) {
-        // check if a custom formatter is set or not
-        var reference = 0.0
-
-        if let data = data, data.entryCount >= 2 {
-            reference = abs(max - min)
-        } else {
-            reference = Swift.max(abs(min), abs(max))
-        }
-
-        if let formatter = defaultValueFormatter as? DefaultValueFormatter {
-            // setup the formatter with a new number of digits
-            let digits = reference.decimalPlaces
-            formatter.decimals = digits
-        }
-    }
-
     override open func draw(_: CGRect) {
         guard let context = NSUIGraphicsGetCurrentContext() else { return }
 
-        if data === nil, !noDataText.isEmpty {
+        if data.isEmpty, !noDataText.isEmpty {
             context.saveGState()
             defer { context.restoreGState() }
 
@@ -305,11 +287,6 @@ open class ChartViewBase: NSUIView {
     ///   - callDelegate: Should the delegate be called for this change
     public final func highlightValue(x: Double, y: Double = .nan, dataSetIndex: Int, dataIndex: Int = -1, callDelegate: Bool = true)
     {
-        guard let data = data else {
-            Swift.print("Value not highlighted because data is nil")
-            return
-        }
-
         if data.indices.contains(dataSetIndex) {
             highlightValue(Highlight(x: x, y: y, dataSetIndex: dataSetIndex, dataIndex: dataIndex), callDelegate: callDelegate)
         } else {
@@ -320,9 +297,8 @@ open class ChartViewBase: NSUIView {
     /// Highlights the value selected by touch gesture.
     public final func highlightValue(_ highlight: Highlight?, callDelegate: Bool = false) {
         var high = highlight
-        guard
-            let h = high,
-            let entry = data?.entry(for: h)
+        guard let h = high,
+              let entry = data.entry(for: h)
         else {
             high = nil
             highlighted.removeAll(keepingCapacity: false)
@@ -348,7 +324,7 @@ open class ChartViewBase: NSUIView {
     /// selected value at the given touch point inside the Line-, Scatter-, or
     /// CandleStick-Chart.
     open func getHighlightByTouchPoint(_ pt: CGPoint) -> Highlight? {
-        guard data != nil else {
+        guard !data.isEmpty else {
             Swift.print("Can't select by touch. No data set.")
             return nil
         }
@@ -370,8 +346,8 @@ open class ChartViewBase: NSUIView {
         else { return }
 
         for highlight in highlighted {
-            guard let set = data?[highlight.dataSetIndex],
-                let e = data?.entry(for: highlight),
+            let set = data[highlight.dataSetIndex]
+            guard let e = data.entry(for: highlight),
                 let entryIndex = set.firstIndex(of: e),
                 entryIndex <= Int(Double(set.count) * chartAnimator.phaseX)
             else { continue }

@@ -672,7 +672,7 @@ public class BarChartRenderer: DataRenderer {
         guard let chart = dataProvider as? BarChartView else { return [] }
 
         // Unlike Bubble & Line charts, here we use the maximum entry count to account for stacked bars
-        let maxEntryCount = chart.data?.maxEntryCountSet?.count ?? 0
+        let maxEntryCount = chart.data.maxEntryCountSet?.count ?? 0
 
         return Array(repeating: [NSUIAccessibilityElement](),
                      count: maxEntryCount)

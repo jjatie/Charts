@@ -33,8 +33,9 @@ public class PieChartRenderer: DataRenderer {
     }
 
     public func drawData(context: CGContext) {
-        guard let chart = chart, let pieData = chart.data else { return }
-
+        guard let chart = chart else { return }
+        let pieData = chart.data
+        
         // If we redraw the data, remove and repopulate accessible elements to update label values and frames
         accessibleChartElements.removeAll()
 
@@ -135,7 +136,7 @@ public class PieChartRenderer: DataRenderer {
         // This is unlike when we are naming individual slices, wherein it's alright to not use a prefix as descriptor.
         // i.e. We want to VO to say "3 Elements" even if the developer didn't specify an accessibility prefix
         // If prefix is unspecified it is safe to assume they did not want to use "Element 1", so that uses a default empty string
-        let prefix: String = chart.data?.accessibilityEntryLabelPrefix ?? "Element"
+        let prefix: String = chart.data.accessibilityEntryLabelPrefix ?? "Element"
         let description = chart.chartDescription.text ?? dataSet.label ?? chart.centerText ?? "Pie Chart"
 
         let
@@ -274,10 +275,8 @@ public class PieChartRenderer: DataRenderer {
     }
 
     public func drawValues(context: CGContext) {
-        guard
-            let chart = chart,
-            let data = chart.data
-        else { return }
+        guard let chart = chart else { return }
+        let data = chart.data
 
         let center = chart.centerCircleBox
 
@@ -627,11 +626,9 @@ public class PieChartRenderer: DataRenderer {
     }
 
     public func drawHighlighted(context: CGContext, indices highlights: [Highlight]) {
-        guard
-            let chart = chart,
-            let data = chart.data
-        else { return }
-
+        guard let chart = chart else { return }
+        let data = chart.data
+        
         context.saveGState()
 
         let phaseX = animator.phaseX

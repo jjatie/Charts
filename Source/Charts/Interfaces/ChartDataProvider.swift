@@ -23,7 +23,7 @@ public protocol ChartDataProvider: AnyObject {
 
     var centerOffsets: CGPoint { get }
 
-    var data: ChartData<ChartDataEntry>? { get }
+    var data: ChartData<ChartDataEntry> { get }
 
     var maxVisibleCount: Int { get }
 }

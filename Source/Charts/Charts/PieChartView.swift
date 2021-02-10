@@ -232,8 +232,6 @@ open class PieChartView: PieRadarChartViewBase, ChartDataProvider {
         _drawAngles = [CGFloat]()
         _absoluteAngles = [CGFloat]()
 
-        guard let data = data else { return }
-
         let entryCount = data.entryCount
 
         _drawAngles.reserveCapacity(entryCount)

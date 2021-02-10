@@ -589,7 +589,7 @@ public class HorizontalBarChartRenderer: DataRenderer {
     }
 
     public func isDrawingValuesAllowed(dataProvider: ChartDataProvider) -> Bool {
-        guard let data = dataProvider.data else { return false }
+        let data = dataProvider.data
         return data.entryCount < Int(CGFloat(dataProvider.maxVisibleCount) * viewPortHandler.scaleY)
     }
 
@@ -657,7 +657,7 @@ extension HorizontalBarChartRenderer {
     /// This is marked internal to support HorizontalBarChartRenderer as well.
     private func accessibilityCreateEmptyOrderedElements() -> [[NSUIAccessibilityElement]] {
         // Unlike Bubble & Line charts, here we use the maximum entry count to account for stacked bars
-        guard let maxEntryCount = dataProvider?.data?.maxEntryCountSet?.count else { return [] }
+        guard let maxEntryCount = dataProvider?.data.maxEntryCountSet?.count else { return [] }
 
         return Array(repeating: [NSUIAccessibilityElement](),
                      count: maxEntryCount)

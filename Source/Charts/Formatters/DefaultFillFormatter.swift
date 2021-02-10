@@ -40,9 +40,9 @@ open class DefaultFillFormatter: FillFormatter {
 
         if dataSet.yRange.max > 0.0, dataSet.yRange.max < 0.0 {
             fillMin = 0.0
-        } else if let data = dataProvider.data {
-            let max = data.yRange.max > 0.0 ? 0.0 : dataProvider.chartYMax
-            let min = data.yRange.min < 0.0 ? 0.0 : dataProvider.chartYMin
+        } else {
+            let max = dataProvider.data.yRange.max > 0.0 ? 0.0 : dataProvider.chartYMax
+            let min = dataProvider.data.yRange.min < 0.0 ? 0.0 : dataProvider.chartYMin
 
             fillMin = CGFloat(dataSet.yRange.min >= 0.0 ? min : max)
         }

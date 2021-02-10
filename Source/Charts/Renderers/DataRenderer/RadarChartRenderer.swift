@@ -26,7 +26,7 @@ public class RadarChartRenderer: DataRenderer {
         guard let chart = chart else { return [] }
         guard let formatter = chart.xAxis.valueFormatter else { return [] }
 
-        let maxEntryCount = chart.data?.maxEntryCountSet?.count ?? 0
+        let maxEntryCount = chart.data.maxEntryCountSet?.count ?? 0
         return stride(from: 0, to: maxEntryCount, by: 1).map {
             formatter.stringForValue(Double($0), axis: chart.xAxis)
         }
@@ -88,7 +88,7 @@ public class RadarChartRenderer: DataRenderer {
         let path = CGMutablePath()
         var hasMovedToPoint = false
 
-        let prefix: String = chart.data?.accessibilityEntryLabelPrefix ?? "Item"
+        let prefix: String = chart.data.accessibilityEntryLabelPrefix ?? "Item"
         let description = dataSet.label ?? ""
 
         // Make a tuple of (xLabels, value, originalIndex) then sort it
@@ -123,7 +123,7 @@ public class RadarChartRenderer: DataRenderer {
             let axp = center.moving(distance: CGFloat((accessibilityValue - chart.chartYMin) * Double(factor) * phaseY),
                                     atAngle: sliceangle * CGFloat(accessibilityValueIndex) * CGFloat(phaseX) + chart.rotationAngle)
 
-            let axDescription = description + " - " + accessibilityLabel + ": \(accessibilityValue) \(chart.data?.accessibilityEntryLabelSuffix ?? "")"
+            let axDescription = description + " - " + accessibilityLabel + ": \(accessibilityValue) \(chart.data.accessibilityEntryLabelSuffix ?? "")"
             let axElement = createAccessibleElement(withDescription: axDescription,
                                                     container: chart,
                                                     dataSet: dataSet) { element in
@@ -176,10 +176,8 @@ public class RadarChartRenderer: DataRenderer {
     }
 
     public func drawValues(context: CGContext) {
-        guard
-            let chart = chart,
-            let data = chart.data
-        else { return }
+        guard let chart = chart else { return }
+        let data = chart.data
 
         let phaseX = animator.phaseX
         let phaseY = animator.phaseY
@@ -243,10 +241,7 @@ public class RadarChartRenderer: DataRenderer {
     private var _webLineSegmentsBuffer = [CGPoint](repeating: CGPoint(), count: 2)
 
     open func drawWeb(context: CGContext) {
-        guard
-            let chart = chart,
-            let data = chart.data
-        else { return }
+        guard let chart = chart else { return }
 
         let sliceangle = chart.sliceAngle
 
@@ -265,7 +260,7 @@ public class RadarChartRenderer: DataRenderer {
         context.setAlpha(chart.webAlpha)
 
         let xIncrements = 1 + chart.skipWebLineCount
-        let maxEntryCount = chart.data?.maxEntryCountSet?.count ?? 0
+        let maxEntryCount = chart.data.maxEntryCountSet?.count ?? 0
 
         for i in stride(from: 0, to: maxEntryCount, by: xIncrements) {
             let p = center.moving(distance: CGFloat(chart.yRange) * factor,
@@ -287,7 +282,7 @@ public class RadarChartRenderer: DataRenderer {
         let labelCount = chart.yAxis.entryCount
 
         for j in 0 ..< labelCount {
-            for i in 0 ..< data.entryCount {
+            for i in 0 ..< chart.data.entryCount {
                 let r = CGFloat(chart.yAxis.entries[j] - chart.chartYMin) * factor
 
                 let p1 = center.moving(distance: r, atAngle: sliceangle * CGFloat(i) + rotationangle)
@@ -324,7 +319,7 @@ public class RadarChartRenderer: DataRenderer {
 
         for high in indices {
             guard
-                let set = chart.data?[high.dataSetIndex] as? RadarChartDataSet,
+                let set = chart.data[high.dataSetIndex] as? RadarChartDataSet,
                 set.isHighlightingEnabled
             else { continue }
 

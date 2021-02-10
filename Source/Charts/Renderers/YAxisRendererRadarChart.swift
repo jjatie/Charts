@@ -149,11 +149,9 @@ open class YAxisRendererRadarChart: YAxisRenderer {
     }
 
     override open func renderLimitLines(context: CGContext) {
-        guard
-            let chart = chart,
-            let data = chart.data
-        else { return }
-
+        guard let chart = chart else { return }
+        let data = chart.data
+        
         let limitLines = axis.limitLines
 
         guard !limitLines.isEmpty else { return }

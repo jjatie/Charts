@@ -71,15 +71,13 @@ open class PieRadarChartViewBase: ChartViewBase {
 
     /// the number of maximum visible drawn values on the chart only active when `drawValuesEnabled` is enabled
     public final var maxVisibleCount: Int {
-        data?.entryCount ?? 0
+        data.entryCount
     }
 
     override open func notifyDataSetChanged() {
         calcMinMax()
 
-        if let data = data {
-            legendRenderer.computeLegend(data: data)
-        }
+        legendRenderer.computeLegend(data: data)
 
         calculateOffsets()
 
