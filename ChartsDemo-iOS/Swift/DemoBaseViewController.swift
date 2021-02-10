@@ -154,12 +154,12 @@ class DemoBaseViewController: UIViewController, ChartViewDelegate {
 
         case .togglePinchZoom:
             let barLineChart = chartView as! BarLineChartViewBase
-            barLineChart.pinchZoomEnabled = !barLineChart.pinchZoomEnabled
+            barLineChart.isPinchZoomEnabled = !barLineChart.isPinchZoomEnabled
             chartView.setNeedsDisplay()
 
         case .toggleAutoScaleMinMax:
             let barLineChart = chartView as! BarLineChartViewBase
-            barLineChart.autoScaleMinMaxEnabled = !barLineChart.isAutoScaleMinMaxEnabled
+            barLineChart.isAutoScaleMinMaxEnabled = !barLineChart.isAutoScaleMinMaxEnabled
             chartView.notifyDataSetChanged()
 
         case .toggleData:
@@ -242,7 +242,7 @@ class DemoBaseViewController: UIViewController, ChartViewDelegate {
         chartView.drawSlicesUnderHoleEnabled = false
         chartView.holeRadiusPercent = 0.58
         chartView.transparentCircleRadiusPercent = 0.61
-        chartView.chartDescription.enabled = false
+        chartView.chartDescription.isEnabled = false
         chartView.setExtraOffsets(left: 5, top: 10, right: 5, bottom: 5)
 
         chartView.drawCenterTextEnabled = true
@@ -263,7 +263,7 @@ class DemoBaseViewController: UIViewController, ChartViewDelegate {
         chartView.drawHoleEnabled = true
         chartView.rotationAngle = 0
         chartView.rotationEnabled = true
-        chartView.highlightPerTapEnabled = true
+        chartView.isHighLightPerTapEnabled = true
 
         let l = chartView.legend
         l.horizontalAlignment = .right
@@ -277,22 +277,22 @@ class DemoBaseViewController: UIViewController, ChartViewDelegate {
     }
 
     func setup(radarChartView chartView: RadarChartView) {
-        chartView.chartDescription.enabled = false
+        chartView.chartDescription.isEnabled = false
     }
 
     func setup(barLineChartView chartView: BarLineChartViewBase) {
-        chartView.chartDescription.enabled = false
+        chartView.chartDescription.isEnabled = false
 
-        chartView.dragEnabled = true
+        chartView.isDragEnabled = true
         chartView.setScaleEnabled(true)
-        chartView.pinchZoomEnabled = false
+        chartView.isPinchZoomEnabled = false
 
         // ChartYAxis *leftAxis = chartView.leftAxis;
 
         let xAxis = chartView.xAxis
         xAxis.labelPosition = .bottom
 
-        chartView.rightAxis.enabled = false
+        chartView.rightAxis.isEnabled = false
     }
 
     // MARK: - ChartViewDelegate
@@ -364,5 +364,35 @@ extension DemoBaseViewController: UITableViewDelegate, UITableViewDataSource {
 
             optionTapped(options[indexPath.row])
         }
+    }
+}
+
+extension ChartViewBase {
+    func getChartImage(transparent: Bool) -> NSUIImage? {
+        UIGraphicsBeginImageContextWithOptions(bounds.size, isOpaque || !transparent, UIScreen.main.scale)
+
+        guard let context = UIGraphicsGetCurrentContext()
+        else { return nil }
+
+        let rect = CGRect(origin: .zero, size: bounds.size)
+
+        if isOpaque || !transparent {
+            // Background color may be partially transparent, we must fill with white if we want to output an opaque image
+            context.setFillColor(NSUIColor.white.cgColor)
+            context.fill(rect)
+
+            if let backgroundColor = self.backgroundColor {
+                context.setFillColor(backgroundColor.cgColor)
+                context.fill(rect)
+            }
+        }
+
+        layer.render(in: context)
+
+        let image = UIGraphicsGetImageFromCurrentImageContext()
+
+        UIGraphicsEndImageContext()
+
+        return image
     }
 }

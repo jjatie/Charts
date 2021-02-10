@@ -43,9 +43,10 @@ public class LineChartRenderer: DataRenderer {
     public func drawData(context: CGContext) {
         guard let lineData = dataProvider?.lineData else { return }
 
-        let sets = lineData.dataSets as? [LineChartDataSet]
+        let sets = lineData._dataSets as? [LineChartDataSet]
         assert(sets != nil, "Datasets for LineChartRenderer must conform to ILineChartDataSet")
 
+        // TODO:
         let drawDataSet = { self.drawDataSet(context: context, dataSet: $0) }
         sets!.lazy
             .filter(\.isVisible)
@@ -813,7 +814,7 @@ public class LineChartRenderer: DataRenderer {
     private func accessibilityCreateEmptyOrderedElements() -> [[NSUIAccessibilityElement]] {
         guard let chart = dataProvider as? LineChartView else { return [] }
 
-        let dataSetCount = chart.lineData?.dataSetCount ?? 0
+        let dataSetCount = chart.lineData?.count ?? 0
 
         return Array(repeating: [NSUIAccessibilityElement](),
                      count: dataSetCount)
@@ -844,7 +845,7 @@ public class LineChartRenderer: DataRenderer {
                                                                      dataSetIndex: dataSetIndex,
                                                                      viewPortHandler: viewPortHandler)
 
-        let dataSetCount = dataProvider.lineData?.dataSetCount ?? -1
+        let dataSetCount = dataProvider.lineData?.count ?? -1
         let doesContainMultipleDataSets = dataSetCount > 1
 
         element.accessibilityLabel = "\(doesContainMultipleDataSets ? (dataSet.label ?? "") + ", " : "") \(label): \(elementValueText)"

@@ -41,8 +41,8 @@ class BarChartViewController: DemoBaseViewController {
 
         chartView.delegate = self
 
-        chartView.drawBarShadowEnabled = false
-        chartView.drawValueAboveBarEnabled = false
+        chartView.isDrawBarShadowEnabled = false
+        chartView.isDrawValueAboveBarEnabled = false
 
         chartView.maxVisibleCount = 60
 
@@ -68,7 +68,7 @@ class BarChartViewController: DemoBaseViewController {
         leftAxis.axisMinimum = 0 // FIXME: HUH?? this replaces startAtZero = YES
 
         let rightAxis = chartView.rightAxis
-        rightAxis.enabled = true
+        rightAxis.isEnabled = true
         rightAxis.labelFont = .systemFont(ofSize: 10)
         rightAxis.labelCount = 8
         rightAxis.valueFormatter = leftAxis.valueFormatter

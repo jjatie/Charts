@@ -65,12 +65,13 @@ open class PieRadarChartViewBase: ChartViewBase {
         #endif
     }
 
-    override internal func calcMinMax() {
+    func calcMinMax() {
         /* _xAxis.axisRange = Double((data?.xVals.count ?? 0) - 1) */
     }
 
-    override open var maxVisibleCount: Int {
-        return data?.entryCount ?? 0
+    /// the number of maximum visible drawn values on the chart only active when `drawValuesEnabled` is enabled
+    public final var maxVisibleCount: Int {
+        data?.entryCount ?? 0
     }
 
     override open func notifyDataSetChanged() {
@@ -91,7 +92,7 @@ open class PieRadarChartViewBase: ChartViewBase {
         var legendBottom = CGFloat(0.0)
         var legendTop = CGFloat(0.0)
 
-        if legend.enabled, !legend.drawInside {
+        if legend.isEnabled, !legend.drawInside {
             let fullLegendWidth = min(legend.neededWidth, viewPortHandler.chartWidth * legend.maxSizePercent)
 
             switch legend.orientation {
@@ -114,7 +115,7 @@ open class PieRadarChartViewBase: ChartViewBase {
                         let legendWidth = fullLegendWidth + spacing
                         let legendHeight = legend.neededHeight + legend.textHeightMax
 
-                        let c = midPoint
+                        let c = bounds.center
 
                         let bottomX = legend.horizontalAlignment == .right
                             ? bounds.width - legendWidth + 15.0
@@ -333,14 +334,6 @@ open class PieRadarChartViewBase: ChartViewBase {
     /// legend size.
     internal var requiredBaseOffset: CGFloat {
         fatalError("requiredBaseOffset cannot be called on PieRadarChartViewBase")
-    }
-
-    override open var chartYMax: Double {
-        return 0.0
-    }
-
-    override open var chartYMin: Double {
-        return 0.0
     }
 
     open var isRotationEnabled: Bool { return rotationEnabled }

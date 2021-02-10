@@ -14,7 +14,7 @@ import Foundation
 
 /// Implementation of the RadarChart, a "spidernet"-like chart. It works best
 /// when displaying 5-10 entries per DataSet.
-open class RadarChartView: PieRadarChartViewBase {
+open class RadarChartView: PieRadarChartViewBase, ChartDataProvider {
     /// width of the web lines that come from the center.
     open var webLineWidth = CGFloat(1.5)
 
@@ -114,7 +114,7 @@ open class RadarChartView: PieRadarChartViewBase {
 
         renderer.drawData(context: context)
 
-        if valuesToHighlight() {
+        if valuesToHighlight {
             renderer.drawHighlighted(context: context, indices: highlighted)
         }
 
@@ -187,11 +187,11 @@ open class RadarChartView: PieRadarChartViewBase {
     }
 
     /// The maximum value this chart can display on it's y-axis.
-    override open var chartYMax: Double { return _yAxis._axisMaximum }
+    public var chartYMax: Double { _yAxis._axisMaximum }
 
     /// The minimum value this chart can display on it's y-axis.
-    override open var chartYMin: Double { return _yAxis._axisMinimum }
+    public var chartYMin: Double { _yAxis._axisMinimum }
 
     /// The range of y-values this chart can display.
-    open var yRange: Double { return _yAxis.axisRange }
+    public var yRange: Double { _yAxis.axisRange }
 }

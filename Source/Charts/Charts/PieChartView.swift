@@ -17,7 +17,7 @@ import Foundation
 #endif
 
 /// View that represents a pie chart. Draws cake like slices.
-open class PieChartView: PieRadarChartViewBase {
+open class PieChartView: PieRadarChartViewBase, ChartDataProvider {
     /// rect object that represents the bounds of the piechart, needed for drawing the circle
     private var _circleBox = CGRect()
 
@@ -71,6 +71,10 @@ open class PieChartView: PieRadarChartViewBase {
     /// maximum angle for this pie
     private var _maxAngle: CGFloat = 360.0
 
+    public let chartYMax: Double = 0.0
+
+    public let chartYMin: Double = 0.0
+
     override public init(frame: CGRect) {
         super.init(frame: frame)
     }
@@ -101,7 +105,7 @@ open class PieChartView: PieRadarChartViewBase {
 
         renderer.drawData(context: context)
 
-        if valuesToHighlight() {
+        if valuesToHighlight {
             renderer.drawHighlighted(context: context, indices: highlighted)
         }
 

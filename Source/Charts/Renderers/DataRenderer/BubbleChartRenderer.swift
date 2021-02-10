@@ -54,8 +54,7 @@ public class BubbleChartRenderer: DataRenderer {
             accessibleChartElements.append(element)
         }
 
-        let sets = bubbleData.dataSets as! [BubbleChartDataSet]
-        for case let (i, set) in zip(sets.indices, sets) where set.isVisible {
+        for case let (i, set as BubbleChartDataSet) in bubbleData.indexed() where set.isVisible {
             drawDataSet(context: context, dataSet: set, dataSetIndex: i)
         }
 
@@ -313,7 +312,7 @@ public class BubbleChartRenderer: DataRenderer {
     private func accessibilityCreateEmptyOrderedElements() -> [[NSUIAccessibilityElement]] {
         guard let chart = dataProvider as? BubbleChartView else { return [] }
 
-        let dataSetCount = chart.bubbleData?.dataSetCount ?? 0
+        let dataSetCount = chart.bubbleData?.count ?? 0
 
         return Array(repeating: [NSUIAccessibilityElement](),
                      count: dataSetCount)
@@ -343,7 +342,7 @@ public class BubbleChartRenderer: DataRenderer {
                                                                      dataSetIndex: dataSetIndex,
                                                                      viewPortHandler: viewPortHandler)
 
-        let dataSetCount = dataProvider.bubbleData?.dataSetCount ?? -1
+        let dataSetCount = dataProvider.bubbleData?.count ?? -1
         let doesContainMultipleDataSets = dataSetCount > 1
 
         element.accessibilityLabel = "\(doesContainMultipleDataSets ? (dataSet.label ?? "") + ", " : "") \(label): \(elementValueText), bubble size: \(String(format: "%.2f", (shapeSize / dataSet.maxSize) * 100)) %"

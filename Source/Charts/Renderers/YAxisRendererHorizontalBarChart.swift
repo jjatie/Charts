@@ -236,22 +236,22 @@ open class YAxisRendererHorizontalBarChart: YAxisRenderer {
                 let point: CGPoint
 
                 switch l.labelPosition {
-                case .rightTop:
+                case .topRight:
                     align = .left
                     point = CGPoint(x: position.x + xOffset,
                                     y: viewPortHandler.contentTop + yOffset)
 
-                case .rightBottom:
+                case .bottomRight:
                     align = .left
                     point = CGPoint(x: position.x + xOffset,
                                     y: viewPortHandler.contentBottom - labelLineHeight - yOffset)
 
-                case .leftTop:
+                case .topLeft:
                     align = .right
                     point = CGPoint(x: position.x - xOffset,
                                     y: viewPortHandler.contentTop + yOffset)
 
-                case .leftBottom:
+                case .bottomLeft:
                     align = .right
                     point = CGPoint(x: position.x - xOffset,
                                     y: viewPortHandler.contentBottom - labelLineHeight - yOffset)

@@ -13,7 +13,7 @@ import CoreGraphics
 import Foundation
 
 /// Chart that draws lines, surfaces, circles, ...
-open class LineChartView: BarLineChartViewBase, LineChartDataProvider {
+open class LineChartView: BarLineChartViewBase {
     override internal func initialize() {
         super.initialize()
 
@@ -23,4 +23,10 @@ open class LineChartView: BarLineChartViewBase, LineChartDataProvider {
     // MARK: - LineChartDataProvider
 
     open var lineData: LineChartData? { return data as? LineChartData }
+}
+
+extension LineChartView: LineChartDataProvider {
+    public final var chartXMax: Double {
+        xAxis._axisMaximum
+    }
 }

@@ -13,10 +13,12 @@ import CoreGraphics
 import Foundation
 
 /// Base class for all axes
-open class AxisBase: ComponentBase {
-    override public init() {
-        super.init()
-    }
+open class AxisBase: Component {
+    public var isEnabled = true
+
+    public var xOffset: CGFloat = 5
+
+    public var yOffset: CGFloat = 5
 
     /// Custom formatter that is used instead of the auto-formatter if set
     private lazy var _axisValueFormatter: AxisValueFormatter = DefaultAxisValueFormatter(decimals: decimals)
@@ -53,7 +55,7 @@ open class AxisBase: ComponentBase {
     open var isCenterAxisLabelsEnabled: Bool { return centerAxisLabelsEnabled }
 
     /// array of limitlines that can be set for the axis
-    private var _limitLines = [ChartLimitLine]()
+    public private(set) var limitLines = [ChartLimitLine]()
 
     /// Are the LimitLines drawn behind the data or in front of the data?
     ///
@@ -230,23 +232,18 @@ open class AxisBase: ComponentBase {
 
     /// Adds a new ChartLimitLine to this axis.
     open func addLimitLine(_ line: ChartLimitLine) {
-        _limitLines.append(line)
+        limitLines.append(line)
     }
 
     /// Removes the specified ChartLimitLine from the axis.
     open func removeLimitLine(_ line: ChartLimitLine) {
-        guard let i = _limitLines.firstIndex(where: { $0 === line }) else { return }
-        _limitLines.remove(at: i)
+        guard let i = limitLines.firstIndex(of: line) else { return }
+        limitLines.remove(at: i)
     }
 
     /// Removes all LimitLines from the axis.
     open func removeAllLimitLines() {
-        _limitLines.removeAll(keepingCapacity: false)
-    }
-
-    /// The LimitLines of this axis.
-    open var limitLines: [ChartLimitLine] {
-        return _limitLines
+        limitLines.removeAll(keepingCapacity: false)
     }
 
     // MARK: Custom axis ranges

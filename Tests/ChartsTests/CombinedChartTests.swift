@@ -10,6 +10,8 @@ import SnapshotTesting
 import XCTest
 
 class CombinedChartTests: XCTestCase {
+    lazy var icon = UIImage(named: "icon", in: .module, compatibleWith: nil)!
+
     var chart: CombinedChartView!
     var lineDataSet: LineChartDataSet!
     var barDataSet: BarChartDataSet!
@@ -36,10 +38,8 @@ class CombinedChartTests: XCTestCase {
                                 76, 25, 20, 13, 52, 44, 57, 23, 45, 91,
                                 99, 14, 84, 48, 40, 71, 106, 41, 45, 61]
 
-        var entries: [ChartDataEntry] = Array()
-
-        for (i, value) in values.enumerated() {
-            entries.append(BarChartDataEntry(x: Double(i), y: value, icon: UIImage(named: "icon", in: Bundle(for: classForCoder), compatibleWith: nil)))
+        let entries = values.enumerated().map { (i, value) in
+            BarChartDataEntry(x: Double(i), y: value, icon: icon)
         }
 
         barDataSet = BarChartDataSet(entries: entries, label: "Bar chart unit test data")
@@ -55,12 +55,9 @@ class CombinedChartTests: XCTestCase {
                                 76, 25, 20, 13, 52, 44, 57, 23, 45, 91,
                                 99, 14, 84, 48, 40, 71, 106, 41, 45, 61]
 
-        var entries: [ChartDataEntry] = Array()
-
-        for (i, value) in values.enumerated() {
-            entries.append(ChartDataEntry(x: Double(i), y: value, icon: UIImage(named: "icon", in: Bundle(for: classForCoder), compatibleWith: nil)))
+        let entries = values.enumerated().map { (i, value) in
+            ChartDataEntry(x: Double(i), y: value, icon: icon)
         }
-
         lineDataSet = LineChartDataSet(entries: entries, label: "Line chart unit test data")
         lineDataSet.isDrawIconsEnabled = false
         return LineChartData(dataSet: lineDataSet)
@@ -78,7 +75,7 @@ class CombinedChartTests: XCTestCase {
     func testLeftRightAxisDependency() {
         lineDataSet.axisDependency = .left
         barDataSet.axisDependency = .right
-        chart.data?.notifyDataChanged()
+        (chart.data as? CombinedChartData)?.notifyDataChanged()
         chart.notifyDataSetChanged()
         assertChartSnapshot(matching: chart)
     }
@@ -86,7 +83,7 @@ class CombinedChartTests: XCTestCase {
     func testAllRightAxisDependency() {
         lineDataSet.axisDependency = .right
         barDataSet.axisDependency = .right
-        chart.data?.notifyDataChanged()
+        (chart.data as? CombinedChartData)?.notifyDataChanged()
         chart.notifyDataSetChanged()
         assertChartSnapshot(matching: chart)
     }

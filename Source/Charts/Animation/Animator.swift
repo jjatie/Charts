@@ -181,7 +181,7 @@ open class Animator {
     ///   - xAxisDuration: duration for animating the x axis
     ///   - yAxisDuration: duration for animating the y axis
     ///   - easingOption: the easing function for the animation
-    open func animate(xAxisDuration: TimeInterval, yAxisDuration: TimeInterval, easingOption: ChartEasingOption = .easeInOutSine)
+    open func animate(xAxisDuration: TimeInterval, yAxisDuration: TimeInterval, easingOption: ChartEasingOption)
     {
         animate(xAxisDuration: xAxisDuration, yAxisDuration: yAxisDuration, easing: easingFunctionFromOption(easingOption))
     }
@@ -218,7 +218,7 @@ open class Animator {
     /// - Parameters:
     ///   - xAxisDuration: duration for animating the x axis
     ///   - easingOption: the easing function for the animation
-    open func animate(xAxisDuration: TimeInterval, easingOption: ChartEasingOption = .easeInOutSine)
+    open func animate(xAxisDuration: TimeInterval, easingOption: ChartEasingOption)
     {
         animate(xAxisDuration: xAxisDuration, easing: easingFunctionFromOption(easingOption))
     }
@@ -255,7 +255,7 @@ open class Animator {
     /// - Parameters:
     ///   - yAxisDuration: duration for animating the y axis
     ///   - easingOption: the easing function for the animation
-    open func animate(yAxisDuration: TimeInterval, easingOption: ChartEasingOption = .easeInOutSine)
+    open func animate(yAxisDuration: TimeInterval, easingOption: ChartEasingOption)
     {
         animate(yAxisDuration: yAxisDuration, easing: easingFunctionFromOption(easingOption))
     }

@@ -38,12 +38,12 @@ class CandleStickChartViewController: DemoBaseViewController {
 
         chartView.delegate = self
 
-        chartView.chartDescription.enabled = false
+        chartView.chartDescription.isEnabled = false
 
-        chartView.dragEnabled = false
+        chartView.isDragEnabled = false
         chartView.setScaleEnabled(true)
         chartView.maxVisibleCount = 200
-        chartView.pinchZoomEnabled = true
+        chartView.isPinchZoomEnabled = true
 
         chartView.legend.horizontalAlignment = .right
         chartView.legend.verticalAlignment = .top
@@ -56,7 +56,7 @@ class CandleStickChartViewController: DemoBaseViewController {
         chartView.leftAxis.spaceBottom = 0.3
         chartView.leftAxis.axisMinimum = 0
 
-        chartView.rightAxis.enabled = false
+        chartView.rightAxis.isEnabled = false
 
         chartView.xAxis.labelPosition = .bottom
         chartView.xAxis.labelFont = UIFont(name: "HelveticaNeue-Light", size: 10)!
@@ -112,7 +112,7 @@ class CandleStickChartViewController: DemoBaseViewController {
             }
             chartView.notifyDataSetChanged()
         case .toggleShowCandleBar:
-            for set in chartView.data!.dataSets as! [CandleChartDataSet] {
+            for case let set as CandleChartDataSet in chartView.data! {
                 set.showCandleBar.toggle()
             }
             chartView.notifyDataSetChanged()

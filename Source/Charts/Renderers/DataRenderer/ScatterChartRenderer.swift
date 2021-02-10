@@ -48,9 +48,10 @@ public class ScatterChartRenderer: DataRenderer {
         // TODO: Due to the potential complexity of data presented in Scatter charts, a more usable way
         // for VO accessibility would be to use axis based traversal rather than by dataset.
         // Hence, accessibleChartElements is not populated below. (Individual renderers guard against dataSource being their respective views)
-        let sets = scatterData.dataSets as? [ScatterChartDataSet]
+        let sets = scatterData._dataSets as? [ScatterChartDataSet]
         assert(sets != nil, "Datasets for ScatterChartRenderer must conform to IScatterChartDataSet")
 
+        // TODO
         let drawDataSet = { self.drawDataSet(context: context, dataSet: $0) }
         sets!.lazy
             .filter(\.isVisible)

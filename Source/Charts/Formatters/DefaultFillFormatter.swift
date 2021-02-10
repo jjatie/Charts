@@ -38,13 +38,13 @@ open class DefaultFillFormatter: FillFormatter {
         guard block == nil else { return block!(dataSet, dataProvider) }
         var fillMin: CGFloat = 0.0
 
-        if dataSet.yMax > 0.0, dataSet.yMin < 0.0 {
+        if dataSet.yRange.max > 0.0, dataSet.yRange.max < 0.0 {
             fillMin = 0.0
         } else if let data = dataProvider.data {
-            let max = data.yMax > 0.0 ? 0.0 : dataProvider.chartYMax
-            let min = data.yMin < 0.0 ? 0.0 : dataProvider.chartYMin
+            let max = data.yRange.max > 0.0 ? 0.0 : dataProvider.chartYMax
+            let min = data.yRange.min < 0.0 ? 0.0 : dataProvider.chartYMin
 
-            fillMin = CGFloat(dataSet.yMin >= 0.0 ? min : max)
+            fillMin = CGFloat(dataSet.yRange.min >= 0.0 ? min : max)
         }
 
         return fillMin

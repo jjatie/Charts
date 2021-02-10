@@ -263,22 +263,22 @@ open class YAxisRenderer: AxisRenderer {
             let point: CGPoint
 
             switch l.labelPosition {
-            case .rightTop:
+            case .topRight:
                 align = .right
                 point = CGPoint(x: viewPortHandler.contentRight - xOffset,
                                 y: position.y - yOffset)
 
-            case .rightBottom:
+            case .bottomRight:
                 align = .right
                 point = CGPoint(x: viewPortHandler.contentRight - xOffset,
                                 y: position.y + yOffset - labelLineHeight)
 
-            case .leftTop:
+            case .topLeft:
                 align = .left
                 point = CGPoint(x: viewPortHandler.contentLeft + xOffset,
                                 y: position.y - yOffset)
 
-            case .leftBottom:
+            case .bottomLeft:
                 align = .left
                 point = CGPoint(x: viewPortHandler.contentLeft + xOffset,
                                 y: position.y + yOffset - labelLineHeight)

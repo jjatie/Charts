@@ -39,13 +39,13 @@ class MultipleLinesChartViewController: DemoBaseViewController {
 
         chartView.delegate = self
 
-        chartView.chartDescription.enabled = false
+        chartView.chartDescription.isEnabled = false
 
-        chartView.leftAxis.enabled = false
+        chartView.leftAxis.isEnabled = false
         chartView.rightAxis.drawAxisLineEnabled = false
         chartView.xAxis.drawAxisLineEnabled = false
 
-        chartView.drawBordersEnabled = false
+        chartView.isDrawBordersEnabled = false
         chartView.setScaleEnabled(true)
 
         let l = chartView.legend

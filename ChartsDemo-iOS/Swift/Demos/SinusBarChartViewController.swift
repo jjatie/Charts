@@ -33,15 +33,15 @@ class SinusBarChartViewController: DemoBaseViewController {
 
         chartView.delegate = self
 
-        chartView.chartDescription.enabled = false
+        chartView.chartDescription.isEnabled = false
 
-        chartView.drawBarShadowEnabled = false
-        chartView.drawValueAboveBarEnabled = false
+        chartView.isDrawBarShadowEnabled = false
+        chartView.isDrawValueAboveBarEnabled = false
         chartView.maxVisibleCount = 60
 
         let xAxis = chartView.xAxis
         xAxis.labelPosition = .bottom
-        xAxis.enabled = false
+        xAxis.isEnabled = false
 
         let leftAxis = chartView.leftAxis
         leftAxis.labelCount = 6

@@ -15,5 +15,8 @@ import Foundation
 public protocol LineChartDataProvider: BarLineScatterCandleBubbleChartDataProvider {
     var lineData: LineChartData? { get }
 
+    /// The maximum x-value of the chart, regardless of zoom or translation.
+    var chartXMax: Double { get }
+
     func getAxis(_ axis: YAxis.AxisDependency) -> YAxis
 }

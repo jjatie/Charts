@@ -28,26 +28,26 @@ class LineChartFilledViewController: DemoBaseViewController {
 
         chartView.backgroundColor = .white
         chartView.gridBackgroundColor = UIColor(red: 51 / 255, green: 181 / 255, blue: 229 / 255, alpha: 150 / 255)
-        chartView.drawGridBackgroundEnabled = true
+        chartView.isDrawGridBackgroundEnabled = true
 
-        chartView.drawBordersEnabled = true
+        chartView.isDrawBordersEnabled = true
 
-        chartView.chartDescription.enabled = false
+        chartView.chartDescription.isEnabled = false
 
-        chartView.pinchZoomEnabled = false
-        chartView.dragEnabled = true
+        chartView.isPinchZoomEnabled = false
+        chartView.isDragEnabled = true
         chartView.setScaleEnabled(true)
 
-        chartView.legend.enabled = false
+        chartView.legend.isEnabled = false
 
-        chartView.xAxis.enabled = false
+        chartView.xAxis.isEnabled = false
 
         let leftAxis = chartView.leftAxis
         leftAxis.axisMaximum = 900
         leftAxis.axisMinimum = -250
         leftAxis.drawAxisLineEnabled = false
 
-        chartView.rightAxis.enabled = false
+        chartView.rightAxis.isEnabled = false
 
         sliderX.value = 100
         sliderY.value = 60

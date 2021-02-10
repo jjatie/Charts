@@ -50,12 +50,12 @@ class CubicLineChartViewController: DemoBaseViewController {
         chartView.setViewPortOffsets(left: 0, top: 20, right: 0, bottom: 0)
         chartView.backgroundColor = UIColor(red: 104 / 255, green: 241 / 255, blue: 175 / 255, alpha: 1)
 
-        chartView.dragEnabled = true
+        chartView.isDragEnabled = true
         chartView.setScaleEnabled(true)
-        chartView.pinchZoomEnabled = false
+        chartView.isPinchZoomEnabled = false
         chartView.maxHighlightDistance = 300
 
-        chartView.xAxis.enabled = false
+        chartView.xAxis.isEnabled = false
 
         let yAxis = chartView.leftAxis
         yAxis.labelFont = UIFont(name: "HelveticaNeue-Light", size: 12)!
@@ -64,8 +64,8 @@ class CubicLineChartViewController: DemoBaseViewController {
         yAxis.labelPosition = .insideChart
         yAxis.axisLineColor = .white
 
-        chartView.rightAxis.enabled = false
-        chartView.legend.enabled = false
+        chartView.rightAxis.isEnabled = false
+        chartView.legend.isEnabled = false
 
         sliderX.value = 45
         sliderY.value = 100

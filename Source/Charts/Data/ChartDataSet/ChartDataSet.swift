@@ -20,6 +20,11 @@ public enum ChartDataSetRounding {
     case closest
 }
 
+public typealias AxisRange = (min: Double, max: Double)
+
+public typealias ARange = ClosedRange<Double>
+
+
 /// The DataSet class represents one group or type of entries (Entry) in the Chart that belong together.
 /// It is designed to logically separate different groups of values inside the Chart (e.g. the values for a specific line in the LineChart, or the values of a specific group of bars in the BarChart).
 @dynamicMemberLookup
@@ -27,7 +32,7 @@ open class ChartDataSet: ChartDataSetProtocol, NSCopying {
     /// - Note: Calls `notifyDataSetChanged()` after setting a new value.
     /// - Returns: The array of y-values that this DataSet represents.
     /// the entries that this dataset represents / holds together
-    open private(set) var entries: [ChartDataEntry]
+    private(set) var entries: [ChartDataEntry]
 
     /// The label string that describes the DataSet.
     open var label: String? = "DataSet"
@@ -36,6 +41,10 @@ open class ChartDataSet: ChartDataSetProtocol, NSCopying {
 
     /// The axis this DataSet should be plotted against.
     open var axisDependency = YAxis.AxisDependency.left
+
+
+    public internal(set) var xRange: AxisRange = (.greatestFiniteMagnitude, -.greatestFiniteMagnitude)
+    public internal(set) var yRange: AxisRange = (.greatestFiniteMagnitude, -.greatestFiniteMagnitude)
 
     public subscript<T>(dynamicMember keyPath: WritableKeyPath<ChartStyle<Element>, T>) -> T {
         get { style[keyPath: keyPath] }
@@ -64,61 +73,48 @@ open class ChartDataSet: ChartDataSetProtocol, NSCopying {
         notifyDataSetChanged()
     }
 
-    open func calcMinMax() {
-        yMax = -Double.greatestFiniteMagnitude
-        yMin = Double.greatestFiniteMagnitude
-        xMax = -Double.greatestFiniteMagnitude
-        xMin = Double.greatestFiniteMagnitude
+    public func calcMinMax() {
+        yRange.min = Double.greatestFiniteMagnitude
+        yRange.max = -Double.greatestFiniteMagnitude
+        xRange.min = Double.greatestFiniteMagnitude
+        xRange.max = -Double.greatestFiniteMagnitude
 
         guard !isEmpty else { return }
 
         forEach(calcMinMax)
     }
 
-    open func calcMinMaxY(fromX: Double, toX: Double) {
-        yMax = -Double.greatestFiniteMagnitude
-        yMin = Double.greatestFiniteMagnitude
+    public func calcMinMaxY(fromX: Double, toX: Double) {
+        yRange.min = Double.greatestFiniteMagnitude
+        yRange.max = -Double.greatestFiniteMagnitude
 
         guard !isEmpty,
               let indexFrom = index(ofX: fromX, closestToY: .nan, rounding: .down),
               let indexTo = self[indexFrom...].index(ofX: toX, closestToY: .nan, rounding: .up),
               indexTo >= indexFrom
-              else { return }
+        else { return }
 
         // only recalculate y
         self[indexFrom...indexTo].forEach(calcMinMaxY)
     }
 
-    open func calcMinMaxX(entry e: ChartDataEntry) {
-        xMin = Swift.min(e.x, xMin)
-        xMax = Swift.max(e.x, xMax)
+    public func calcMinMaxX(entry e: Element) {
+        xRange.min = Swift.min(e.x, xRange.min)
+        xRange.max = Swift.max(e.x, xRange.max)
     }
 
-    open func calcMinMaxY(entry e: ChartDataEntry) {
-        yMin = Swift.min(e.y, yMin)
-        yMax = Swift.max(e.y, yMax)
+    public func calcMinMaxY(entry e: Element) {
+        yRange = (Swift.min(e.y, yRange.min), Swift.max(e.y, yRange.max))
     }
 
     /// Updates the min and max x and y value of this DataSet based on the given Entry.
     ///
     /// - Parameters:
     ///   - e:
-    func calcMinMax(entry e: ChartDataEntry) {
+    public func calcMinMax(entry e: ChartDataEntry) {
         calcMinMaxX(entry: e)
         calcMinMaxY(entry: e)
     }
-
-    /// The minimum y-value this DataSet holds
-    public internal(set) var yMin: Double = Double.greatestFiniteMagnitude
-
-    /// The maximum y-value this DataSet holds
-    public internal(set) var yMax: Double = -Double.greatestFiniteMagnitude
-
-    /// The minimum x-value this DataSet holds
-    public internal(set) var xMin: Double = Double.greatestFiniteMagnitude
-
-    /// The maximum x-value this DataSet holds
-    public internal(set) var xMax: Double = -Double.greatestFiniteMagnitude
 
     /// Adds an Entry to the DataSet dynamically.
     /// Entries are added to their appropriate index respective to it's x-index.
@@ -156,10 +152,8 @@ open class ChartDataSet: ChartDataSetProtocol, NSCopying {
         copy.entries = entries
         copy.label = label
         copy.axisDependency = axisDependency
-        copy.yMax = yMax
-        copy.yMin = yMin
-        copy.xMax = xMax
-        copy.xMin = xMin
+        copy.xRange = yRange
+        copy.yRange = xRange
 
         return copy
     }

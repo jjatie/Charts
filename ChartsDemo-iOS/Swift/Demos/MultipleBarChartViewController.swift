@@ -37,10 +37,10 @@ class MultipleBarChartViewController: DemoBaseViewController {
 
         chartView.delegate = self
 
-        chartView.chartDescription.enabled = false
+        chartView.chartDescription.isEnabled = false
 
-        chartView.pinchZoomEnabled = false
-        chartView.drawBarShadowEnabled = false
+        chartView.isPinchZoomEnabled = false
+        chartView.isDrawBarShadowEnabled = false
 
         let marker = BalloonMarker(color: UIColor(white: 180 / 255, alpha: 1), font: .systemFont(ofSize: 12), textColor: .white, insets: UIEdgeInsets(top: 8, left: 8, bottom: 20, right: 8))
         marker.chartView = chartView
@@ -73,7 +73,7 @@ class MultipleBarChartViewController: DemoBaseViewController {
         leftAxis.spaceTop = 0.35
         leftAxis.axisMinimum = 0
 
-        chartView.rightAxis.enabled = false
+        chartView.rightAxis.isEnabled = false
 
         sliderX.value = 10
         sliderY.value = 100

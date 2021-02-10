@@ -13,7 +13,7 @@ import CoreGraphics
 import Foundation
 
 /// This chart class allows the combination of lines, bars, scatter and candle data all displayed in one chart area.
-open class CombinedChartView: BarLineChartViewBase, CombinedChartDataProvider {
+open class CombinedChartView: BarLineChartViewBase {
     /// the fill-formatter used for determining the position of the fill-line
     internal var _fillFormatter: FillFormatter!
 
@@ -164,7 +164,7 @@ open class CombinedChartView: BarLineChartViewBase, CombinedChartDataProvider {
     override func drawMarkers(context: CGContext) {
         guard
             let marker = marker,
-            isDrawMarkersEnabled, valuesToHighlight()
+            isDrawMarkersEnabled, valuesToHighlight
         else { return }
 
         for i in highlighted.indices {
@@ -194,5 +194,11 @@ open class CombinedChartView: BarLineChartViewBase, CombinedChartDataProvider {
             // draw the marker
             marker.draw(context: context, point: pos)
         }
+    }
+}
+
+extension CombinedChartView: CombinedChartDataProvider {
+    public final var chartXMax: Double {
+        xAxis._axisMaximum
     }
 }

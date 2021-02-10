@@ -16,8 +16,8 @@ open class PieChartData: ChartData {
         super.init()
     }
 
-    override public init(dataSets: [ChartDataSet]) {
-        super.init(dataSets: dataSets)
+    public init(dataSet: ChartDataSet) {
+        super.init(dataSets: [dataSet])
     }
 
     public required init(arrayLiteral elements: ChartDataSet...) {
@@ -25,49 +25,25 @@ open class PieChartData: ChartData {
     }
 
     public var dataSet: PieChartDataSet? {
-        get {
-            return dataSets.first as? PieChartDataSet
-        }
+        get { _dataSets.first as? PieChartDataSet }
         set {
             if let set = newValue {
-                dataSets = [set]
+                _dataSets = [set]
             } else {
-                dataSets = []
+                _dataSets = []
             }
         }
     }
 
     /// - returns: All up to one dataSet object this ChartData object holds.
-    override open var dataSets: [ChartDataSet] {
+    override var _dataSets: [Element] {
         get {
-            assert(super.dataSets.count <= 1, "Found multiple data sets while pie chart only allows one")
-            return super.dataSets
+            assert(super._dataSets.count <= 1, "Found multiple data sets while pie chart only allows one")
+            return super._dataSets
         }
         set {
-            super.dataSets = newValue
+            super._dataSets = newValue
         }
-    }
-
-    override open func dataSet(at index: ChartData.Index) -> ChartData.Element? {
-        guard index == 0 else { return nil }
-        return self[index]
-    }
-
-    override open func dataSet(forLabel label: String, ignorecase: Bool) -> ChartDataSet? {
-        if dataSets.first?.label == nil {
-            return nil
-        }
-
-        if ignorecase {
-            if let label = dataSets[0].label, label.caseInsensitiveCompare(label) == .orderedSame {
-                return dataSets[0]
-            }
-        } else {
-            if label == dataSets[0].label {
-                return dataSets[0]
-            }
-        }
-        return nil
     }
 
     override open func entry(for highlight: Highlight) -> ChartDataEntry? {

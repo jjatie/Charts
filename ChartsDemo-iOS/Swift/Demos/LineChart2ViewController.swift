@@ -40,10 +40,10 @@ class LineChart2ViewController: DemoBaseViewController {
 
         chartView.delegate = self
 
-        chartView.chartDescription.enabled = false
-        chartView.dragEnabled = true
+        chartView.chartDescription.isEnabled = false
+        chartView.isDragEnabled = true
         chartView.setScaleEnabled(true)
-        chartView.pinchZoomEnabled = true
+        chartView.isPinchZoomEnabled = true
 
         let l = chartView.legend
         l.form = .line

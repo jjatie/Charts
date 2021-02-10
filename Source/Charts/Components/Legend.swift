@@ -12,7 +12,7 @@
 import CoreGraphics
 import Foundation
 
-open class Legend: ComponentBase {
+open class Legend: Component {
     public enum Form {
         /// Avoid drawing a form
         case none
@@ -54,6 +54,12 @@ open class Legend: ComponentBase {
         case leftToRight
         case rightToLeft
     }
+
+    public var isEnabled = true
+
+    public var xOffset: CGFloat = 5
+
+    public var yOffset: CGFloat = 3
 
     /// The legend entries array
     open var entries = [LegendEntry]()
@@ -118,16 +124,7 @@ open class Legend: ComponentBase {
     open var calculatedLabelBreakPoints = [Bool]()
     open var calculatedLineSizes = [CGSize]()
 
-    override public init() {
-        super.init()
-
-        xOffset = 5.0
-        yOffset = 3.0
-    }
-
-    public init(entries: [LegendEntry]) {
-        super.init()
-
+    public init(entries: [LegendEntry] = []) {
         self.entries = entries
     }
 

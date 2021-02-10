@@ -43,12 +43,12 @@ class NegativeStackedBarChartViewController: DemoBaseViewController {
 
         chartView.delegate = self
 
-        chartView.chartDescription.enabled = false
+        chartView.chartDescription.isEnabled = false
 
-        chartView.drawBarShadowEnabled = false
-        chartView.drawValueAboveBarEnabled = true
+        chartView.isDrawBarShadowEnabled = false
+        chartView.isDrawValueAboveBarEnabled = true
 
-        chartView.leftAxis.enabled = false
+        chartView.leftAxis.isEnabled = false
         let rightAxis = chartView.rightAxis
         rightAxis.axisMaximum = 25
         rightAxis.axisMinimum = -25
