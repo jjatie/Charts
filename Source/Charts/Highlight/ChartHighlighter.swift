@@ -13,7 +13,7 @@ import Algorithms
 import CoreGraphics
 import Foundation
 
-open class ChartHighlighter<Entry: ChartDataEntry>: Highlighter {
+open class ChartHighlighter<Entry: ChartDataEntry2D>: Highlighter {
     /// instance of the data-provider
     open weak var chart: ChartViewBase<Entry>?
 
@@ -78,7 +78,7 @@ open class ChartHighlighter<Entry: ChartDataEntry>: Highlighter {
     }
 
     /// - Returns: An array of `Highlight` objects corresponding to the selected xValue and dataSetIndex.
-    internal func buildHighlights<Entry: ChartDataEntry>(
+    internal func buildHighlights<Entry: ChartDataEntry2D>(
         dataSet set: ChartDataSet<Entry>,
         dataSetIndex: Int,
         xValue: Double,

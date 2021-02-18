@@ -26,8 +26,10 @@ public protocol ValueFormatter: class {
     ///   - dataSetIndex:    The index of the DataSet the entry in focus belongs to
     ///   - viewPortHandler: provides information about the current chart state (scale, translation, ...)
     /// - Returns:                   The formatted label ready to be drawn
-    func stringForValue(_ value: Double,
-                        entry: ChartDataEntry,
-                        dataSetIndex: Int,
-                        viewPortHandler: ViewPortHandler?) -> String
+    func stringForValue<Entry: ChartDataEntry1D>(
+        _ value: Double,
+        entry: Entry,
+        dataSetIndex: Int,
+        viewPortHandler: ViewPortHandler?
+    ) -> String
 }

@@ -13,14 +13,14 @@ import Foundation
 
 /// The default value formatter used for all chart components that needs a default
 open class DefaultValueFormatter: ValueFormatter {
-    public typealias Block = (
-        _ value: Double,
-        _ entry: ChartDataEntry,
-        _ dataSetIndex: Int,
-        _ viewPortHandler: ViewPortHandler?
-    ) -> String
-
-    open var block: Block?
+//    public typealias Block<Entry: ChartDataEntry1D> = (
+//        _ value: Double,
+//        _ entry: Entry,
+//        _ dataSetIndex: Int,
+//        _ viewPortHandler: ViewPortHandler?
+//    ) -> String
+//
+//    open var block: Block?
 
     open var hasAutoDecimals: Bool
 
@@ -67,24 +67,25 @@ open class DefaultValueFormatter: ValueFormatter {
         setupDecimals(decimals: decimals)
     }
 
-    public init(block: @escaping Block) {
-        self.block = block
-        hasAutoDecimals = false
-    }
+//    public init(block: @escaping Block) {
+//        self.block = block
+//        hasAutoDecimals = false
+//    }
 
-    open func stringForValue(_ value: Double,
-                             entry: ChartDataEntry,
-                             dataSetIndex: Int,
-                             viewPortHandler: ViewPortHandler?) -> String
-    {
-        if let block = block {
-            return block(value, entry, dataSetIndex, viewPortHandler)
-        } else {
+    open func stringForValue<Entry: ChartDataEntry1D>(
+        _ value: Double,
+        entry: Entry,
+        dataSetIndex: Int,
+        viewPortHandler: ViewPortHandler?
+    ) -> String {
+//        if let block = block {
+//            return block(value, entry, dataSetIndex, viewPortHandler)
+//        } else {
             return formatter?.string(from: NSNumber(floatLiteral: value)) ?? ""
-        }
+//        }
     }
 
-    func configure<Entry: ChartDataEntry>(for data: ChartData<Entry>) {
+    func configure<Entry: ChartDataEntry2D>(for data: ChartData<Entry>) {
         var reference = 0.0
 
         let min = data.yRange.min, max = data.yRange.max

@@ -18,7 +18,7 @@ import QuartzCore
 #endif
 
 /// Base class of PieChartView and RadarChartView.
-open class PieRadarChartViewBase<Entry: ChartDataEntry>: ChartViewBase<Entry> {
+open class PieRadarChartViewBase<Entry: ChartDataEntry2D>: ChartViewBase<Entry> {
     /// holds the normalized version of the current rotation angle of the chart
     private var _rotationAngle = CGFloat(270.0)
 
@@ -292,9 +292,7 @@ open class PieRadarChartViewBase<Entry: ChartDataEntry>: ChartViewBase<Entry> {
     /// **default**: 270 --> top (NORTH)
     /// Will always return a normalized value, which will be between 0.0 < 360.0
     open var rotationAngle: CGFloat {
-        get {
-            return _rotationAngle
-        }
+        get { _rotationAngle }
         set {
             _rawRotationAngle = newValue
             _rotationAngle = newValue.normalizedAngle
@@ -689,38 +687,38 @@ open class PieRadarChartViewBase<Entry: ChartDataEntry>: ChartViewBase<Entry> {
     }
 
     #if !os(tvOS)
-        @objc
-        private func rotationGestureRecognized(_ recognizer: NSUIRotationGestureRecognizer) {
-            if recognizer.state == NSUIGestureRecognizerState.began {
+    @objc
+    private func rotationGestureRecognized(_ recognizer: NSUIRotationGestureRecognizer) {
+        if recognizer.state == NSUIGestureRecognizerState.began {
+            stopDeceleration()
+
+            _startAngle = rawRotationAngle
+        }
+
+        if recognizer.state == NSUIGestureRecognizerState.began || recognizer.state == NSUIGestureRecognizerState.changed
+        {
+            let angle = recognizer.nsuiRotation.RAD2DEG
+
+            rotationAngle = _startAngle + angle
+            setNeedsDisplay()
+        } else if recognizer.state == NSUIGestureRecognizerState.ended {
+            let angle = recognizer.nsuiRotation.RAD2DEG
+
+            rotationAngle = _startAngle + angle
+            setNeedsDisplay()
+
+            if isDragDecelerationEnabled {
                 stopDeceleration()
 
-                _startAngle = rawRotationAngle
-            }
+                _decelerationAngularVelocity = recognizer.velocity.RAD2DEG
 
-            if recognizer.state == NSUIGestureRecognizerState.began || recognizer.state == NSUIGestureRecognizerState.changed
-            {
-                let angle = recognizer.nsuiRotation.RAD2DEG
-
-                rotationAngle = _startAngle + angle
-                setNeedsDisplay()
-            } else if recognizer.state == NSUIGestureRecognizerState.ended {
-                let angle = recognizer.nsuiRotation.RAD2DEG
-
-                rotationAngle = _startAngle + angle
-                setNeedsDisplay()
-
-                if isDragDecelerationEnabled {
-                    stopDeceleration()
-
-                    _decelerationAngularVelocity = recognizer.velocity.RAD2DEG
-
-                    if _decelerationAngularVelocity != 0.0 {
-                        _decelerationLastTime = CACurrentMediaTime()
-                        _decelerationDisplayLink = NSUIDisplayLink(target: self, selector: #selector(PieRadarChartViewBase.decelerationLoop))
-                        _decelerationDisplayLink.add(to: RunLoop.main, forMode: RunLoop.Mode.common)
-                    }
+                if _decelerationAngularVelocity != 0.0 {
+                    _decelerationLastTime = CACurrentMediaTime()
+                    _decelerationDisplayLink = NSUIDisplayLink(target: self, selector: #selector(PieRadarChartViewBase.decelerationLoop))
+                    _decelerationDisplayLink.add(to: RunLoop.main, forMode: RunLoop.Mode.common)
                 }
             }
         }
+    }
     #endif
 }

@@ -32,7 +32,7 @@ open class HorizontalBarHighlighter: BarHighlighter {
         return high
     }
 
-    override internal func buildHighlights<Entry: ChartDataEntry>(
+    override internal func buildHighlights<Entry: ChartDataEntry2D>(
         dataSet set: ChartDataSet<Entry>,
         dataSetIndex: Int,
         xValue: Double,

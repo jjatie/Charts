@@ -1,89 +1,72 @@
-//
-//  CandleChartDataEntry.swift
-//  Charts
-//
-//  Copyright 2015 Daniel Cohen Gindi & Philipp Jahoda
-//  A port of MPAndroidChart for iOS
-//  Licensed under Apache License 2.0
-//
-//  https://github.com/danielgindi/Charts
-//
+public struct CandleChartDataEntry: ChartDataEntry2D {
+    public var x: Double = 0.0
 
-import Foundation
+    /// the center value of the candle. (Middle value between high and low)
+    public var y: Double {
+        get { _y }
+        set { _y = (high + low) / 2.0 }
+    }
+    private var _y: Double = 0
 
-open class CandleChartDataEntry: ChartDataEntry {
+    /// optional icon image
+    public var icon: NSUIImage?
+
     /// shadow-high value
-    open var high = Double(0.0)
+    public var high: Double = 0
 
     /// shadow-low value
-    open var low = Double(0.0)
+    public var low: Double = 0
 
     /// close value
-    open var close = Double(0.0)
+    public var close: Double = 0
 
-    /// open value
-    open var open = Double(0.0)
+    /// public value
+    public var open: Double = 0
 
-    public required init() {
-        super.init()
+    /// The overall range (difference) between shadow-high and shadow-low.
+    public var shadowRange: Double {
+        abs(high - low)
     }
 
-    public init(x: Double, shadowH: Double, shadowL: Double, open: Double, close: Double) {
-        super.init(x: x, y: (shadowH + shadowL) / 2.0)
+    /// The body size (difference between public and close).
+    public var bodyRange: Double {
+        abs(open - close)
+    }
 
-        high = shadowH
-        low = shadowL
+    public init() { }
+
+    public init(
+        x: Double,
+        shadowH: Double,
+        shadowL: Double,
+        open: Double,
+        close: Double,
+        icon: NSUIImage? = nil
+    ) {
+        self.x = x
+        self._y = (shadowH + shadowL) / 2.0
+        self.icon = icon
+        self.high = shadowH
+        self.low = shadowL
         self.open = open
         self.close = close
     }
+}
 
-    public convenience init(x: Double, shadowH: Double, shadowL: Double, open: Double, close: Double, icon: NSUIImage?)
-    {
-        self.init(x: x, shadowH: shadowH, shadowL: shadowL, open: open, close: close)
-        self.icon = icon
-    }
+// MARK: - Equatable
 
-    public convenience init(x: Double, shadowH: Double, shadowL: Double, open: Double, close: Double, data: Any?)
-    {
-        self.init(x: x, shadowH: shadowH, shadowL: shadowL, open: open, close: close)
-        self.data = data
-    }
-
-    public convenience init(x: Double, shadowH: Double, shadowL: Double, open: Double, close: Double, icon: NSUIImage?, data: Any?)
-    {
-        self.init(x: x, shadowH: shadowH, shadowL: shadowL, open: open, close: close)
-        self.icon = icon
-        self.data = data
-    }
-
-    /// The overall range (difference) between shadow-high and shadow-low.
-    open var shadowRange: Double {
-        return abs(high - low)
-    }
-
-    /// The body size (difference between open and close).
-    open var bodyRange: Double {
-        return abs(open - close)
-    }
-
-    /// the center value of the candle. (Middle value between high and low)
-    override open var y: Double {
-        get {
-            return super.y
-        }
-        set {
-            super.y = (high + low) / 2.0
-        }
-    }
-
-    // MARK: NSCopying
-
-    override open func copy(with zone: NSZone? = nil) -> Any {
-        let copy = super.copy(with: zone) as! CandleChartDataEntry
-        copy.high = high
-        copy.low = low
-        copy.open = open
-        copy.close = close
-        return copy
+extension CandleChartDataEntry: Equatable {
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.x == rhs.x &&
+            lhs._y == rhs._y &&
+            lhs.high == rhs.high &&
+            lhs.low == rhs.low &&
+            lhs.open == rhs.open &&
+            lhs.close == rhs.close &&
+            lhs.icon == rhs.icon
     }
 }
+
+// MARK: - CustomStringConvertible
+
+extension CandleChartDataEntry: CustomStringConvertible { }

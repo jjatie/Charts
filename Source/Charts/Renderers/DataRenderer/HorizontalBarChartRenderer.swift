@@ -578,7 +578,7 @@ public class HorizontalBarChartRenderer: DataRenderer {
         }
     }
 
-    public func isDrawingValuesAllowed<Entry: ChartDataEntry>(chart: ChartViewBase<Entry>) -> Bool {
+    public func isDrawingValuesAllowed<Entry: ChartDataEntry2D>(chart: ChartViewBase<Entry>) -> Bool {
         let data = chart.data
         return data.entryCount < Int(CGFloat(chart.maxVisibleCount) * viewPortHandler.scaleY)
     }

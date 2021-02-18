@@ -23,7 +23,7 @@ public enum ChartDataSetRounding {
 /// The DataSet class represents one group or type of entries (Entry) in the Chart that belong together.
 /// It is designed to logically separate different groups of values inside the Chart (e.g. the values for a specific line in the LineChart, or the values of a specific group of bars in the BarChart).
 @dynamicMemberLookup
-public struct ChartDataSet<Element: ChartDataEntry> {
+public struct ChartDataSet<Element: ChartDataEntry2D> {
     /// - Note: Calls `notifyDataSetChanged()` after setting a new value.
     /// - Returns: The array of y-values that this DataSet represents.
     /// the entries that this dataset represents / holds together
@@ -284,16 +284,16 @@ extension ChartDataSet: CustomStringConvertible {
 
 // MARK: - CustomDebugStringConvertible
 
-extension ChartDataSet: CustomDebugStringConvertible {
+extension ChartDataSet: CustomDebugStringConvertible where Element: CustomDebugStringConvertible {
     public var debugDescription: String {
         reduce(into: description + ":") {
-            $0 += "\n\($1.description)"
+            $0 += "\n\($1.debugDescription)"
         }
     }
 }
 
 extension BidirectionalCollection where
-    Element: ChartDataEntry
+    Element: ChartDataEntry2D
 {
     /// - Parameters:
     ///   - xValue: the x-value

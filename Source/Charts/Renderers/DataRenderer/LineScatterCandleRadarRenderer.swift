@@ -6,7 +6,7 @@ extension DataRenderer {
     /// :param: points
     /// :param: horizontal
     /// :param: vertical
-    public func drawHighlightLines<EntryType: ChartDataEntry>(
+    public func drawHighlightLines<EntryType: ChartDataEntry2D>(
         context: CGContext,
         point: CGPoint,
         set: ChartDataSet<EntryType>

@@ -11,7 +11,7 @@ public protocol ChartStyleKey {
     static var defaultValue: Value { get }
 }
 
-public struct ChartStyle<EntryType: ChartDataEntry> {
+public struct ChartStyle<EntryType: ChartDataEntry2D> {
     public init() { }
 
     private var __storage: [ObjectIdentifier : Any] = [:]

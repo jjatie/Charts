@@ -23,25 +23,25 @@ public protocol ChartViewDelegate: AnyObject {
     /// - Parameters:
     ///   - entry: The selected Entry.
     ///   - highlight: The corresponding highlight object that contains information about the highlighted position such as dataSetIndex etc.
-    func chartValueSelected<Entry: ChartDataEntry>(_ chartView: ChartViewBase<Entry>, entry: Entry, highlight: Highlight)
+    func chartValueSelected<Entry: ChartDataEntry2D>(_ chartView: ChartViewBase<Entry>, entry: Entry, highlight: Highlight)
 
     /// Called when a user stops panning between values on the chart
-    func chartViewDidEndPanning<Entry: ChartDataEntry>(_ chartView: ChartViewBase<Entry>)
+    func chartViewDidEndPanning<Entry: ChartDataEntry2D>(_ chartView: ChartViewBase<Entry>)
 
     // Called when nothing has been selected or an "un-select" has been made.
-    func chartValueNothingSelected<Entry: ChartDataEntry>(_ chartView: ChartViewBase<Entry>)
+    func chartValueNothingSelected<Entry: ChartDataEntry2D>(_ chartView: ChartViewBase<Entry>)
 
     // Callbacks when the chart is scaled / zoomed via pinch zoom gesture.
-    func chartScaled<Entry: ChartDataEntry>(_ chartView: ChartViewBase<Entry>, scaleX: CGFloat, scaleY: CGFloat)
+    func chartScaled<Entry: ChartDataEntry2D>(_ chartView: ChartViewBase<Entry>, scaleX: CGFloat, scaleY: CGFloat)
 
     // Callbacks when the chart is moved / translated via drag gesture.
-    func chartTranslated<Entry: ChartDataEntry>(_ chartView: ChartViewBase<Entry>, dX: CGFloat, dY: CGFloat)
+    func chartTranslated<Entry: ChartDataEntry2D>(_ chartView: ChartViewBase<Entry>, dX: CGFloat, dY: CGFloat)
 
     // Callbacks when Animator stops animating
-    func chartView<Entry: ChartDataEntry>(_ chartView: ChartViewBase<Entry>, animatorDidStop animator: Animator)
+    func chartView<Entry: ChartDataEntry2D>(_ chartView: ChartViewBase<Entry>, animatorDidStop animator: Animator)
 }
 
-open class ChartViewBase<Entry: ChartDataEntry>: NSUIView {
+open class ChartViewBase<Entry: ChartDataEntry2D>: NSUIView {
     // MARK: - Properties
     public var maxVisibleCount: Int {
         data.entryCount

@@ -11,19 +11,16 @@ import XCTest
 class EquatableTests: XCTestCase {
     func testChartDataEntryEquality() {
         let image = UIImage()
-        let data = NSObject()
-        let entry1 = ChartDataEntry(x: 5, y: 3, icon: image, data: data)
-        let entry2 = ChartDataEntry(x: 5, y: 3, icon: image, data: data)
+        let entry1 = ChartDataEntry(x: 5, y: 3, icon: image)
+        let entry2 = ChartDataEntry(x: 5, y: 3, icon: image)
 
         XCTAssertTrue(entry1 == entry2)
     }
 
     func testChartDataEntryInequality() {
         let image = UIImage()
-        let data1 = NSObject()
-        let data2 = NSObject()
-        let entry1 = ChartDataEntry(x: 5, y: 3, icon: image, data: data1)
-        let entry2 = ChartDataEntry(x: 5, y: 9, icon: image, data: data2)
+        let entry1 = ChartDataEntry(x: 5, y: 3, icon: image)
+        let entry2 = ChartDataEntry(x: 5, y: 9, icon: image)
 
         XCTAssertFalse(entry1 == entry2)
     }

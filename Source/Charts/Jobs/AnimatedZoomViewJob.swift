@@ -12,7 +12,7 @@
 import CoreGraphics
 import Foundation
 
-open class AnimatedZoomViewJob: AnimatedViewPortJob {
+open class AnimatedZoomViewJob<Entry: ChartDataEntry2D>: AnimatedViewPortJob {
     internal var yAxis: YAxis
     internal var xAxisRange: Double = 0.0
     internal var scaleX: CGFloat = 0.0
@@ -25,7 +25,7 @@ open class AnimatedZoomViewJob: AnimatedViewPortJob {
     public init(
         viewPortHandler: ViewPortHandler,
         transformer: Transformer,
-        view: NSUIView,
+        view: BarLineChartViewBase<Entry>,
         yAxis: YAxis,
         xAxisRange: Double,
         scaleX: CGFloat,
@@ -81,7 +81,7 @@ open class AnimatedZoomViewJob: AnimatedViewPortJob {
     }
 
     override internal func animationEnd() {
-        (view as? BarLineChartViewBase)?.calculateOffsets()
+        (view as! BarLineChartViewBase<Entry>).calculateOffsets()
         view.setNeedsDisplay()
     }
 }

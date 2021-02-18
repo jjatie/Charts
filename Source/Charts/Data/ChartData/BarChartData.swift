@@ -29,12 +29,12 @@ extension BarChartData {
             let start = fromX
             fromX += groupSpaceWidthHalf
 
-            _dataSets.forEach { set in
+            for j in _dataSets.indices {
                 fromX += barSpaceHalf
                 fromX += barWidthHalf
 
-                if set.indices.contains(i) {
-                    set[i].x = fromX
+                if _dataSets[j].indices.contains(i) {
+                    _dataSets[j][i].x = fromX
                 }
 
                 fromX += barWidthHalf

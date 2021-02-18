@@ -12,7 +12,7 @@
 import CoreGraphics
 import Foundation
 
-open class ZoomViewJob: ViewPortJob {
+open class ZoomViewJob<Entry: ChartDataEntry2D>: ViewPortJob {
     internal var scaleX: CGFloat = 0.0
     internal var scaleY: CGFloat = 0.0
     internal var axisDependency: YAxis.AxisDependency = .left
@@ -25,7 +25,7 @@ open class ZoomViewJob: ViewPortJob {
         yValue: Double,
         transformer: Transformer,
         axis: YAxis.AxisDependency,
-        view: NSUIView
+        view: BarLineChartViewBase<Entry>
     ) {
         self.scaleX = scaleX
         self.scaleY = scaleY
@@ -44,8 +44,9 @@ open class ZoomViewJob: ViewPortJob {
         var matrix = viewPortHandler.setZoom(scaleX: scaleX, scaleY: scaleY)
         viewPortHandler.refresh(newMatrix: matrix, chart: view, invalidate: false)
 
-        let yValsInView = (view as! BarLineChartViewBase).getAxis(axisDependency).axisRange / Double(viewPortHandler.scaleY)
-        let xValsInView = (view as! BarLineChartViewBase).xAxis.axisRange / Double(viewPortHandler.scaleX)
+        let view = self.view as! BarLineChartViewBase<Entry>
+        let yValsInView = view.getAxis(axisDependency).axisRange / Double(viewPortHandler.scaleY)
+        let xValsInView = view.xAxis.axisRange / Double(viewPortHandler.scaleX)
 
         var pt = CGPoint(
             x: CGFloat(xValue - xValsInView / 2.0),
@@ -57,7 +58,7 @@ open class ZoomViewJob: ViewPortJob {
         matrix = viewPortHandler.translate(pt: pt)
         viewPortHandler.refresh(newMatrix: matrix, chart: view, invalidate: false)
 
-        (view as! BarLineChartViewBase).calculateOffsets()
+        view.calculateOffsets()
         view.setNeedsDisplay()
     }
 }

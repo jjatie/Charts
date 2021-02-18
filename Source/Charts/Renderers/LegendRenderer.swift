@@ -24,7 +24,7 @@ open class LegendRenderer: Renderer {
     }
 
     /// Prepares the legend and calculates all needed forms, labels and colors.
-    open func computeLegend<EntryType: ChartDataEntry>(data: ChartData<EntryType>) {
+    open func computeLegend<EntryType: ChartDataEntry2D>(data: ChartData<EntryType>) {
         guard let legend = legend else { return }
 
         if !legend.isLegendCustom {

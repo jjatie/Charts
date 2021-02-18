@@ -40,7 +40,7 @@ public protocol DataRenderer: Renderer {
     /// Since this might do memory allocations, it should only be called if necessary.
     func initBuffers()
 
-    func isDrawingValuesAllowed<Entry: ChartDataEntry>(chart: ChartViewBase<Entry>) -> Bool
+    func isDrawingValuesAllowed<Entry: ChartDataEntry2D>(chart: ChartViewBase<Entry>) -> Bool
 }
 
 extension DataRenderer {
@@ -49,17 +49,17 @@ extension DataRenderer {
     public func drawExtras(context: CGContext) { }
 
     /// Checks if the provided entry object is in bounds for drawing considering the current animation phase.
-    func isInBoundsX<Entry: ChartDataEntry>(entry e: Entry, dataSet: ChartDataSet<Entry>) -> Bool {
+    func isInBoundsX<Entry: ChartDataEntry2D>(entry e: Entry, dataSet: ChartDataSet<Entry>) -> Bool {
         let entryIndex = dataSet.firstIndex(of: e)!
         return Double(entryIndex) < Double(dataSet.count) * animator.phaseX
     }
 
     /// - Returns: `true` if the DataSet values should be drawn, `false` if not.
-    func shouldDrawValues<Entry: ChartDataEntry>(forDataSet set: ChartDataSet<Entry>) -> Bool {
+    func shouldDrawValues<Entry: ChartDataEntry2D>(forDataSet set: ChartDataSet<Entry>) -> Bool {
         set.isVisible && (set.isDrawValuesEnabled || set.isDrawIconsEnabled)
     }
 
-    public func isDrawingValuesAllowed<Entry: ChartDataEntry>(chart: ChartViewBase<Entry>) -> Bool {
+    public func isDrawingValuesAllowed<Entry: ChartDataEntry2D>(chart: ChartViewBase<Entry>) -> Bool {
         let data = chart.data
         return data.entryCount < Int(CGFloat(chart.maxVisibleCount) * viewPortHandler.scaleX)
     }
@@ -71,7 +71,7 @@ extension DataRenderer {
     ///   - data: A non optional data source about the chart
     ///   - defaultDescription: A simple string describing the type/design of Chart.
     /// - Returns: A header ```NSUIAccessibilityElement``` that can be added to accessibleChartElements.
-    func createAccessibleHeader<Entry: ChartDataEntry>(usingChart chart: ChartViewBase<Entry>, andData data: ChartData<Entry>, withDefaultDescription defaultDescription: String) -> NSUIAccessibilityElement {
+    func createAccessibleHeader<Entry: ChartDataEntry2D>(usingChart chart: ChartViewBase<Entry>, andData data: ChartData<Entry>, withDefaultDescription defaultDescription: String) -> NSUIAccessibilityElement {
         let chartDescriptionText = chart.chartDescription.text ?? defaultDescription
         let dataSetDescriptions = data.map { $0.label ?? "" }
         let dataSetDescriptionText = dataSetDescriptions.joined(separator: ", ")

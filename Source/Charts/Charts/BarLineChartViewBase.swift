@@ -19,7 +19,7 @@ import AppKit
 #endif
 
 /// Base-class of LineChart, BarChart, ScatterChart and CandleStickChart.
-open class BarLineChartViewBase<Entry: ChartDataEntry>: ChartViewBase<Entry>, NSUIGestureRecognizerDelegate
+open class BarLineChartViewBase<Entry: ChartDataEntry2D>: ChartViewBase<Entry>, NSUIGestureRecognizerDelegate
 {
     /// the number of maximum visible drawn values on the chart only active when `drawValuesEnabled` is enabled
     /// - Note: entry numbers greater than this value will cause value-labels to disappear
@@ -476,7 +476,7 @@ open class BarLineChartViewBase<Entry: ChartDataEntry>: ChartViewBase<Entry>, NS
     private var _isDragging = false
     private var _isScaling = false
     private var _gestureScaleAxis = GestureScaleAxis.both
-    private var _closestDataSetToTouch: ChartDataSet<ChartDataEntry>!
+    private var _closestDataSetToTouch: ChartDataSet<Entry>!
     private weak var _outerScrollView: NSUIScrollView?
 
     private var _lastPanPoint = CGPoint() /// This is to prevent using setTranslation which resets velocity
@@ -921,7 +921,7 @@ open class BarLineChartViewBase<Entry: ChartDataEntry>: ChartViewBase<Entry>, NS
         yValue: Double,
         axis: YAxis.AxisDependency
     ) {
-        let job = ZoomViewJob(
+        let job = ZoomViewJob<Entry>(
             viewPortHandler: viewPortHandler,
             scaleX: scaleX,
             scaleY: scaleY,
@@ -1333,7 +1333,7 @@ open class BarLineChartViewBase<Entry: ChartDataEntry>: ChartViewBase<Entry>, NS
 //    }
 
     /// - Returns: The position (in pixels) the provided Entry has inside the chart view
-    public func getPosition(entry e: ChartDataEntry, axis: YAxis.AxisDependency) -> CGPoint {
+    public func getPosition(entry e: Entry, axis: YAxis.AxisDependency) -> CGPoint {
         var vals = CGPoint(x: CGFloat(e.x), y: CGFloat(e.y))
         getTransformer(forAxis: axis).pointValueToPixel(&vals)
         return vals
@@ -1415,13 +1415,13 @@ open class BarLineChartViewBase<Entry: ChartDataEntry>: ChartViewBase<Entry>, NS
     }
 
     /// - Returns: The DataSet object displayed at the touched position of the chart
-    public func getDataSetByTouchPoint<EntryType: ChartDataEntry>(point pt: CGPoint) -> ChartDataSet<EntryType>?
+    public func getDataSetByTouchPoint(point pt: CGPoint) -> ChartDataSet<Entry>?
     {
         guard let h = getHighlightByTouchPoint(pt) else {
             return nil
         }
 
-        return data[h.dataSetIndex] as? ChartDataSet<EntryType>
+        return data[h.dataSetIndex]
     }
 
     /// The current x-scale factor

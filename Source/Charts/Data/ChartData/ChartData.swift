@@ -1,6 +1,6 @@
 import Foundation
 
-public struct ChartData<EntryType: ChartDataEntry> {
+public struct ChartData<EntryType: ChartDataEntry2D> {
     public internal(set) var xRange: AxisRange = (0, 0)
     public var yRange: AxisRange { merge(leftAxisRange, rightAxisRange) }
     var leftAxisRange: AxisRange = (.greatestFiniteMagnitude, -.greatestFiniteMagnitude)

@@ -159,7 +159,7 @@ open class HorizontalBarChartView: BarChartView {
         return bounds
     }
 
-    override open func getPosition(entry e: ChartDataEntry, axis: YAxis.AxisDependency) -> CGPoint {
+    override open func getPosition(entry e: BarChartDataEntry, axis: YAxis.AxisDependency) -> CGPoint {
         var vals = CGPoint(x: CGFloat(e.y), y: CGFloat(e.x))
 
         getTransformer(forAxis: axis).pointValueToPixel(&vals)

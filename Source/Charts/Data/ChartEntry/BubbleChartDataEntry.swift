@@ -12,61 +12,35 @@
 import CoreGraphics
 import Foundation
 
-open class BubbleChartDataEntry: ChartDataEntry {
-    /// The size of the bubble.
-    open var size = CGFloat(0.0)
+public struct BubbleChartDataEntry: ChartDataEntry2D {
+    public var x: Double = 0.0
+    public var y: Double = 0.0
 
-    public required init() {
-        super.init()
-    }
+    /// optional icon image
+    public var icon: NSUIImage?
+
+    /// The size of the bubble.
+    public var size: CGFloat = 0.0
+
+    public init() { }
 
     /// - Parameters:
     ///   - x: The index on the x-axis.
     ///   - y: The value on the y-axis.
     ///   - size: The size of the bubble.
-    public init(x: Double, y: Double, size: CGFloat) {
-        super.init(x: x, y: y)
-
+    ///   - icon: icon image
+    public init(x: Double, y: Double, size: CGFloat, icon: NSUIImage? = nil) {
+        self.x = x
+        self.y = y
+        self.icon = icon
         self.size = size
     }
+}
 
-    /// - Parameters:
-    ///   - x: The index on the x-axis.
-    ///   - y: The value on the y-axis.
-    ///   - size: The size of the bubble.
-    ///   - data: Spot for additional data this Entry represents.
-    public convenience init(x: Double, y: Double, size: CGFloat, data: Any?) {
-        self.init(x: x, y: y, size: size)
-        self.data = data
-    }
-
-    /// - Parameters:
-    ///   - x: The index on the x-axis.
-    ///   - y: The value on the y-axis.
-    ///   - size: The size of the bubble.
-    ///   - icon: icon image
-    public convenience init(x: Double, y: Double, size: CGFloat, icon: NSUIImage?) {
-        self.init(x: x, y: y, size: size)
-        self.icon = icon
-    }
-
-    /// - Parameters:
-    ///   - x: The index on the x-axis.
-    ///   - y: The value on the y-axis.
-    ///   - size: The size of the bubble.
-    ///   - icon: icon image
-    ///   - data: Spot for additional data this Entry represents.
-    public convenience init(x: Double, y: Double, size: CGFloat, icon: NSUIImage?, data: Any?) {
-        self.init(x: x, y: y, size: size)
-        self.icon = icon
-        self.data = data
-    }
-
-    // MARK: NSCopying
-
-    override open func copy(with zone: NSZone? = nil) -> Any {
-        let copy = super.copy(with: zone) as! BubbleChartDataEntry
-        copy.size = size
-        return copy
+extension BubbleChartDataEntry: Equatable {
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.x == rhs.x &&
+            lhs.y == rhs.y &&
+            lhs.size == rhs.size
     }
 }

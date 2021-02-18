@@ -44,7 +44,7 @@ open class MarkerView: NSUIView, Marker {
         return offset
     }
 
-    open func refreshContent(entry _: ChartDataEntry, highlight _: Highlight) {
+    open func refreshContent<Entry: ChartDataEntry1D>(entry: Entry, highlight: Highlight) {
         // Do nothing here...
     }
 
